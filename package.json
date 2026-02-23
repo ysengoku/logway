@@ -1,0 +1,13 @@
+{
+  "name": "logway",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "supabase": "./server/node_modules/.bin/supabase"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.28.0"
+}
