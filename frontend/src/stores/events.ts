@@ -1,0 +1,107 @@
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import { eventsApi } from '@/api/client';
+import type { EventRow } from '@shared/types/event';
+
+export const useEventsStore = defineStore('events', () => {
+  // --- State -----------
+  const events = ref<EventRow[]>([]);
+  const loading = ref(false);
+  const error = ref<string | null>(null);
+
+  // --- Getters -----------
+
+  // Group events by their primary date (for calendar display)
+  const eventsByDate = computed(() => {
+    const map = new Map<string, EventRow[]>();
+
+    for (const event of events.value) {
+      const date = primaryDate(event);
+      if (!date) {
+        continue;
+      }
+      if (!map.has(date)) {
+        map.set(date, []);
+      }
+      map.get(date)!.push(event);
+    }
+
+    return map;
+  });
+
+  // Get events for a specific date
+  function getByDate(date: string): EventRow[] {
+    return eventsByDate.value.get(date) ?? [];
+  }
+
+  // Set of dates that have events (for calendar highlighting)
+  const datesWithEvents = computed(() => new Set(eventsByDate.value.keys()));
+
+  // --- Actions ----------
+  async function fetchAll() {
+    loading.value = true;
+    error.value = null;
+    try {
+      events.value = await eventsApi.getAll();
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : 'Failed to fetch events';
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function createEvent(body: Partial<EventRow>) {
+    const created = await eventsApi.create(body);
+    events.value.push(created);
+    return created;
+  }
+
+  async function updateEvent(id: string, body: Partial<EventRow>) {
+    const updated = await eventsApi.update(id, body);
+    const index = events.value.findIndex((e) => e.id === id);
+    if (index !== -1) events.value[index] = updated;
+    return updated;
+  }
+
+  async function deleteEvent(id: string) {
+    await eventsApi.delete(id);
+    events.value = events.value.filter((e) => e.id !== id);
+  }
+
+  // --- Helpers ---------
+  function primaryDate(event: EventRow): string | null {
+    switch (event.type) {
+      case 'flight':
+      case 'transport':
+        return event.dep_local_date ?? null;
+      case 'hotel':
+        return event.check_in_date ?? null;
+      case 'restaurant':
+        return event.reservation_date ?? null;
+      case 'activity':
+        return event.schedule_date ?? null;
+      case 'link':
+        return event.related_date ?? null;
+      default:
+        return null;
+    }
+  }
+
+  return {
+    // state
+    events,
+    loading,
+    error,
+    // getters
+    eventsByDate,
+    datesWithEvents,
+    getByDate,
+    // actions
+    fetchAll,
+    createEvent,
+    updateEvent,
+    deleteEvent,
+    // helpers
+    primaryDate,
+  };
+});

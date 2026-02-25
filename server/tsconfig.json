@@ -5,10 +5,13 @@
     "moduleResolution": "bundler",
     "strict": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "..",
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../shared/**/*"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,0 +1,106 @@
+@use '../variables' as *;
+
+.event-modal {
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 12px;
+  }
+
+  & {
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    padding: 22px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: 19px;
+    margin-bottom: 18px;
+  }
+
+  &__type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+    margin-bottom: 18px;
+  }
+
+  &__type-opt {
+    padding: 9px 4px;
+    border-radius: $radius-sm;
+    border: 1px solid $border;
+    background: $bg;
+    cursor: pointer;
+    text-align: center;
+    font-size: 11px;
+    color: $text-muted;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+
+    &:hover {
+      border-color: $accent;
+      color: $text;
+    }
+
+    &--selected {
+      border-color: $accent;
+      background: $surface2;
+      color: $text;
+    }
+  }
+
+  &__form-placeholder {
+    color: $text-muted;
+    font-size: 13px;
+    padding: 20px 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 18px;
+  }
+
+  &__btn {
+    padding: 8px 16px;
+    border-radius: 7px;
+    border: 1px solid $border;
+    background: $surface;
+    color: $text;
+    font-size: 13px;
+    transition: all 0.15s;
+
+    &:hover {
+      background: $surface2;
+      border-color: $accent;
+      color: $accent;
+    }
+
+    &--primary {
+      background: $accent;
+      border-color: $accent;
+      color: $bg;
+      font-weight: 500;
+
+      &:hover {
+        opacity: 0.85;
+        color: $bg;
+      }
+    }
+  }
+}
