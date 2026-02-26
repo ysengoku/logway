@@ -1,0 +1,116 @@
+@use '../variables' as *;
+
+.home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    border-bottom: 1px solid $border;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: 28px;
+    color: $accent;
+  }
+
+  &__new-btn {
+    padding: 8px 16px;
+    border-radius: 7px;
+    border: 1px solid $accent;
+    background: $accent;
+    color: $bg;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.15s;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  &__main {
+    flex: 1;
+    padding: 24px;
+  }
+
+  &__state {
+    color: $text-muted;
+    font-size: 13px;
+    text-align: center;
+    padding: 60px 0;
+  }
+
+  &__trips {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  &__trip-card {
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+      background: $surface2;
+      border-color: $accent;
+    }
+  }
+
+  &__trip-title {
+    font-family: $font-display;
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  &__trip-dates {
+    font-size: 12px;
+    color: $text-muted;
+  }
+}
+
+.new-trip-modal {
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 12px;
+  }
+
+  & {
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    padding: 22px;
+    width: 100%;
+    max-width: 440px;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: 19px;
+    margin-bottom: 18px;
+  }
+}
+
+.new-trip-form {
+  &__actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 18px;
+  }
+}

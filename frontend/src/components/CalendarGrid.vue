@@ -4,6 +4,7 @@ import { useEventsStore } from '@/stores/events';
 
 const props = defineProps<{
   selectedDate: string | null;
+  initialDate?: string; // YYYY-MM-DD
 }>();
 
 const emit = defineEmits<{
@@ -12,9 +13,11 @@ const emit = defineEmits<{
 
 const eventsStore = useEventsStore();
 
+// Initialize calendar to initialDate if provided, otherwise today
 const today = new Date();
-const currentYear = ref(today.getFullYear());
-const currentMonth = ref(today.getMonth());
+const initialD = props.initialDate ? new Date(props.initialDate) : today;
+const currentYear = ref(initialD.getFullYear());
+const currentMonth = ref(initialD.getMonth());
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',

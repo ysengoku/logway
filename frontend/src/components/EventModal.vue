@@ -13,11 +13,12 @@ const props = defineProps<{
   open: boolean;
   date?: string;
   event?: EventRow;
+  tripId?: string;
 }>();
 
 const emit = defineEmits<{
   close: [];
-  saved: [event: EventRow];
+  saved: [];
 }>();
 
 const eventsStore = useEventsStore();
@@ -50,13 +51,12 @@ watch(
 async function onFormSubmit(data: Partial<EventRow>) {
   saving.value = true;
   try {
-    let saved: EventRow;
     if (isEditing.value && props.event) {
-      saved = await eventsStore.updateEvent(props.event.id, data);
+      await eventsStore.updateEvent(props.event.id, data);
     } else {
-      saved = await eventsStore.createEvent(data);
+      await eventsStore.createEvent({ ...data, trip_id: props.tripId });
     }
-    emit('saved', saved);
+    emit('saved');
   } catch (e) {
     alert(e instanceof Error ? e.message : 'Failed to save event.');
   } finally {

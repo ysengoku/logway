@@ -31,7 +31,22 @@ export const useEventsStore = defineStore('events', () => {
 
   // Get events for a specific date
   function getByDate(date: string): EventRow[] {
-    return eventsByDate.value.get(date) ?? [];
+    return (eventsByDate.value.get(date) ?? []).sort((a, b) => {
+      const ta = sortKey(a);
+      const tb = sortKey(b);
+      return ta < tb ? -1 : ta > tb ? 1 : 0;
+    });
+  }
+
+  function sortKey(event: EventRow): string {
+    switch (event.type) {
+      case 'flight':
+      case 'transport':  return event.dep_local_time ?? '99:99';
+      case 'hotel':      return event.check_in_time ?? '99:99';
+      case 'restaurant': return event.reservation_time ?? '99:99';
+      case 'activity':   return event.schedule_time ?? '99:99';
+      default:           return '99:99';
+    }
   }
 
   // Set of dates that have events (for calendar highlighting)
@@ -43,6 +58,18 @@ export const useEventsStore = defineStore('events', () => {
     error.value = null;
     try {
       events.value = await eventsApi.getAll();
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : 'Failed to fetch events';
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function fetchByTrip(tripId: string) {
+    loading.value = true;
+    error.value = null;
+    try {
+      events.value = await eventsApi.getByTrip(tripId);
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to fetch events';
     } finally {
@@ -98,6 +125,7 @@ export const useEventsStore = defineStore('events', () => {
     getByDate,
     // actions
     fetchAll,
+    fetchByTrip,
     createEvent,
     updateEvent,
     deleteEvent,

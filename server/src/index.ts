@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
 import { supabase } from './db/supabase';
+import trips from './routes/trips';
 import events from './routes/events';
 
 const app = new Hono();
@@ -13,6 +14,7 @@ app.use(
   }),
 );
 
+app.route('api/trips', trips);
 app.route('/api/events', events);
 
 app.get('/api/health', async (c) => {

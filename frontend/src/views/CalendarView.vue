@@ -30,7 +30,7 @@ function onModalClose() {
   modalOpen.value = false;
 }
 
-function onModalSaved(event: EventRow) {
+function onModalSaved() {
   modalOpen.value = false;
 }
 </script>

@@ -4,18 +4,22 @@ import type { EventRow } from '@shared/types/event';
 
 const events = new Hono();
 
-// GET /api/events - 全イベント取得
+// GET /api/events
 events.get('/', async (c) => {
-  const { data, error } = await supabase
-    .from('events')
-    .select('*')
-    .order('created_at', { ascending: true });
+  const tripId = c.req.query('trip_id');
 
+  let query = supabase.from('events').select('*').order('created_at', { ascending: true });
+
+  if (tripId) {
+    query = query.eq('trip_id', tripId);
+  }
+
+  const { data, error } = await query;
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data);
 });
 
-// GET /api/events/:id - 1件取得
+// GET /api/events/:id
 events.get('/:id', async (c) => {
   const id = c.req.param('id');
   const { data, error } = await supabase.from('events').select('*').eq('id', id).single();
@@ -24,7 +28,7 @@ events.get('/:id', async (c) => {
   return c.json(data);
 });
 
-// POST /api/events - 新規作成
+// POST /api/events
 events.post('/', async (c) => {
   const body = await c.req.json<Partial<EventRow>>();
 
@@ -34,7 +38,7 @@ events.post('/', async (c) => {
   return c.json(data, 201);
 });
 
-// PATCH /api/events/:id - 更新
+// PATCH /api/events/:id
 events.patch('/:id', async (c) => {
   const id = c.req.param('id');
   const body = await c.req.json<Partial<EventRow>>();
@@ -45,7 +49,7 @@ events.patch('/:id', async (c) => {
   return c.json(data);
 });
 
-// DELETE /api/events/:id - 削除
+// DELETE /api/events/:id
 events.delete('/:id', async (c) => {
   const id = c.req.param('id');
 
