@@ -31,8 +31,9 @@ $bp-tablet: 1024px;
   }
 
   &__title {
-    font-family: $font-display;
-    font-size: 22px;
+    font-family: $font-body;
+    font-size: 20px;
+    font-weight: 500;
     color: $accent;
     flex: 1;
     text-align: center;

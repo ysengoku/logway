@@ -111,7 +111,7 @@
     align-items: flex-start;
     gap: 12px;
     padding: 12px 14px;
-    border-radius: $radius-md;
+    border-radius: 0 $radius-md $radius-md 0;
     background: $surface;
     border-left: 3px solid transparent;
     transition: background 0.15s;

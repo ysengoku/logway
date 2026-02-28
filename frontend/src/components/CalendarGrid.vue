@@ -26,8 +26,6 @@ const MONTHS = [
 ];
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const EVENT_TYPES = ['flight', 'transport', 'hotel', 'restaurant', 'activity', 'link'] as const;
-
 function prevMonth() {
   if (currentMonth.value === 0) {
     currentMonth.value = 11;
@@ -137,13 +135,6 @@ const calendarDays = computed(() => {
             :class="`calendar-grid__dot--${type}`"
           />
         </div>
-      </div>
-    </div>
-
-    <div class="calendar-grid__legend">
-      <div v-for="type in EVENT_TYPES" :key="type" class="calendar-grid__legend-item">
-        <span class="calendar-grid__dot" :class="`calendar-grid__dot--${type}`" />
-        {{ type }}
       </div>
     </div>
   </div>
