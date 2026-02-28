@@ -12,15 +12,16 @@ const emit = defineEmits<{
 }>();
 
 const form = reactive({
-  name:            props.initial?.name ?? '',
-  booking_ref:     props.initial?.booking_ref ?? '',
-  address:         props.initial?.address ?? '',
-  nearest_station: props.initial?.nearest_station ?? '',
-  check_in_date:   props.initial?.check_in_date ?? props.defaultDate ?? '',
-  check_in_time:   props.initial?.check_in_time ?? '',
-  check_out_date:  props.initial?.check_out_date ?? '',
-  url:             props.initial?.url ?? '',
-  note:            props.initial?.note ?? '',
+  name:             props.initial?.name ?? '',
+  booking_ref:      props.initial?.booking_ref ?? '',
+  address:          props.initial?.address ?? '',
+  nearest_station:  props.initial?.nearest_station ?? '',
+  check_in_date:    props.initial?.check_in_date ?? props.defaultDate ?? '',
+  check_in_time:    props.initial?.check_in_time ?? '',
+  check_out_date:   props.initial?.check_out_date ?? '',
+  check_out_time:   props.initial?.check_out_time ?? '',
+  url:              props.initial?.url ?? '',
+  note:             props.initial?.note ?? '',
 });
 
 function submit() {
@@ -30,16 +31,17 @@ function submit() {
   }
 
   emit('submit', {
-    type:            'hotel',
-    name:            form.name,
-    booking_ref:     form.booking_ref || undefined,
-    address:         form.address || undefined,
-    nearest_station: form.nearest_station || undefined,
-    check_in_date:   form.check_in_date,
-    check_in_time:   form.check_in_time || undefined,
-    check_out_date:  form.check_out_date || undefined,
-    url:             form.url || undefined,
-    note:            form.note || undefined,
+    type:             'hotel',
+    name:             form.name,
+    booking_ref:      form.booking_ref || undefined,
+    address:          form.address || undefined,
+    nearest_station:  form.nearest_station || undefined,
+    check_in_date:    form.check_in_date,
+    check_in_time:    form.check_in_time || undefined,
+    check_out_date:   form.check_out_date || undefined,
+    check_out_time:   form.check_out_time || undefined,
+    url:              form.url || undefined,
+    note:             form.note || undefined,
   });
 }
 
@@ -77,9 +79,15 @@ defineExpose({ submit });
         <input v-model="form.check_in_time" type="time" />
       </div>
     </div>
-    <div class="form-row">
-      <label>Check-out Date</label>
-      <input v-model="form.check_out_date" type="date" />
+    <div class="form-row-2">
+      <div class="form-row">
+        <label>Check-out Date</label>
+        <input v-model="form.check_out_date" type="date" />
+      </div>
+      <div class="form-row">
+        <label>Check-out Time</label>
+        <input v-model="form.check_out_time" type="time" />
+      </div>
     </div>
 
     <hr class="form-divider" />

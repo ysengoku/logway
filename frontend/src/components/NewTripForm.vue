@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { reactive, computed } from 'vue';
+import type { Trip } from '@shared/types/trip';
 import type { TripInput } from '@shared/types/trip';
+
+const props = defineProps<{
+  initial?: Partial<Trip>;
+}>();
 
 const emit = defineEmits<{
   submit: [data: TripInput];
@@ -8,9 +13,9 @@ const emit = defineEmits<{
 }>();
 
 const form = reactive({
-  title: '',
-  start_date: '',
-  end_date: '',
+  title: props.initial?.title ?? '',
+  start_date: props.initial?.start_date ?? '',
+  end_date: props.initial?.end_date ?? '',
 });
 
 // Minimum end date is the day after start date

@@ -131,6 +131,7 @@ export interface EventRow {
   check_in_date?: string
   check_in_time?: string
   check_out_date?: string
+  check_out_time?: string;
 
   reservation_date?: string
   reservation_time?: string

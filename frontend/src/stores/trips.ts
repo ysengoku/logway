@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { tripsApi } from '@/api/client';
 import type { Trip, TripInput } from '@shared/types/trip';
 
@@ -7,6 +7,20 @@ export const useTripsStore = defineStore('trips', () => {
   const trips = ref<Trip[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  const upcomingTrips = computed(() =>
+    trips.value
+      .filter((t) => !t.end_date || t.end_date >= today)
+      .sort((a, b) => (a.start_date ?? '').localeCompare(b.start_date ?? '')),
+  );
+
+  const pastTrips = computed(() =>
+    trips.value
+      .filter((t) => t.end_date && t.end_date < today)
+      .sort((a, b) => (b.start_date ?? '').localeCompare(a.start_date ?? '')),
+  );
 
   async function fetchAll() {
     loading.value = true;
@@ -40,6 +54,8 @@ export const useTripsStore = defineStore('trips', () => {
 
   return {
     trips,
+    upcomingTrips,
+    pastTrips,
     loading,
     error,
     fetchAll,

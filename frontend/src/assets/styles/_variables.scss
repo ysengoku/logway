@@ -1,24 +1,28 @@
 // --- Colors ----------
-$bg: #0f0e0c;
-$surface: #1a1815;
-$surface2: #231f1a;
-$border: #2e2922;
-$accent: #d4a853;
-$text: #e8e0d4;
-$text-muted: #7a7060;
-$text-dim: #4a4238;
+$bg: #EEECE9;
+$surface: #D4DEDD;
+$surface2: #D9D5CF;
+$border: #C8C3BB;
+$accent: #177B84;
+$accent-hover: #0f5c63;
+$accent2: #E55A4D;
+$accent2-hover: #c44a3e;
+$header-gradient-start: #1B3A5C;
+$text: #031315;
+$text-muted: #5a6e70;
+$text-dim: #8fa3a5;
 
 // --- Event type colors ----------
-$flight: #6b9fd4;
-$transport: #a08fd4;
-$hotel: #d48f8f;
-$restaurant: #d4b08f;
-$activity: #8fd4b0;
-$link: #8fb4d4;
+$flight: #177B84;
+$transport: #6b5ea8;
+$hotel: #a84444;
+$restaurant: #a87a44;
+$activity: #448a6b;
+$link: #4474a8;
 
 // --- Typography ----------
-$font-body: 'DM Sans', sans-serif;
-$font-display: 'Playfair Display', serif;
+$font-body: 'Inter', sans-serif;
+$font-display: 'Bellota Text', sans-serif;
 
 // --- Spacing ----------
 $radius-sm: 6px;

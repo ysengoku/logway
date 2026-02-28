@@ -13,13 +13,15 @@
   }
 
   &__month {
-    font-family: $font-display;
-    font-size: 20px;
+    font-family: $font-body;
+    font-weight: 500;
+    font-size: 16px;
+    color: $text;
   }
 
   &__arrow {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     border: 1px solid $border;
     background: none;
@@ -69,6 +71,7 @@
     transition: all 0.15s;
     gap: 2px;
     min-height: 0;
+    padding: 16px 0;
 
     &:hover:not(&--empty) {
       background: $surface2;
@@ -98,20 +101,28 @@
     &--has-events .calendar-grid__day-num {
       color: $text;
     }
+
+    &--in-trip {
+      background: rgba($accent, 0.08);
+    }
+
+    &--out-of-trip {
+      opacity: 0.35;
+      cursor: default;
+      pointer-events: none;
+    }
   }
 
   &__day-num {
-    font-size: 14px;
+    font-size: 16px;
     color: $text-muted;
     line-height: 1;
   }
 
-  &__dots {
-    display: flex;
-    gap: 2px;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 24px;
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
   }
 
   &__dot {
@@ -129,7 +140,7 @@
 
   &__legend {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 5px;
     margin-top: 16px;
   }
@@ -138,13 +149,13 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 11px;
+    font-size: 12px;
     color: $text-muted;
     text-transform: capitalize;
 
     .calendar-grid__dot {
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
     }
   }
 }

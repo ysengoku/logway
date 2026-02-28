@@ -1,0 +1,48 @@
+@use '../variables' as *;
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 16px 20px 16px;
+  background: linear-gradient(135deg, $header-gradient-start 0%, $accent 100%);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  clip-path: ellipse(120% 100% at 25% 0%);
+
+  &__logo {
+    font-family: $font-display;
+    font-size: 28px;
+    color: rgba($bg, 0.7);
+    cursor: pointer;
+    display: inline-block;
+    transition: opacity 0.15s;
+    
+    &-highlight {
+      color: $accent2;
+    }
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  &__account-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    color: white;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+  }
+}

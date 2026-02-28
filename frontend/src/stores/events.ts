@@ -16,18 +16,38 @@ export const useEventsStore = defineStore('events', () => {
     const map = new Map<string, EventRow[]>();
 
     for (const event of events.value) {
-      const date = primaryDate(event);
-      if (!date) {
-        continue;
+      const dates = eventDates(event);
+      for (const date of dates) {
+        if (!map.has(date)) map.set(date, []);
+        map.get(date)!.push(event);
       }
-      if (!map.has(date)) {
-        map.set(date, []);
-      }
-      map.get(date)!.push(event);
     }
 
     return map;
   });
+
+  function eventDates(event: EventRow): string[] {
+    switch (event.type) {
+      case 'flight':
+      case 'transport':  return [event.dep_local_date].filter(Boolean) as string[];
+      case 'hotel': {
+        if (!event.check_in_date) return [];
+        if (!event.check_out_date) return [event.check_in_date];
+        const dates: string[] = [];
+        const current = new Date(event.check_in_date);
+        const end = new Date(event.check_out_date);
+        while (current <= end) {
+          dates.push(current.toISOString().slice(0, 10));
+          current.setDate(current.getDate() + 1);
+        }
+        return dates;
+      }
+      case 'restaurant': return [event.reservation_date].filter(Boolean) as string[];
+      case 'activity':   return [event.schedule_date].filter(Boolean) as string[];
+      case 'link':       return [event.related_date].filter(Boolean) as string[];
+      default:           return [];
+    }
+  }
 
   // Get events for a specific date
   function getByDate(date: string): EventRow[] {
@@ -95,22 +115,15 @@ export const useEventsStore = defineStore('events', () => {
     events.value = events.value.filter((e) => e.id !== id);
   }
 
-  // --- Helpers ---------
   function primaryDate(event: EventRow): string | null {
     switch (event.type) {
       case 'flight':
-      case 'transport':
-        return event.dep_local_date ?? null;
-      case 'hotel':
-        return event.check_in_date ?? null;
-      case 'restaurant':
-        return event.reservation_date ?? null;
-      case 'activity':
-        return event.schedule_date ?? null;
-      case 'link':
-        return event.related_date ?? null;
-      default:
-        return null;
+      case 'transport':  return event.dep_local_date ?? null;
+      case 'hotel':      return event.check_in_date ?? null;
+      case 'restaurant': return event.reservation_date ?? null;
+      case 'activity':   return event.schedule_date ?? null;
+      case 'link':       return event.related_date ?? null;
+      default:           return null;
     }
   }
 
