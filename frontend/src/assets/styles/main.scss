@@ -1,6 +1,7 @@
 @use 'variables' as *;
 @use 'reset';
 @use 'components/app-header';
+@use 'components/auth-view';
 @use 'components/calendar-grid';
 @use 'components/day-detail';
 @use 'components/event-modal';

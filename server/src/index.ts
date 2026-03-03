@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import { Hono } from 'hono/quick';
 import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
 import { supabase } from './db/supabase';
@@ -13,6 +13,29 @@ app.use(
     origin: 'http://localhost:5173',
   }),
 );
+
+app.use('/api/*', async (c, next) => {
+  if (c.req.path == '/api/health') {
+    return next();
+  }
+
+  const authHeader = c.req.header('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  const token = authHeader.slice(7);
+  const { data, error } = await supabase.auth.getUser(token);
+
+  if (error || !data.user) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  c.set('userId', data.user.id);
+  c.set('token', token);
+
+  return next();
+});
 
 app.route('api/trips', trips);
 app.route('/api/events', events);

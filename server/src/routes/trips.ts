@@ -1,12 +1,14 @@
 import { Hono } from 'hono';
-import { supabase } from '../db/supabase';
+import { supabaseWithAuth } from '../db/supabase';
 import type { TripInput } from '@shared/types/trip';
 
 const trips = new Hono();
 
-// GET /api/trips
 trips.get('/', async (c) => {
-  const { data, error } = await supabase
+  const token = c.get('token');
+  const db = supabaseWithAuth(token);
+
+  const { data, error } = await db
     .from('trips')
     .select('*')
     .order('start_date', { ascending: true });
@@ -15,10 +17,12 @@ trips.get('/', async (c) => {
   return c.json(data);
 });
 
-// GET /api/trips/:id
 trips.get('/:id', async (c) => {
+  const token = c.get('token');
+  const db = supabaseWithAuth(token);
   const id = c.req.param('id');
-  const { data, error } = await supabase
+
+  const { data, error } = await db
     .from('trips')
     .select('*')
     .eq('id', id)
@@ -28,15 +32,17 @@ trips.get('/:id', async (c) => {
   return c.json(data);
 });
 
-// POST /api/trips
 trips.post('/', async (c) => {
+  const token = c.get('token');
+  const db = supabaseWithAuth(token);
+  const userId = c.get('userId');
   const body = await c.req.json<TripInput>();
 
   if (!body.title) return c.json({ error: 'Title is required.' }, 400);
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('trips')
-    .insert(body)
+    .insert({ ...body, owner_id: userId })
     .select()
     .single();
 
@@ -44,12 +50,13 @@ trips.post('/', async (c) => {
   return c.json(data, 201);
 });
 
-// PATCH /api/trips/:id
 trips.patch('/:id', async (c) => {
+  const token = c.get('token');
+  const db = supabaseWithAuth(token);
   const id = c.req.param('id');
   const body = await c.req.json<Partial<TripInput>>();
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('trips')
     .update(body)
     .eq('id', id)
@@ -60,11 +67,12 @@ trips.patch('/:id', async (c) => {
   return c.json(data);
 });
 
-// DELETE /api/trips/:id
 trips.delete('/:id', async (c) => {
+  const token = c.get('token');
+  const db = supabaseWithAuth(token);
   const id = c.req.param('id');
 
-  const { error } = await supabase
+  const { error } = await db
     .from('trips')
     .delete()
     .eq('id', id);

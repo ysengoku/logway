@@ -1,14 +1,16 @@
 import { Hono } from 'hono';
-import { supabase } from '../db/supabase';
+import { supabase, supabaseWithAuth } from '../db/supabase';
 import type { EventRow } from '@shared/types/event';
 
 const events = new Hono();
 
 // GET /api/events
 events.get('/', async (c) => {
+  const token = c.get('token');
+  const db = supabaseWithAuth(token);
   const tripId = c.req.query('trip_id');
 
-  let query = supabase.from('events').select('*').order('created_at', { ascending: true });
+  let query = db.from('events').select('*').order('created_at', { ascending: true });
 
   if (tripId) {
     query = query.eq('trip_id', tripId);
@@ -21,8 +23,11 @@ events.get('/', async (c) => {
 
 // GET /api/events/:id
 events.get('/:id', async (c) => {
+  const token = c.get('token');
+  const db = supabaseWithAuth(token);
   const id = c.req.param('id');
-  const { data, error } = await supabase.from('events').select('*').eq('id', id).single();
+
+  const { data, error } = await db.from('events').select('*').eq('id', id).single();
 
   if (error) return c.json({ error: error.message }, 404);
   return c.json(data);
@@ -30,9 +35,11 @@ events.get('/:id', async (c) => {
 
 // POST /api/events
 events.post('/', async (c) => {
+  const token = c.get('token');
+  const db = supabaseWithAuth(token);
   const body = await c.req.json<Partial<EventRow>>();
 
-  const { data, error } = await supabase.from('events').insert(body).select().single();
+  const { data, error } = await db.from('events').insert(body).select().single();
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data, 201);
@@ -40,10 +47,12 @@ events.post('/', async (c) => {
 
 // PATCH /api/events/:id
 events.patch('/:id', async (c) => {
+  const token = c.get('token');
+  const db = supabaseWithAuth(token);
   const id = c.req.param('id');
   const body = await c.req.json<Partial<EventRow>>();
 
-  const { data, error } = await supabase.from('events').update(body).eq('id', id).select().single();
+  const { data, error } = await db.from('events').update(body).eq('id', id).select().single();
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data);
@@ -51,9 +60,11 @@ events.patch('/:id', async (c) => {
 
 // DELETE /api/events/:id
 events.delete('/:id', async (c) => {
+  const token = c.get('token');
+  const db = supabaseWithAuth(token);
   const id = c.req.param('id');
 
-  const { error } = await supabase.from('events').delete().eq('id', id);
+  const { error } = await db.from('events').delete().eq('id', id);
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json({ success: true });

@@ -3,6 +3,7 @@ export interface Trip {
   title: string;
   start_date?: string;
   end_date?: string;
+  owner_id?: string;
   created_at: string;
   updated_at: string;
 }
