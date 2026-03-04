@@ -31,6 +31,14 @@
     margin-bottom: 24px;
   }
 
+  &__links {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
   &__switch {
     margin-top: 16px;
     font-size: 12px;
@@ -53,11 +61,15 @@
 
   &__success {
     color: $accent;
-    font-size: 13px;
+    font-size: 14px;
     padding: 16px;
     background: rgba($accent, 0.08);
     border-radius: $radius-sm;
     margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
   }
 
   &__error {

@@ -6,10 +6,11 @@ import { useAuthStore } from '@/stores/auth';
 const router = useRouter();
 const authStore = useAuthStore();
 
-const mode = ref<'signin' | 'signup'>('signin');
+const mode = ref<'signin' | 'signup' | 'reset' >('signin');
 const loading = ref(false);
 const error = ref<string | null>(null);
 const signUpDone = ref(false);
+const resetDone = ref(false);
 
 const form = reactive({
   email: '',
@@ -33,12 +34,19 @@ async function submit() {
 
   loading.value = true;
   try {
-    if (mode.value === 'signin') {
-      await authStore.signIn(form.email, form.password);
-      router.push({ name: 'home' });
-    } else {
-      await authStore.signUp(form.email, form.password);
-      signUpDone.value = true;
+    switch (mode.value) {
+      case 'signin':
+        await authStore.signIn(form.email, form.password);
+        router.push({ name: 'home' });
+        break;
+      case 'signup':
+        await authStore.signUp(form.email, form.password);
+        signUpDone.value = true;
+        break;
+      case 'reset':
+        await authStore.resetPassword(form.email);
+        resetDone.value = true;
+        break;
     }
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'An error occurred.';
@@ -46,17 +54,32 @@ async function submit() {
     loading.value = false;
   }
 }
+
+function switchMode(newMode: 'signin' | 'signup' | 'reset') {
+  mode.value = newMode;
+  error.value = null;
+  signUpDone.value = false;
+  resetDone.value = false;
+}
 </script>
 
 <template>
   <div class="auth-view">
     <div class="auth-view__card">
       <h2 class="auth-view__title">
-        {{ mode === 'signin' ? 'Sign in' : 'Sign up' }}
+        <template v-if="mode === 'signin'">Sign In</template>
+        <template v-else-if="mode === 'signup'">Sign Up</template>
+        <template v-else>Reset Password</template>
       </h2>
 
       <div v-if="signUpDone" class="auth-view__success">
         Check your email to confirm your account, then sign in.
+      </div>
+      <div v-else-if="resetDone" class="auth-view__success">
+        Check your email for password reset link.
+        <button class="auth-view__switch-btn" @click="switchMode('signin')">
+          Back to Sign in
+        </button>
       </div>
 
       <template v-else>
@@ -64,22 +87,24 @@ async function submit() {
           <label>Email</label>
           <input v-model="form.email" type="email" placeholder="you@example.com" />
         </div>
-        <div class="form-row">
-          <label>Password</label>
-          <input v-model="form.password" type="password" placeholder="••••••••" />
-        </div>
-        <div v-if="mode === 'signup'" class="form-row">
-          <label>Confirm Password</label>
-          <input
-            v-model="form.passwordConfirm"
-            type="password"
-            placeholder="••••••••"
-            :class="{ 'auth-view__input--error': passwordMismatch }"
-          />
-          <span v-if="passwordMismatch" class="auth-view__field-error">
-            Passwords do not match.
-          </span>
-        </div>
+        <template v-if="mode !== 'reset'">
+          <div class="form-row">
+            <label>Password</label>
+            <input v-model="form.password" type="password" placeholder="password" />
+          </div>
+          <div v-if="mode === 'signup'" class="form-row">
+            <label>Confirm Password</label>
+            <input
+              v-model="form.passwordConfirm"
+              type="password"
+              placeholder="repeat password"
+              :class="{ 'auth-view__input--error': passwordMismatch }"
+            />
+            <span v-if="passwordMismatch" class="auth-view__field-error">
+              Passwords do not match.
+            </span>
+          </div>
+        </template>
 
         <div v-if="error" class="auth-view__error">{{ error }}</div>
 
@@ -88,21 +113,31 @@ async function submit() {
           :disabled="loading || passwordMismatch"
           @click="submit"
         >
-          {{ loading ? 'Loading...' : mode === 'signin' ? 'Sign in' : 'Sign up' }}
+          <template v-if="mode === 'signin'">Sign In</template>
+          <template v-else-if="mode === 'signup'">Sign Up</template>
+          <template v-else>Send Password Reset Link</template>
         </button>
 
-        <p class="auth-view__switch">
+        <p class="auth-view__links">
           <template v-if="mode === 'signin'">
-            Don't have an account?
-            <button class="auth-view__switch-btn" @click="mode = 'signup'; error = null">
-              Sign up
-            </button>
+            <p class="auth-view__switch">
+              <button class="auth-view__switch-btn" @click="switchMode('reset')">
+                Forgot password?
+              </button>
+            </p>
+            <p class="auth-view__switch">
+              Don't have an account yet?
+              <button class="auth-view__switch-btn" @click="switchMode('signup')">
+                Sign up
+              </button>
+            </p>
           </template>
           <template v-else>
-            Already have an account?
-            <button class="auth-view__switch-btn" @click="mode = 'signin'; error = null">
-              Sign in
-            </button>
+            <p class="auth-view__switch">
+              <button class="auth-view__switch-btn" @click="switchMode('signin')">
+                Back to Sign in
+              </button>
+            </p>
           </template>
         </p>
       </template>

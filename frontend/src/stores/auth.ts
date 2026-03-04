@@ -35,6 +35,13 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null;
   }
 
+  async function resetPassword(email: string) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) throw error;
+  }
+
   return {
     user,
     loading,
@@ -43,5 +50,6 @@ export const useAuthStore = defineStore('auth', () => {
     signUp,
     signIn,
     signOut,
+    resetPassword,
   };
 });
