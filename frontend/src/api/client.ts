@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import type { EventRow } from '@shared/types/event';
-import type { Trip, TripInput } from '@shared/types/trip';
+import type { Profile } from '@shared/types/profile';
+import type { Trip, TripInput, TripMember } from '@shared/types/trip';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
@@ -23,6 +24,12 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   return res.json();
 }
+
+export const profilesApi = {
+  getByIds(userIds: string[]): Promise<Profile[]> {
+    return request(`/api/profiles?user_ids=${userIds.join(',')}`);
+  }
+};
 
 export const eventsApi = {
   getAll(): Promise<EventRow[]> {
@@ -72,5 +79,24 @@ export const tripsApi = {
   },
   delete(id: string): Promise<{ success: boolean }> {
     return request(`/api/trips/${id}`, { method: 'DELETE' });
+  },
+};
+
+export const membersApi = {
+  getAll(tripId: string): Promise<TripMember[]> {
+    return request(`/api/trips/${tripId}/members`);
+  },
+
+  invite(tripId: string, email: string): Promise<{ success: boolean }> {
+    return request(`/api/trips/${tripId}/members/invite`, {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  },
+
+  remove(tripId: string, userId: string): Promise<{ success: boolean }> {
+    return request(`/api/trips/${tripId}/members/${userId}`, {
+      method: 'DELETE',
+    });
   },
 };

@@ -14,6 +14,7 @@ const resetDone = ref(false);
 
 const form = reactive({
   email: '',
+  displayName: '',
   password: '',
   passwordConfirm: '',
 });
@@ -40,7 +41,7 @@ async function submit() {
         router.push({ name: 'home' });
         break;
       case 'signup':
-        await authStore.signUp(form.email, form.password);
+        await authStore.signUp(form.email, form.password, form.displayName);
         signUpDone.value = true;
         break;
       case 'reset':
@@ -87,6 +88,12 @@ function switchMode(newMode: 'signin' | 'signup' | 'reset') {
           <label>Email</label>
           <input v-model="form.email" type="email" placeholder="you@example.com" />
         </div>
+        <template v-if="mode === 'signup'">
+          <div class="form-row">
+            <label>Display Name *</label>
+            <input v-model="form.displayName" type="text" placeholder="Your name" />
+          </div>
+        </template>
         <template v-if="mode !== 'reset'">
           <div class="form-row">
             <label>Password</label>

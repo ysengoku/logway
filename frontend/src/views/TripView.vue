@@ -7,6 +7,7 @@ import CalendarGrid from '@/components/CalendarGrid.vue';
 import DayDetail from '@/components/DayDetail.vue';
 import EventModal from '@/components/EventModal.vue';
 import NewTripForm from '@/components/NewTripForm.vue';
+import TripMembers from '@/components/TripMembers.vue';
 import type { TripInput } from '@shared/types/trip';
 import type { EventRow } from '@shared/types/event';
 
@@ -81,6 +82,7 @@ async function deleteTrip() {
 
     <div class="trip-view__body">
       <aside class="trip-view__sidebar">
+        {{ trip?.invite_code }}
         <CalendarGrid
           :selected-date="selectedDate"
           :initial-date="trip?.start_date"
@@ -112,6 +114,11 @@ async function deleteTrip() {
             @submit="onEditTrip"
             @cancel="showEditModal = false"
           />
+          <!-- <hr class="form-divider" style="margin: 20px 0" />
+          <TripMembers
+            :trip-id="tripId"
+            :owner-id="trip?.owner_id"
+          /> -->
         </div>
       </div>
     </Teleport>

@@ -1,0 +1,125 @@
+@use '../variables' as *;
+
+.trip-members {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__title {
+    font-size: 12px;
+    font-weight: 500;
+    color: $text-muted;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: $surface;
+    border-radius: $radius-sm;
+    font-size: 13px;
+  }
+
+  &__item-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__role {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+
+    &--owner {
+      background: rgba($accent, 0.15);
+      color: $accent;
+    }
+
+    &--member {
+      background: rgba($text-muted, 0.15);
+      color: $text-muted;
+    }
+  }
+
+  &__name {
+    color: $text-muted;
+    font-size: 12px;
+    font-family: monospace;
+  }
+
+  &__remove-btn {
+    background: none;
+    border: none;
+    color: $text-dim;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: $radius-sm;
+    transition: all 0.15s;
+
+    &:hover {
+      color: $hotel;
+      background: rgba($hotel, 0.1);
+    }
+  }
+
+  &__invite {
+    border-top: 1px solid $border;
+    padding-top: 16px;
+  }
+
+  &__invite-row {
+    display: flex;
+    gap: 8px;
+
+    input {
+      flex: 1;
+    }
+  }
+
+  &__invite-btn {
+    padding: 9px 16px;
+    border-radius: $radius-sm;
+    border: 1px solid $accent;
+    background: $accent;
+    color: $bg;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      background: $accent-hover;
+      border-color: $accent-hover;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__success {
+    font-size: 12px;
+    color: $accent;
+    margin-top: 6px;
+  }
+
+  &__error {
+    font-size: 12px;
+    color: $accent2;
+    margin-top: 6px;
+  }
+}

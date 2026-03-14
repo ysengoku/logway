@@ -2,8 +2,10 @@ import { Hono } from 'hono/quick';
 import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
 import { supabase } from './db/supabase';
-import trips from './routes/trips';
 import events from './routes/events';
+import members from './routes/members';
+import profiles from './routes/profiles';
+import trips from './routes/trips';
 
 const app = new Hono();
 
@@ -37,8 +39,9 @@ app.use('/api/*', async (c, next) => {
   return next();
 });
 
-app.route('api/trips', trips);
 app.route('/api/events', events);
+app.route('/api/profiles', profiles);
+app.route('/api/trips', trips);
 
 app.get('/api/health', async (c) => {
   const { error } = await supabase.from('events').select('count').limit(1);

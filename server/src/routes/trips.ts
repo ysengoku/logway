@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import members from './members';
 import { supabaseWithAuth } from '../db/supabase';
 import type { TripInput } from '@shared/types/trip';
 
@@ -37,17 +38,44 @@ trips.post('/', async (c) => {
   const db = supabaseWithAuth(token);
   const userId = c.get('userId');
   const body = await c.req.json<TripInput>();
+  if (!body.title) {
+    return c.json({ error: 'Title is required.' }, 400);
+  }
 
-  if (!body.title) return c.json({ error: 'Title is required.' }, 400);
+  // Generate a human-friendly 8-char invite code and ensure uniqueness.
+  const genInviteCode = (len = 8) => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    for (let i = 0; i < len; i++) {
+      out += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return out;
+  };
 
-  const { data, error } = await db
-    .from('trips')
-    .insert({ ...body, owner_id: userId })
-    .select()
-    .single();
+  let trip = null;
+  let tripError = null;
+  const maxAttempts = 5;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const invite_code = genInviteCode(8);
+    const insertBody = { ...body, invite_code, owner_id: userId } as any;
+    const res = await db.from('trips').insert(insertBody).select().single();
+    trip = res.data as any;
+    tripError = res.error;
+    if (trip) break;
+    // If unique violation, retry with new code
+    if (tripError && tripError.code === '23505') continue;
+    // Return immediately on other errors
+    if (tripError) {
+      return c.json({ error: tripError.message }, 500);
+    }
+  }
+  if (!trip) {
+    return c.json({ error: 'Failed to create trip after multiple attempts.' }, 500);
+  }
 
-  if (error) return c.json({ error: error.message }, 500);
-  return c.json(data, 201);
+  // owner is recorded on trips.owner_id; trip_members table was removed
+
+  return c.json(trip, 201);
 });
 
 trips.patch('/:id', async (c) => {
@@ -80,5 +108,7 @@ trips.delete('/:id', async (c) => {
   if (error) return c.json({ error: error.message }, 500);
   return c.json({ success: true });
 });
+
+trips.route('/:tripId/members', members);
 
 export default trips;
