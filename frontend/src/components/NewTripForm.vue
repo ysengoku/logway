@@ -72,8 +72,8 @@ function submit() {
       </div>
     </div>
     <div class="new-trip-form__actions">
-      <button class="event-modal__btn" @click="emit('cancel')">Cancel</button>
-      <button class="event-modal__btn event-modal__btn--primary" @click="submit">Create</button>
+      <button class="button-secondary" @click="emit('cancel')">Cancel</button>
+      <button class="button-primary" @click="submit">Create</button>
     </div>
   </div>
 </template>

@@ -134,9 +134,9 @@ function onSaveClick() {
         />
 
         <div class="event-modal__actions">
-          <button class="event-modal__btn" @click="emit('close')">Cancel</button>
+          <button class="button-secondary" @click="emit('close')">Cancel</button>
           <button
-            class="event-modal__btn event-modal__btn--primary"
+            class="button-primary"
             :disabled="saving"
             @click="onSaveClick"
           >

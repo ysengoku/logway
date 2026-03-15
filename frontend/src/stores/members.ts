@@ -20,10 +20,9 @@ export const useMembersStore = defineStore('members', () => {
     }
   }
 
-  async function invite (tripId: string, email: string) {
-    console.log('Inviting', email, 'to trip', tripId);
-    await membersApi.invite(tripId, email);
-    console.log('Invitation sent, refreshing members');
+  async function add(tripId: string) {
+    const newMember = await membersApi.add(tripId);
+    members.value.push(newMember);
   }
 
   async function remove(tripId: string, userId: string) {
@@ -36,7 +35,6 @@ export const useMembersStore = defineStore('members', () => {
     loading,
     error,
     fetchByTrip,
-    invite,
     remove,
   };
 });

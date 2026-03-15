@@ -5,6 +5,30 @@ import type { TripInput } from '@shared/types/trip';
 
 const trips = new Hono();
 
+function normalizeInviteCode(raw: string | undefined): string {
+  return (raw ?? '').trim().toUpperCase();
+}
+
+async function findTripByInviteCode(token: string, inviteCodeRaw: string | undefined) {
+  const db = supabaseWithAuth(token);
+  const inviteCode = normalizeInviteCode(inviteCodeRaw);
+
+  if (!inviteCode) {
+    return { trip: null, error: 'invite_code is required.', status: 400 as const };
+  }
+
+  const { data, error } = await db.rpc('find_trip_by_invite_code', {
+    p_invite_code: inviteCode,
+  });
+
+  const trip = Array.isArray(data) ? data[0] : data;
+  if (error || !trip) {
+    return { trip: null, error: 'Trip not found for this invite code.', status: 404 as const };
+  }
+
+  return { trip, error: null, status: 200 as const };
+}
+
 trips.get('/', async (c) => {
   const token = c.get('token');
   const db = supabaseWithAuth(token);
@@ -16,6 +40,18 @@ trips.get('/', async (c) => {
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data);
+});
+
+trips.get('/by-invite', async (c) => {
+  const token = c.get('token');
+  const code = c.req.query('code');
+  const { trip, error, status } = await findTripByInviteCode(token, code);
+
+  if (!trip) {
+    return c.json({ error }, status);
+  }
+
+  return c.json(trip);
 });
 
 trips.get('/:id', async (c) => {
@@ -73,9 +109,28 @@ trips.post('/', async (c) => {
     return c.json({ error: 'Failed to create trip after multiple attempts.' }, 500);
   }
 
-  // owner is recorded on trips.owner_id; trip_members table was removed
+  const { error: memberError } = await db
+    .from('trip_members')
+    .insert({ trip_id: trip.id, user_id: userId, role: 'owner' });
+
+  if (memberError) {
+    await db.from('trips').delete().eq('id', trip.id);
+    return c.json({ error: memberError.message }, 500);
+  }
 
   return c.json(trip, 201);
+});
+
+trips.get('/by-invite/:inviteCode', async (c) => {
+  const token = c.get('token');
+  const code = c.req.param('inviteCode');
+  const { trip, error, status } = await findTripByInviteCode(token, code);
+
+  if (!trip) {
+    return c.json({ error }, status);
+  }
+
+  return c.json(trip);
 });
 
 trips.patch('/:id', async (c) => {

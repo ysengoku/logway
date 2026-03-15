@@ -27,6 +27,13 @@ body {
   min-height: 100vh;
 }
 
+h1 {
+  font-family: $font-body;
+  font-size: 20px;
+  font-weight: 500;
+  color: $accent;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -35,6 +42,60 @@ a {
 button {
   cursor: pointer;
   font-family: $font-body;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 7px 12px;
+  transition: all 0.15s;
+}
+
+.button-primary {
+  background: $accent;
+  border: 1px solid $accent;
+  border-radius: $radius-sm;
+  color: $bg;
+
+  &:hover {
+    background: $accent-hover;
+    border-color: $accent-hover;
+  }
+}
+
+.button-secondary {
+  background: transparent;
+  border: 1px solid $accent;
+  border-radius: $radius-sm;
+  color: $accent;
+
+  &:hover {
+    color: $bg;
+    background: $accent-hover;
+    border-color: $accent-hover;
+  }
+}
+
+.button-secondary2 {
+  background: transparent;
+  border: 1px solid $accent2;
+  border-radius: $radius-sm;
+  color: $accent2;
+
+  &:hover {
+    color: $bg;
+    background: $accent2-hover;
+    border-color: $accent2-hover;
+  }
+}
+
+.button-accent {
+  background: $accent2;
+  border: 1px solid $accent2;
+  border-radius: $radius-sm;
+  color: $bg;
+
+  &:hover {
+    background-color: $accent2-hover;
+    border-color: $accent2-hover;
+  }
 }
 
 input,

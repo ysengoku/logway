@@ -24,8 +24,8 @@
   }
 
   &__title {
-    font-family: $font-display;
-    font-size: 19px;
+    font-family: $font-body;
+    font-size: 20px;
     margin-bottom: 18px;
   }
 
@@ -74,33 +74,5 @@
     gap: 8px;
     justify-content: flex-end;
     margin-top: 18px;
-  }
-
-  &__btn {
-    padding: 8px 16px;
-    border-radius: 7px;
-    border: 1px solid $border;
-    background: $surface;
-    color: $text;
-    font-size: 13px;
-    transition: all 0.15s;
-
-    &:hover {
-      background: $surface2;
-      border-color: $accent;
-      color: $accent;
-    }
-
-    &--primary {
-      background: $accent;
-      border-color: $accent;
-      color: $bg;
-      font-weight: 500;
-
-      &:hover {
-        opacity: 0.85;
-        color: $bg;
-      }
-    }
   }
 }

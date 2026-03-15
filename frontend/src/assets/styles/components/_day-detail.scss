@@ -62,22 +62,6 @@
     }
   }
 
-  &__add-btn {
-    padding: 6px 12px;
-    border-radius: $radius-sm;
-    border: 1px solid $accent2;
-    color: $accent2;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-
-    &:hover {
-      background: $accent2-hover;
-      border-color: $accent2-hover;
-    }
-  }
-
   &__empty {
     color: $text-muted;
     font-size: 13px;

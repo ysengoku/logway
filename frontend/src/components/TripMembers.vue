@@ -4,64 +4,54 @@ import { useMembersStore } from '@/stores/members';
 import { useAuthStore } from '@/stores/auth';
 import { profilesApi } from '@/api/client';
 import type { Profile } from '@shared/types/profile';
+import type { Trip } from '@shared/types/trip';
 
 const props = defineProps<{
-  tripId: string;
-  ownerId?: string;
+  trip: Trip;
 }>();
 
 const membersStore = useMembersStore();
 const authStore = useAuthStore();
-const inviteEmail = ref('');
-const inviting = ref(false);
 const error = ref<string | null>(null);
 const success = ref<string | null>(null);
 const profiles = ref<Profile[]>([]);
 
-const isOwner = computed(() => authStore.user?.id === props.ownerId);
+const isOwner = computed(() => authStore.user?.id === props.trip.owner_id);
 
 function getDisplayName(userId: string): string {
   return profiles.value.find((p) => p.id === userId)?.display_name ?? userId;
 }
 
 onMounted(async () => {
-  await membersStore.fetchByTrip(props.tripId);
+  await membersStore.fetchByTrip(props.trip.id);
+  console.log('Members:', membersStore.members);
   if (membersStore.members.length > 0) {
     const userIds = membersStore.members.map((m) => m.user_id);
     profiles.value = await profilesApi.getByIds(userIds);
   }
 });
 
-async function invite() {
-  if (!inviteEmail.value) return;
-  error.value = null;
-  success.value = null;
-  inviting.value = true;
-  try {
-    console.log(1);
-    await membersStore.invite(props.tripId, inviteEmail.value);
-    console.log(2);
-    success.value = `Invitation sent to ${inviteEmail.value}.`;
-    inviteEmail.value = '';
-    await membersStore.fetchByTrip(props.tripId);
-    const userIds = membersStore.members.map((m) => m.user_id);
-    profiles.value = await profilesApi.getByIds(userIds);
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Failed to invite member.';
-  } finally {
-    inviting.value = false;
-  }
-}
-
 async function remove(userId: string) {
   if (!confirm('Remove this member?')) return;
-  await membersStore.remove(props.tripId, userId);
+  await membersStore.remove(props.trip.id, userId);
+}
+
+async function copyCodeToClipboard() {
+  navigator.clipboard.writeText(props.trip.invite_code)
+    .then(() => {
+      success.value = 'Invite code copied to clipboard!';
+      setTimeout(() => success.value = null, 3000);
+    })
+    .catch(() => {
+      error.value = 'Failed to copy invite code.';
+      setTimeout(() => error.value = null, 3000);
+    });
 }
 </script>
 
 <template>
   <div class="trip-members">
-    <div class="trip-members__title">Members</div>
+    <h2 class="trip-members__title">Members</h2>
     <div class="trip-members__list">
       <div
         v-for="member in membersStore.members"
@@ -85,26 +75,26 @@ async function remove(userId: string) {
     </div>
 
     <div v-if="isOwner" class="trip-members__invite">
-      <div class="form-row">
-        <label>Invite by email</label>
+      <div class="trip-members__invite-code-label">Share this code to invite friends: </div>
+      <div class="trip-members__invite-code">
+        <span class="trip-members__invite-code-value">{{ props.trip.invite_code }}</span>
+        <button @click="copyCodeToClipboard">Copy</button>
+      </div>
+      <!-- <div class="form-row">
+        <label>Send the code</label>
         <div class="trip-members__invite-row">
           <input
-            v-model="inviteEmail"
             type="email"
+            v-model="inviteEmail"
             placeholder="friend@example.com"
-            @keyup.enter="invite"
           />
-          <button
-            class="trip-members__invite-btn"
-            :disabled="inviting || !inviteEmail"
-            @click="invite"
-          >
-            {{ inviting ? '...' : 'Invite' }}
+          <button @click="invite" :disabled="inviting || !inviteEmail">
+            Send
           </button>
         </div>
       </div>
       <p v-if="success" class="trip-members__success">{{ success }}</p>
-      <p v-if="error" class="trip-members__error">{{ error }}</p>
+      <p v-if="error" class="trip-members__error">{{ error }}</p> -->
     </div>
   </div>
 </template>

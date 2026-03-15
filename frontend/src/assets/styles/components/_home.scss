@@ -5,24 +5,6 @@
   display: flex;
   flex-direction: column;
 
-  &__account-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid $border;
-    background: $surface;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
-
-    &:hover {
-      border-color: $accent;
-      background: $surface2;
-    }
-  }
-
   &__main {
     flex: 1;
     padding: 16px 0;
@@ -46,7 +28,6 @@
   &__section-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
   }
 
   &__section-title {
@@ -56,20 +37,11 @@
     color: $text-muted;
   }
 
-  &__new-btn {
-    padding: 7px 14px;
-    border-radius: 7px;
-    border: 1px solid $accent2;
-    background: $accent2;
-    color: $bg;
-    font-weight: 500;
-    font-size: 13px;
-    transition: all 0.15s;
-
-    &:hover {
-      background: $accent2-hover;
-      border-color: $accent2-hover;
-    }
+  &__btn-group {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
   }
 
   &__trips {

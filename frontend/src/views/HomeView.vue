@@ -2,15 +2,22 @@
 import { onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTripsStore } from '@/stores/trips';
+import { ApiError } from '@/api/client';
+import { JOIN_TRIP_ALREADY_JOINED_MESSAGE } from '@/constants/messages';
+import { ERROR_CODE_ALREADY_JOINED } from '@shared/constants/errorCodes';
 import type { TripInput } from '@shared/types/trip';
 import type { Trip } from '@shared/types/trip';
 import NewTripForm from '@/components/NewTripForm.vue';
+import JoinTripForm from '@/components/JoinTripForm.vue';
+import AppModal from '@/components/AppModal.vue';
 
 const PREVIEW_COUNT = 3;
 
 const router = useRouter();
 const tripsStore = useTripsStore();
 const showNewTripModal = ref(false);
+const showJoinTripModal = ref(false);
+const joinTripMessage = ref<string | null>(null);
 const showAllUpcoming = ref(false);
 const showAllPast = ref(false);
 
@@ -36,6 +43,31 @@ async function createTrip(input: TripInput) {
   router.push({ name: 'trip', params: { id: trip.id } });
 }
 
+async function joinTrip(inviteCode: string) {
+  joinTripMessage.value = null;
+  try {
+    const trip = await tripsStore.joinTrip(inviteCode);
+    showJoinTripModal.value = false;
+    router.push({ name: 'trip', params: { id: trip.id } });
+  } catch (error) {
+    if (error instanceof ApiError && error.code === ERROR_CODE_ALREADY_JOINED) {
+      joinTripMessage.value = JOIN_TRIP_ALREADY_JOINED_MESSAGE;
+      return;
+    }
+    throw error;
+  }
+}
+
+function openJoinTripModal() {
+  joinTripMessage.value = null;
+  showJoinTripModal.value = true;
+}
+
+function closeJoinTripModal() {
+  joinTripMessage.value = null;
+  showJoinTripModal.value = false;
+}
+
 function goToTrip(trip: Trip) {
   router.push({ name: 'trip', params: { id: trip.id } });
 }
@@ -57,11 +89,17 @@ function formatDates(trip: Trip): string {
       <template v-else>
         <!-- Upcoming Trips -->
         <section class="home__section">
-          <div class="home__section-header">
-            <h2 class="home__section-title">Upcoming Trips</h2>
-            <button class="home__new-btn" @click="showNewTripModal = true">
+          <h1 class="home__title">My Trips</h1>
+          <div class="home__btn-group">
+            <button class="home__new-btn button-accent" @click="showNewTripModal = true">
               + New Trip
             </button>
+            <button class="button-secondary2" @click="openJoinTripModal">
+              Join Trip
+            </button>
+          </div>
+          <div class="home__section-header">
+            <h2 class="home__section-title">Upcoming Trips</h2>
           </div>
           <div v-if="tripsStore.upcomingTrips.length === 0" class="home__state">
             No upcoming trips. Plan your next adventure!
@@ -120,14 +158,15 @@ function formatDates(trip: Trip): string {
       </template>
     </main>
 
-    <!-- New Trip Modal -->
+    <!-- New Trip / Join Trip Modals -->
     <Teleport to="body">
-      <div v-if="showNewTripModal" class="new-trip-modal__overlay" @click.self="showNewTripModal = false">
-        <div class="new-trip-modal">
-          <div class="new-trip-modal__title">New Trip</div>
-          <NewTripForm @submit="createTrip" @cancel="showNewTripModal = false" />
-        </div>
-      </div>
+      <AppModal :open="showNewTripModal" title="New Trip" @close="showNewTripModal = false">
+        <NewTripForm @submit="createTrip" @cancel="showNewTripModal = false" />
+      </AppModal>
+
+      <AppModal :open="showJoinTripModal" title="Join Trip" @close="closeJoinTripModal">
+        <JoinTripForm :message="joinTripMessage" @submit="joinTrip" @cancel="closeJoinTripModal" />
+      </AppModal>
     </Teleport>
   </div>
 </template>

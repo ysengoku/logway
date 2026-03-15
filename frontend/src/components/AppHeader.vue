@@ -13,9 +13,9 @@ async function signOut() {
 
 <template>
   <header class="app-header">
-    <h1 class="app-header__logo" @click="router.push({ name: 'home' })">
+    <div class="app-header__logo" @click="router.push({ name: 'home' })">
       Lo<span class="app-header__logo-highlight">gWa</span>y
-    </h1>
+    </div>
     <button class="app-header__account-btn" title="Sign out" @click="signOut">
       👤
     </button>

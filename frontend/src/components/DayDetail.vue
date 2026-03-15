@@ -98,7 +98,7 @@ async function deleteEvent(id: string) {
     <div class="day-detail__header">
       <div class="day-detail__header-top">
         <h2 class="day-detail__date">{{ formattedDate }}</h2>
-        <button class="day-detail__add-btn" @click="emit('addEvent', date)">
+        <button class="button-secondary2" @click="emit('addEvent', date)">
           + Add
         </button>
       </div>

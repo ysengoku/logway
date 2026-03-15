@@ -82,7 +82,6 @@ async function deleteTrip() {
 
     <div class="trip-view__body">
       <aside class="trip-view__sidebar">
-        {{ trip?.invite_code }}
         <CalendarGrid
           :selected-date="selectedDate"
           :initial-date="trip?.start_date"
@@ -101,6 +100,7 @@ async function deleteTrip() {
           @add-event="onAddEvent"
           @edit-event="onEditEvent"
         />
+        <TripMembers v-if="trip" :trip="trip" />
       </main>
     </div>
 
@@ -114,11 +114,6 @@ async function deleteTrip() {
             @submit="onEditTrip"
             @cancel="showEditModal = false"
           />
-          <!-- <hr class="form-divider" style="margin: 20px 0" />
-          <TripMembers
-            :trip-id="tripId"
-            :owner-id="trip?.owner_id"
-          /> -->
         </div>
       </div>
     </Teleport>

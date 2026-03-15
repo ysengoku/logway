@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { tripsApi } from '@/api/client';
+import { membersApi, tripsApi } from '@/api/client';
 import type { Trip, TripInput } from '@shared/types/trip';
 
 export const useTripsStore = defineStore('trips', () => {
@@ -40,6 +40,18 @@ export const useTripsStore = defineStore('trips', () => {
     return created;
   }
 
+  async function joinTrip(inviteCode: string): Promise<Trip> {
+    const joined = await tripsApi.getByInviteCode(inviteCode);
+    await membersApi.add(joined.id);
+    const index = trips.value.findIndex((t) => t.id === joined.id);
+    if (index === -1) {
+      trips.value.push(joined);
+    } else {
+      trips.value[index] = joined;
+    }
+    return joined;
+  }
+
   async function updateTrip(id: string, body: Partial<TripInput>): Promise<Trip> {
     const updated = await tripsApi.update(id, body);
     const index = trips.value.findIndex((t) => t.id === id);
@@ -60,6 +72,7 @@ export const useTripsStore = defineStore('trips', () => {
     error,
     fetchAll,
     createTrip,
+    joinTrip,
     updateTrip,
     deleteTrip,
   };
