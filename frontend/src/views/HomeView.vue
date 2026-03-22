@@ -7,9 +7,8 @@ import { JOIN_TRIP_ALREADY_JOINED_MESSAGE } from '@/constants/messages';
 import { ERROR_CODE_ALREADY_JOINED } from '@shared/constants/errorCodes';
 import type { TripInput } from '@shared/types/trip';
 import type { Trip } from '@shared/types/trip';
-import NewTripForm from '@/components/NewTripForm.vue';
-import JoinTripForm from '@/components/JoinTripForm.vue';
-import AppModal from '@/components/AppModal.vue';
+import TripModal from '@/components/modalContents/TripModal.vue';
+import JoinTripModal from '@/components/modalContents/JoinTripModal.vue';
 
 const PREVIEW_COUNT = 3;
 
@@ -158,15 +157,20 @@ function formatDates(trip: Trip): string {
       </template>
     </main>
 
-    <!-- New Trip / Join Trip Modals -->
     <Teleport to="body">
-      <AppModal :open="showNewTripModal" title="New Trip" @close="showNewTripModal = false">
-        <NewTripForm @submit="createTrip" @cancel="showNewTripModal = false" />
-      </AppModal>
+      <TripModal
+        :open="showNewTripModal"
+        title="New Trip"
+        @close="showNewTripModal = false"
+        @submit="createTrip"
+      />
 
-      <AppModal :open="showJoinTripModal" title="Join Trip" @close="closeJoinTripModal">
-        <JoinTripForm :message="joinTripMessage" @submit="joinTrip" @cancel="closeJoinTripModal" />
-      </AppModal>
+      <JoinTripModal
+        :open="showJoinTripModal"
+        :message="joinTripMessage"
+        @close="closeJoinTripModal"
+        @submit="joinTrip"
+      />
     </Teleport>
   </div>
 </template>

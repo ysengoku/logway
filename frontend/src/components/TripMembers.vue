@@ -59,10 +59,12 @@ async function copyCodeToClipboard() {
         class="trip-members__item"
       >
         <div class="trip-members__item-info">
-          <span class="trip-members__role" :class="`trip-members__role--${member.role}`">
+          <span class="trip-members__name">
+            {{ getDisplayName(member.user_id) }}
+          </span>
+          <span v-if="member.role === 'owner'" class="trip-members__role">
             {{ member.role }}
           </span>
-          <span class="trip-members__name">{{ getDisplayName(member.user_id) }}</span>
         </div>
         <button
           v-if="isOwner && member.role !== 'owner'"
@@ -78,8 +80,15 @@ async function copyCodeToClipboard() {
       <div class="trip-members__invite-code-label">Share this code to invite friends: </div>
       <div class="trip-members__invite-code">
         <span class="trip-members__invite-code-value">{{ props.trip.invite_code }}</span>
-        <button @click="copyCodeToClipboard">Copy</button>
+        <button @click="copyCodeToClipboard" class="trip-members__invite-code-copy" title="Copy invite code">
+          <span class="material-icons">
+            content_copy
+          </span>
+        </button>
       </div>
+      <p v-if="success" class="trip-members__success">{{ success }}</p>
+      <p v-if="error" class="trip-members__error">{{ error }}</p> 
+
       <!-- <div class="form-row">
         <label>Send the code</label>
         <div class="trip-members__invite-row">
@@ -92,9 +101,7 @@ async function copyCodeToClipboard() {
             Send
           </button>
         </div>
-      </div>
-      <p v-if="success" class="trip-members__success">{{ success }}</p>
-      <p v-if="error" class="trip-members__error">{{ error }}</p> -->
+      </div> -->
     </div>
   </div>
 </template>

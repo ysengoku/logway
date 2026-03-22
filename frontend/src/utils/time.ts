@@ -50,3 +50,7 @@ export function toUTC(localDate: string, localTime: string, tzId: string): strin
     return null;
   }
 }
+
+export function formatTime(time: string | null | undefined): string | null {
+  return time ? time.slice(0, 5) : null;
+}

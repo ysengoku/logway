@@ -15,7 +15,6 @@ const form = reactive({
   name:             props.initial?.name ?? '',
   booking_ref:      props.initial?.booking_ref ?? '',
   address:          props.initial?.address ?? '',
-  nearest_station:  props.initial?.nearest_station ?? '',
   check_in_date:    props.initial?.check_in_date ?? props.defaultDate ?? '',
   check_in_time:    props.initial?.check_in_time ?? '',
   check_out_date:   props.initial?.check_out_date ?? '',
@@ -35,7 +34,6 @@ function submit() {
     name:             form.name,
     booking_ref:      form.booking_ref || undefined,
     address:          form.address || undefined,
-    nearest_station:  form.nearest_station || undefined,
     check_in_date:    form.check_in_date,
     check_in_time:    form.check_in_time || undefined,
     check_out_date:   form.check_out_date || undefined,
@@ -61,10 +59,6 @@ defineExpose({ submit });
     <div class="form-row">
       <label>Address</label>
       <input v-model="form.address" type="text" placeholder="e.g. 45 Blvd Raspail, Paris" />
-    </div>
-    <div class="form-row">
-      <label>Nearest Station / Transit</label>
-      <input v-model="form.nearest_station" type="text" placeholder="e.g. 5 min walk from Sèvres–Babylone" />
     </div>
 
     <hr class="form-divider" />

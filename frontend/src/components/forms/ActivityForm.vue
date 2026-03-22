@@ -14,7 +14,6 @@ const emit = defineEmits<{
 const form = reactive({
   name:            props.initial?.name ?? '',
   address:         props.initial?.address ?? '',
-  nearest_station: props.initial?.nearest_station ?? '',
   schedule_date:   props.initial?.schedule_date ?? props.defaultDate ?? '',
   schedule_time:   props.initial?.schedule_time ?? '',
   url:             props.initial?.url ?? '',
@@ -31,7 +30,6 @@ function submit() {
     type:            'activity',
     name:            form.name,
     address:         form.address || undefined,
-    nearest_station: form.nearest_station || undefined,
     schedule_date:   form.schedule_date,
     schedule_time:   form.schedule_time || undefined,
     url:             form.url || undefined,
@@ -51,10 +49,6 @@ defineExpose({ submit });
     <div class="form-row">
       <label>Address</label>
       <input v-model="form.address" type="text" placeholder="e.g. Rue de Rivoli, 75001 Paris" />
-    </div>
-    <div class="form-row">
-      <label>Nearest Station</label>
-      <input v-model="form.nearest_station" type="text" placeholder="e.g. 3 min walk from Palais Royal" />
     </div>
 
     <hr class="form-divider" />

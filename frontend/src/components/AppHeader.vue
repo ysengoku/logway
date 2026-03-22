@@ -16,8 +16,15 @@ async function signOut() {
     <div class="app-header__logo" @click="router.push({ name: 'home' })">
       Lo<span class="app-header__logo-highlight">gWa</span>y
     </div>
-    <button class="app-header__account-btn" title="Sign out" @click="signOut">
-      👤
+    <button
+      v-if="authStore.isAuthenticated"
+      class="app-header__account-btn"
+      title="Sign out"
+      @click="signOut"
+    >
+      <span class="material-icons">
+        face
+      </span>
     </button>
   </header>
 </template>

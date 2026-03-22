@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 16px 20px 16px;
+  padding: 24px;
   background: linear-gradient(135deg, $header-gradient-start 0%, $accent 100%);
   position: sticky;
   top: 0;
@@ -29,21 +29,24 @@
   }
 
   &__account-btn {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.15);
-    font-size: 16px;
+    border: none;
+    background: rgba($header-gradient-start, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.15s;
-    color: white;
 
     &:hover {
       background: rgba(255, 255, 255, 0.25);
       border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .material-icons {
+      color: rgba($bg, 0.8);
+      font-size: 32px;
     }
   }
 }

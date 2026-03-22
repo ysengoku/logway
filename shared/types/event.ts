@@ -51,7 +51,6 @@ export interface HotelEvent extends BaseEvent {
   name: string
   booking_ref?: string
   address?: string
-  nearest_station?: string
   url?: string
   check_in_date: string
   check_in_time?: string
@@ -63,7 +62,6 @@ export interface RestaurantEvent extends BaseEvent {
   type: 'restaurant'
   name: string
   address?: string
-  nearest_station?: string
   url?: string
   reservation_date: string
   reservation_time: string
@@ -74,7 +72,6 @@ export interface ActivityEvent extends BaseEvent {
   type: 'activity'
   name: string
   address?: string
-  nearest_station?: string
   url?: string
   schedule_date: string
   schedule_time?: string
@@ -125,7 +122,6 @@ export interface EventRow {
 
   name?: string
   address?: string
-  nearest_station?: string
   url?: string
 
   check_in_date?: string

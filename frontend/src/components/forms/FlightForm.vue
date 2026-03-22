@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import type { EventRow } from '@shared/types/event';
-import { TIMEZONES, toUTC } from '@/utils/timezone';
+import { TIMEZONES, toUTC } from '@/utils/time';
 
 const props = defineProps<{
   initial?: Partial<EventRow>;
@@ -66,7 +66,7 @@ defineExpose({ submit });
     </div>
 
     <hr class="form-divider" />
-    <div class="form-sub">🛫 Departure</div>
+    <div class="form-sub">Departure</div>
 
     <div class="form-row">
       <label>Airport / City</label>
@@ -90,7 +90,7 @@ defineExpose({ submit });
     </div>
 
     <hr class="form-divider" />
-    <div class="form-sub">🛬 Arrival</div>
+    <div class="form-sub">Arrival</div>
 
     <div class="form-row">
       <label>Airport / City</label>

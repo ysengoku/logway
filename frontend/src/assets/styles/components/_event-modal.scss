@@ -58,8 +58,8 @@
 
     &--selected {
       border-color: $accent;
-      background: $surface2;
-      color: $text;
+      background: $accent;
+      color: $bg;
     }
   }
 

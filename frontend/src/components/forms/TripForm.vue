@@ -3,9 +3,12 @@ import { reactive, computed } from 'vue';
 import type { Trip } from '@shared/types/trip';
 import type { TripInput } from '@shared/types/trip';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   initial?: Partial<Trip>;
-}>();
+  submitLabel?: string;
+}>(), {
+  submitLabel: 'Create trip',
+});
 
 const emit = defineEmits<{
   submit: [data: TripInput];
@@ -73,7 +76,7 @@ function submit() {
     </div>
     <div class="new-trip-form__actions">
       <button class="button-secondary" @click="emit('cancel')">Cancel</button>
-      <button class="button-primary" @click="submit">Create</button>
+      <button class="button-primary" @click="submit">{{ submitLabel }}</button>
     </div>
   </div>
 </template>

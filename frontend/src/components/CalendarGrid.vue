@@ -100,11 +100,19 @@ const calendarDays = computed(() => {
 <template>
   <div class="calendar-grid">
     <div class="calendar-grid__nav">
-      <button class="calendar-grid__arrow" @click="prevMonth">‹</button>
+      <button class="calendar-grid__arrow" @click="prevMonth">
+        <span class="material-icons">
+          arrow_back_ios_new
+        </span>
+      </button>
       <span class="calendar-grid__month">
         {{ MONTHS[currentMonth] }} {{ currentYear }}
       </span>
-      <button class="calendar-grid__arrow" @click="nextMonth">›</button>
+      <button class="calendar-grid__arrow" @click="nextMonth">
+        <span class="material-icons">
+          arrow_forward_ios
+        </span>
+      </button>
     </div>
 
     <div class="calendar-grid__dow">

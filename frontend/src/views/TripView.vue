@@ -5,8 +5,8 @@ import { useTripsStore } from '@/stores/trips';
 import { useEventsStore } from '@/stores/events';
 import CalendarGrid from '@/components/CalendarGrid.vue';
 import DayDetail from '@/components/DayDetail.vue';
-import EventModal from '@/components/EventModal.vue';
-import NewTripForm from '@/components/NewTripForm.vue';
+import EventModal from '@/components/modalContents/EventModal.vue';
+import TripModal from '@/components/modalContents/TripModal.vue';
 import TripMembers from '@/components/TripMembers.vue';
 import type { TripInput } from '@shared/types/trip';
 import type { EventRow } from '@shared/types/event';
@@ -106,16 +106,14 @@ async function deleteTrip() {
 
     <!-- Edit Trip Modal -->
     <Teleport to="body">
-      <div v-if="showEditModal" class="new-trip-modal__overlay" @click.self="showEditModal = false">
-        <div class="new-trip-modal">
-          <div class="new-trip-modal__title">Edit Trip</div>
-          <NewTripForm
-            :initial="trip"
-            @submit="onEditTrip"
-            @cancel="showEditModal = false"
-          />
-        </div>
-      </div>
+      <TripModal
+        :open="showEditModal"
+        title="Edit Trip"
+        :initial="trip"
+        submit-label="Save changes"
+        @close="showEditModal = false"
+        @submit="onEditTrip"
+      />
     </Teleport>
 
     <footer class="trip-view__footer">
