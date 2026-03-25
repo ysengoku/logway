@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useTripsStore } from '@/stores/trips';
 import { useEventsStore } from '@/stores/events';
+import AppLoader from '@/components/AppLoader.vue';
 import CalendarGrid from '@/components/CalendarGrid.vue';
 import DayDetail from '@/components/DayDetail.vue';
 import EventModal from '@/components/modalContents/EventModal.vue';
@@ -23,13 +24,20 @@ const modalOpen = ref(false);
 const modalDate = ref<string | undefined>();
 const modalEvent = ref<EventRow | undefined>();
 
+const loading = ref(true);
+
 const showEditModal = ref(false);
 
 onMounted(async () => {
-  await Promise.all([
-    tripsStore.fetchAll(),
-    eventsStore.fetchByTrip(tripId.value),
-  ]);
+  loading.value = true;
+  try {
+    await Promise.all([
+      tripsStore.fetchAll(),
+      eventsStore.fetchByTrip(tripId.value),
+    ]);
+  } finally {
+    loading.value = false;
+  }
 });
 
 function onSelectDate(date: string) {
@@ -69,12 +77,16 @@ async function deleteTrip() {
 </script>
 
 <template>
-  <div class="trip-view">
+  <!-- TODO: Replace with actual loading spinner -->
+  <div v-if="loading" class="app-loader">
+    <AppLoader />
+  </div> 
+  <div v-else class="trip-view">
     <header class="trip-view__header">
       <button class="trip-view__back" @click="router.push({ name: 'home' })">
         ← Back
       </button>
-      <h1 class="trip-view__title">{{ trip?.title ?? 'Loading...' }}</h1>
+      <h1 class="trip-view__title">{{ trip?.title }}</h1>
       <button class="trip-view__edit-btn" @click="showEditModal = true">
         Edit
       </button>
@@ -84,7 +96,6 @@ async function deleteTrip() {
       <aside class="trip-view__sidebar">
         <CalendarGrid
           :selected-date="selectedDate"
-          :initial-date="trip?.start_date"
           :start-date="trip?.start_date"
           :end-date="trip?.end_date"
           @select-date="onSelectDate"

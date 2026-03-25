@@ -43,6 +43,7 @@ $bp-tablet: 1024px;
 
   &__sidebar {
     padding: 32px 0 24px;
+    position: relative;
     border-bottom: 1px solid $border;
   }
 

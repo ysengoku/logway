@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import AppIcon from './AppIcon.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { useEventsStore } from '@/stores/events';
+import { useTripsStore } from '@/stores/trips';
 
 const props = defineProps<{
   selectedDate: string | null;
-  initialDate?: string;
   startDate?: string;
   endDate?: string;
 }>();
@@ -15,11 +16,37 @@ const emit = defineEmits<{
 
 const eventsStore = useEventsStore();
 
-// Initialize calendar to initialDate if provided, otherwise today
+// Initialize calendar to initialDate if provided, otherwise try trip start date, fallback to today
 const today = new Date();
-const initialD = props.initialDate ? new Date(props.initialDate) : today;
-const currentYear = ref(initialD.getFullYear());
-const currentMonth = ref(initialD.getMonth());
+const currentYear = ref(today.getFullYear());
+const currentMonth = ref(today.getMonth());
+
+const route = useRoute();
+const tripsStore = useTripsStore();
+
+function initFromDateString(dateString?: string) {
+  if (!dateString) return;
+  const date = new Date(dateString);
+  if (!isNaN(date.getTime())) {
+    currentYear.value = date.getFullYear();
+    currentMonth.value = date.getMonth();
+  }
+}
+
+onMounted(async () => {
+  // Priority: props.startDate -> trip.start_date (fetched by route id) -> today
+  if (props.startDate) {
+    initFromDateString(props.startDate);
+    return;
+  }
+
+  const tripId = route.params.id as string | undefined;
+  if (tripId) {
+    if (tripsStore.trips.length === 0) await tripsStore.fetchAll();
+    const trip = tripsStore.trips.find((t) => t.id === tripId);
+    if (trip?.start_date) initFromDateString(trip.start_date);
+  }
+});
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
