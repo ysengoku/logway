@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { EventRow } from '@shared/types/event';
 import { formatTime } from '@/utils/time';
+import type { EventRow } from '@shared/types/event';
 
 const props = defineProps<{
   event: EventRow;
@@ -28,10 +28,8 @@ function isCheckOutDate(event: EventRow): boolean {
       (CHECK OUT {{ event.check_out_date }} {{ formatTime(event.check_out_time) }})
     </span>
   </div>
-  <div v-if="event.address" class="day-detail__card-meta-address">
-    <span class="material-icons">
-      location_on
-    </span>
+  <!-- <div v-if="event.address" class="day-detail__card-meta-address">
+    <AppIcon name="location" :size="16" />
     {{ event.address }}
-  </div>
+  </div> -->
 </template>

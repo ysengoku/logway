@@ -15,7 +15,7 @@
   &__list {
     display: flex;
     flex-wrap: wrap;
-    gap: 24px;
+    gap: 16px;
   }
 
   &__item {
@@ -84,17 +84,16 @@
 
     button {
       border: none;
-      color: rgba($text-muted, 0.6);
       cursor: pointer;
       transition: all 0.15s;
       padding: 0;
+      
+      .app-icon {
+        color: rgba($text-muted, 0.6);
 
-      &:hover { 
-        color: $accent;
-      }
-
-      .material-icons {
-        font-size: 16px;
+        &:hover { 
+          color: $accent;
+        }
       }
     }
   }

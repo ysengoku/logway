@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import AppIcon from './AppIcon.vue';
 import { useMembersStore } from '@/stores/members';
 import { useAuthStore } from '@/stores/auth';
 import { profilesApi } from '@/api/client';
 import type { Profile } from '@shared/types/profile';
 import type { Trip } from '@shared/types/trip';
+import { ref, onMounted, computed } from 'vue';
 
 const props = defineProps<{
   trip: Trip;
@@ -81,9 +82,7 @@ async function copyCodeToClipboard() {
       <div class="trip-members__invite-code">
         <span class="trip-members__invite-code-value">{{ props.trip.invite_code }}</span>
         <button @click="copyCodeToClipboard" class="trip-members__invite-code-copy" title="Copy invite code">
-          <span class="material-icons">
-            content_copy
-          </span>
+          <AppIcon name="copy" :size="16" />
         </button>
       </div>
       <p v-if="success" class="trip-members__success">{{ success }}</p>

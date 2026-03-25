@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
-import type { EventRow, TransportMode } from '@shared/types/event';
 import { TIMEZONES, toUTC } from '@/utils/time';
+import { TRANSPORT_MODES } from '@/constants/events';
+import type { EventRow, TransportMode } from '@shared/types/event';
+import { reactive } from 'vue';
 
 const props = defineProps<{
   initial?: Partial<EventRow>;
@@ -10,14 +11,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   submit: [data: Partial<EventRow>];
 }>();
-
-const TRANSPORT_MODES: { value: TransportMode; label: string }[] = [
-  { value: 'train', label: '🚆 Train' },
-  { value: 'bus',   label: '🚌 Bus / Coach' },
-  { value: 'ferry', label: '⛴ Ferry / Boat' },
-  { value: 'car',   label: '🚗 Car / Taxi' },
-  { value: 'other', label: '🚐 Other' },
-];
 
 const form = reactive({
   transport_mode: (props.initial?.transport_mode ?? 'train') as TransportMode,

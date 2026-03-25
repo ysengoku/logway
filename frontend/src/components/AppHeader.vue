@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppIcon from './AppIcon.vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 
@@ -22,9 +23,7 @@ async function signOut() {
       title="Sign out"
       @click="signOut"
     >
-      <span class="material-icons">
-        face
-      </span>
+      <AppIcon name="face" :size="32"  />
     </button>
   </header>
 </template>

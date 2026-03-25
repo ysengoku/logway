@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import type { EventRow, EventType } from '@shared/types/event';
-import { useEventsStore } from '@/stores/events';
 import { EVENT_TYPE_OPTIONS } from '@/constants/events';
+import { useEventsStore } from '@/stores/events';
+import ActivityForm from '@/components/forms/ActivityForm.vue';
+import AppIcon from '@/components/AppIcon.vue';
 import AppModal from '@/components/AppModal.vue';
 import FlightForm from '@/components/forms/FlightForm.vue';
-import TransportForm from '@/components/forms/TransportForm.vue';
 import HotelForm from '@/components/forms/HotelForm.vue';
-import RestaurantForm from '@/components/forms/RestaurantForm.vue';
-import ActivityForm from '@/components/forms/ActivityForm.vue';
 import LinkForm from '@/components/forms/LinkForm.vue';
+import RestaurantForm from '@/components/forms/RestaurantForm.vue';
+import TransportForm from '@/components/forms/TransportForm.vue';
+import type { EventRow, EventType } from '@shared/types/event';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
   open: boolean;
@@ -80,7 +81,7 @@ function onSaveClick() {
           :class="{ 'event-modal__type-opt--selected': selectedType === t.type }"
           @click="selectedType = t.type"
         >
-          <span class="material-icons">{{ t.icon }}</span>
+          <AppIcon :name="t.icon" />
           <span>{{ t.label }}</span>
         </button>
       </div>

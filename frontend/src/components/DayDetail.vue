@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { useEventsStore } from '@/stores/events';
 import { EVENT_TYPE_OPTIONS } from '@/constants/events';
 import EventCard from '@/components/eventCards/EventCard.vue';
+import AppIcon from '@/components/AppIcon.vue';
 import type { EventRow, EventType } from '@shared/types/event';
 
 const props = defineProps<{
@@ -91,7 +92,8 @@ async function deleteEvent(id: string) {
         >
           <template v-if="getEventsByType(group.type).length">
             <div class="day-detail__group-label">
-              <span class="material-icons">{{ group.icon }}</span> {{ group.label }}
+              <AppIcon :name="group.icon" :size="20" />
+              {{ group.label }}
             </div>
             <div class="day-detail__list">
               <EventCard

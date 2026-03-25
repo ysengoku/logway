@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { EVENT_TYPE, EVENT_TYPE_OPTIONS } from '@/constants/events';
-import EventMetaAddress from '@/components/eventCards/EventMetaAddress.vue';
+import AppIcon from '@/components/AppIcon.vue';
 import EventMetaHotel from '@/components/eventCards/EventMetaHotel.vue';
 import EventMetaTransport from '@/components/eventCards/EventMetaTransport.vue';
+import { EVENT_TYPE, EVENT_TYPE_OPTIONS, TRANSPORT_MODES } from '@/constants/events';
 import type { EventRow } from '@shared/types/event';
+import { computed } from 'vue';
 
 const props = defineProps<{
   event: EventRow;
@@ -18,7 +18,13 @@ const emit = defineEmits<{
 }>();
 
 const eventIcon = computed(() => {
-  return EVENT_TYPE_OPTIONS.find((eventType) => eventType.type === props.event.type)?.icon ?? '';
+  const mode = EVENT_TYPE_OPTIONS.find((eventType) => eventType.type === props.event.type);
+  console.log(mode);
+  if (mode?.type === EVENT_TYPE.TRANSPORT) {
+    const transportMode = TRANSPORT_MODES.find((m) => m.value === props.event.transport_mode);
+    return transportMode?.icon ?? '';
+  }
+  return mode?.icon ?? '';
 });
 
 function getEventTitle(event: EventRow): string {
@@ -73,9 +79,7 @@ function getEventTime(event: EventRow): string | null {
     </div>
     <div class="day-detail__card-content">
       <div class="day-detail__card-title">
-        <span v-if="mode === 'timeline'" class="day-detail__card-icon material-icons">
-          {{ eventIcon }}
-        </span>
+        <AppIcon v-if="mode === 'timeline'" :name="eventIcon" class="day-detail__card-icon material-icons" />
         {{ getEventTitle(event) }}
       </div>
       <div class="day-detail__card-meta">
@@ -86,19 +90,19 @@ function getEventTime(event: EventRow): string | null {
           :event="event"
           :date="date"
         />
-        <EventMetaAddress v-else-if="event.type === EVENT_TYPE.RESTAURANT || event.type === EVENT_TYPE.ACTIVITY"
-          :event="event"
-        />
+        <div v-if="event.address" class="day-detail__card-meta-address">
+          <AppIcon name="location" :size="16" />
+          {{ event.address }}
+        </div>
         <div v-if="event.link_url || event.url" class="day-detail__card-meta-link">
           <a v-if="event.link_url" :href="event.link_url" target="_blank" rel="noopener">
-            {{ event.link_url }}
+            <span>{{ event.link_url }}</span>
+            <AppIcon name="link" :size="14" />
           </a>
           <a v-else-if="event.url" :href="event.url" target="_blank" rel="noopener">
-            {{ event.url }}
+            <span>{{ event.url }}</span>
+            <AppIcon name="link" :size="14" />
           </a>
-          <span class="material-icons">
-            open_in_new
-          </span>
         </div>
         <div v-if="event.booking_ref" class="day-detail__tag">
           Ref: {{ event.booking_ref }}
@@ -110,14 +114,10 @@ function getEventTime(event: EventRow): string | null {
     </div>
     <div class="day-detail__card-actions">
       <button @click="emit('edit', event)">
-        <span class="material-icons">
-          edit
-        </span>
+        <AppIcon name="edit" :size="20" />
       </button>
       <button @click="emit('delete', event.id)">
-        <span class="material-icons">
-          delete
-        </span>
+        <AppIcon name="delete" :size="20" />
       </button>
     </div>
   </div>

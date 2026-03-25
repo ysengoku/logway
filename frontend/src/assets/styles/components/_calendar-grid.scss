@@ -30,13 +30,13 @@
     align-items: center;
     justify-content: center;
     transition: all 0.15s;
+    
+    .app-icon {
+      color: rgba($accent, 0.6);
 
-    &:hover {
-      color: $accent;
-    }
-
-    .material-icons {
-      font-size: 20px;
+      &:hover {
+        color: $accent;
+      }
     }
   }
 
