@@ -1,13 +1,14 @@
+import { eventsApi } from '@/api/client';
+import { useLoadingStore } from './loading';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { eventsApi } from '@/api/client';
 import type { EventRow } from '@shared/types/event';
 
 export const useEventsStore = defineStore('events', () => {
   // --- State -----------
   const events = ref<EventRow[]>([]);
-  const loading = ref(false);
   const error = ref<string | null>(null);
+  const loadingStore = useLoadingStore();
 
   // --- Getters -----------
 
@@ -74,45 +75,60 @@ export const useEventsStore = defineStore('events', () => {
 
   // --- Actions ----------
   async function fetchAll() {
-    loading.value = true;
+    loadingStore.start();
     error.value = null;
     try {
       events.value = await eventsApi.getAll();
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to fetch events';
     } finally {
-      loading.value = false;
+      loadingStore.stop();
     }
   }
 
   async function fetchByTrip(tripId: string) {
-    loading.value = true;
+    loadingStore.start();
     error.value = null;
     try {
       events.value = await eventsApi.getByTrip(tripId);
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to fetch events';
     } finally {
-      loading.value = false;
+      loadingStore.stop();
     }
   }
 
   async function createEvent(body: Partial<EventRow>) {
-    const created = await eventsApi.create(body);
-    events.value.push(created);
-    return created;
+    loadingStore.start();
+    try {
+      const created = await eventsApi.create(body);
+      events.value.push(created);
+      return created;
+    } finally {
+      loadingStore.stop();
+    }
   }
 
   async function updateEvent(id: string, body: Partial<EventRow>) {
-    const updated = await eventsApi.update(id, body);
-    const index = events.value.findIndex((e) => e.id === id);
-    if (index !== -1) events.value[index] = updated;
-    return updated;
+    loadingStore.start();
+    try {
+      const updated = await eventsApi.update(id, body);
+      const index = events.value.findIndex((e) => e.id === id);
+      if (index !== -1) events.value[index] = updated;
+      return updated;
+    } finally {
+      loadingStore.stop();
+    }
   }
 
   async function deleteEvent(id: string) {
-    await eventsApi.delete(id);
-    events.value = events.value.filter((e) => e.id !== id);
+    loadingStore.start();
+    try {
+      await eventsApi.delete(id);
+      events.value = events.value.filter((e) => e.id !== id);
+    } finally {
+      loadingStore.stop();
+    }
   }
 
   function primaryDate(event: EventRow): string | null {
@@ -130,7 +146,6 @@ export const useEventsStore = defineStore('events', () => {
   return {
     // state
     events,
-    loading,
     error,
     // getters
     eventsByDate,

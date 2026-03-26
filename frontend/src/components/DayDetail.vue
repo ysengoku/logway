@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useEventsStore } from '@/stores/events';
-import { EVENT_TYPE_OPTIONS } from '@/constants/events';
-import EventCard from '@/components/eventCards/EventCard.vue';
 import AppIcon from '@/components/AppIcon.vue';
+import EventCard from '@/components/eventCards/EventCard.vue';
+import { EVENT_TYPE_OPTIONS } from '@/constants/events';
+import { useEventsStore } from '@/stores/events';
 import type { EventRow, EventType } from '@shared/types/event';
+import { computed, ref } from 'vue';
 
 const props = defineProps<{
   date: string;

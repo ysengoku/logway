@@ -1,38 +1,49 @@
+import { membersApi } from '@/api/client';
+import { useLoadingStore } from './loading';
+import type { TripMember } from '@shared/types/trip';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { membersApi } from '@/api/client';
-import type { TripMember } from '@shared/types/trip';
 
 export const useMembersStore = defineStore('members', () => {
   const members = ref<TripMember[]>([]);
-  const loading = ref(false);
+  const loadingStore = useLoadingStore();
   const error = ref<string | null>(null);
 
   async function fetchByTrip(tripId: string) {
-    loading.value = true;
+    loadingStore.start();
     error.value = null;
     try {
       members.value = await membersApi.getAll(tripId);
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to fetch membres';
     } finally {
-      loading.value = false;
+      loadingStore.stop();
     }
   }
 
   async function add(tripId: string) {
-    const newMember = await membersApi.add(tripId);
-    members.value.push(newMember);
+    loadingStore.start();
+    try {
+      const newMember = await membersApi.add(tripId);
+      members.value.push(newMember);
+      return newMember;
+    } finally {
+      loadingStore.stop();
+    }
   }
 
   async function remove(tripId: string, userId: string) {
-    await membersApi.remove(tripId, userId);
-    members.value = members.value.filter(m => m.user_id !== userId);
+    loadingStore.start();
+    try {
+      await membersApi.remove(tripId, userId);
+      members.value = members.value.filter(m => m.user_id !== userId);
+    } finally {
+      loadingStore.stop();
+    }
   }
 
   return {
     members,
-    loading,
     error,
     fetchByTrip,
     remove,

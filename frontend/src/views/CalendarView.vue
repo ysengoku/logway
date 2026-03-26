@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import CalendarGrid from '@/components/CalendarGrid.vue';
 import DayDetail from '@/components/DayDetail.vue';
-import EventModal from '@/components/EventModal.vue';
+import EventModal from '@/components/modals/EventModal.vue';
 import type { EventRow } from '@shared/types/event';
 
 const selectedDate = ref<string | null>(null);

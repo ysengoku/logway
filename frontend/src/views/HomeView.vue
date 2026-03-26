@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useTripsStore } from '@/stores/trips';
+import JoinTripModal from '@/components/modals/JoinTripModal.vue';
+import TripModal from '@/components/modals/TripModal.vue';
 import { ApiError } from '@/api/client';
-import { JOIN_TRIP_ALREADY_JOINED_MESSAGE } from '@/constants/messages';
 import { ERROR_CODE_ALREADY_JOINED } from '@shared/constants/errorCodes';
+import { JOIN_TRIP_ALREADY_JOINED_MESSAGE } from '@/constants/messages';
+import { useLoadingStore } from '@/stores/loading';
+import { useTripsStore } from '@/stores/trips';
 import type { TripInput } from '@shared/types/trip';
 import type { Trip } from '@shared/types/trip';
-import TripModal from '@/components/modalContents/TripModal.vue';
-import JoinTripModal from '@/components/modalContents/JoinTripModal.vue';
+import { onMounted, ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 
 const PREVIEW_COUNT = 3;
 
 const router = useRouter();
 const tripsStore = useTripsStore();
+const loadingStore = useLoadingStore();
 const showNewTripModal = ref(false);
 const showJoinTripModal = ref(false);
 const joinTripMessage = ref<string | null>(null);
@@ -81,11 +83,7 @@ function formatDates(trip: Trip): string {
 <template>
   <div class="home">
     <main class="home__main">
-      <div v-if="tripsStore.loading" class="home__state">
-        Loading...
-      </div>
-
-      <template v-else>
+      <div v-show="!loadingStore.active">
         <!-- Upcoming Trips -->
         <section class="home__section">
           <h1 class="home__title">My Trips</h1>
@@ -154,7 +152,7 @@ function formatDates(trip: Trip): string {
             </button>
           </template>
         </section>
-      </template>
+      </div>
     </main>
 
     <Teleport to="body">

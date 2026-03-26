@@ -1,58 +1,83 @@
-import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { useLoadingStore } from './loading';
 import { supabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null);
-  const loading = ref(true);
+  const initialized = ref(false);
+  const loadingStore = useLoadingStore();
 
   const isAuthenticated = computed(() => !!user.value);
 
   async function init() {
+    if (initialized.value) return;
+    loadingStore.start();
     const { data } = await supabase.auth.getSession();
     user.value = data.session?.user ?? null;
-    loading.value = false;
+    loadingStore.stop();
 
     supabase.auth.onAuthStateChange((_event, session) => {
       user.value = session?.user ?? null;
     });
+    initialized.value = true;
   }
 
   async function signUp(email: string, password: string, displayName: string) {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          display_name: displayName
+    loadingStore.start();
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            display_name: displayName
+          }
         }
-      }
-    });
-    if (error) throw error;
+      });
+      if (error) throw error;
+    } finally {
+      loadingStore.stop();
+    }
   }
 
   async function signIn(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    loadingStore.start();
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+    } finally {
+      loadingStore.stop();
+    }
   }
 
   async function signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    user.value = null;
+    loadingStore.start();
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      user.value = null;
+    } finally {
+      loadingStore.stop();
+    }
   }
 
   async function resetPassword(email: string) {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    if (error) throw error;
+    loadingStore.start();
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+    } finally {
+      loadingStore.stop();
+    }
   }
 
   return {
     user,
-    loading,
+    initialized,
     isAuthenticated,
     init,
     signUp,

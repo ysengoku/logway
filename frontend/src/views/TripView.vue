@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useTripsStore } from '@/stores/trips';
-import { useEventsStore } from '@/stores/events';
-import AppLoader from '@/components/AppLoader.vue';
 import CalendarGrid from '@/components/CalendarGrid.vue';
 import DayDetail from '@/components/DayDetail.vue';
-import EventModal from '@/components/modalContents/EventModal.vue';
-import TripModal from '@/components/modalContents/TripModal.vue';
+import EventModal from '@/components/modals/EventModal.vue';
+import TripModal from '@/components/modals/TripModal.vue';
 import TripMembers from '@/components/TripMembers.vue';
+import { useEventsStore } from '@/stores/events';
+import { useLoadingStore } from '@/stores/loading';
+import { useTripsStore } from '@/stores/trips';
 import type { TripInput } from '@shared/types/trip';
 import type { EventRow } from '@shared/types/event';
+import { ref, onMounted, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
@@ -24,20 +24,14 @@ const modalOpen = ref(false);
 const modalDate = ref<string | undefined>();
 const modalEvent = ref<EventRow | undefined>();
 
-const loading = ref(true);
-
+const loadingStore = useLoadingStore();
 const showEditModal = ref(false);
 
 onMounted(async () => {
-  loading.value = true;
-  try {
-    await Promise.all([
-      tripsStore.fetchAll(),
-      eventsStore.fetchByTrip(tripId.value),
-    ]);
-  } finally {
-    loading.value = false;
-  }
+    await eventsStore.fetchByTrip(tripId.value);
+    if (tripsStore.trips.length === 0) {
+      await tripsStore.fetchAll();
+    }
 });
 
 function onSelectDate(date: string) {
@@ -77,11 +71,7 @@ async function deleteTrip() {
 </script>
 
 <template>
-  <!-- TODO: Replace with actual loading spinner -->
-  <div v-if="loading" class="app-loader">
-    <AppLoader />
-  </div> 
-  <div v-else class="trip-view">
+  <div v-show="!loadingStore.active" class="trip-view">
     <header class="trip-view__header">
       <button class="trip-view__back" @click="router.push({ name: 'home' })">
         ← Back

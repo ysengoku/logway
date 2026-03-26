@@ -25,7 +25,6 @@ function getDisplayName(userId: string): string {
 
 onMounted(async () => {
   await membersStore.fetchByTrip(props.trip.id);
-  console.log('Members:', membersStore.members);
   if (membersStore.members.length > 0) {
     const userIds = membersStore.members.map((m) => m.user_id);
     profiles.value = await profilesApi.getByIds(userIds);

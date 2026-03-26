@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Trip } from '@shared/types/trip';
-import type { TripInput } from '@shared/types/trip';
 import AppModal from '@/components/AppModal.vue';
 import TripForm from '@/components/forms/TripForm.vue';
+import type { Trip } from '@shared/types/trip';
+import type { TripInput } from '@shared/types/trip';
 
 withDefaults(defineProps<{
   open: boolean;

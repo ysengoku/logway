@@ -32,7 +32,7 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const authStore = useAuthStore();
 
-  if (authStore.loading) {
+  if (!authStore.initialized) {
     await authStore.init();
   }
 
