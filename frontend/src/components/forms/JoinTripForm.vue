@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
   message?: string | null;
@@ -10,6 +11,7 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
+const { t } = useI18n();
 const form = reactive({
   invite_code: '',
 });
@@ -17,7 +19,7 @@ const form = reactive({
 function submit() {
   const inviteCode = form.invite_code.trim().toUpperCase();
   if (!inviteCode) {
-    alert('Invite code is required.');
+    alert(t('join.inviteCodeRequired'));
     return;
   }
   emit('submit', inviteCode);
@@ -29,18 +31,18 @@ function submit() {
     <div v-if="message" class="home__state">{{ message }}</div>
 
     <div class="form-row">
-      <label>Invite Code *</label>
+      <label>{{ $t('join.inviteCodeLabel') }}</label>
       <input
         v-model="form.invite_code"
         type="text"
-        placeholder="e.g. A1B2C3D4"
+        :placeholder="$t('join.inviteCodePlaceholder')"
         maxlength="8"
       />
     </div>
 
     <div class="new-trip-form__actions">
-      <button class="button-secondary" @click="emit('cancel')">Cancel</button>
-      <button class="button-primary" @click="submit">Join</button>
+      <button class="button-secondary" @click="emit('cancel')">{{ $t('common.cancel') }}</button>
+      <button class="button-primary" @click="submit">{{ $t('join.join') }}</button>
     </div>
   </div>
 </template>

@@ -46,6 +46,7 @@ export const useMembersStore = defineStore('members', () => {
     members,
     error,
     fetchByTrip,
+    add,
     remove,
   };
 });

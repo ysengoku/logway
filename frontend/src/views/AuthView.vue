@@ -68,9 +68,9 @@ function switchMode(newMode: 'signin' | 'signup' | 'reset') {
   <div class="auth-view">
     <div class="auth-view__card">
       <h2 class="auth-view__title">
-        <template v-if="mode === 'signin'">Sign In</template>
-        <template v-else-if="mode === 'signup'">Sign Up</template>
-        <template v-else>Reset Password</template>
+        <template v-if="mode === 'signin'">{{ $t('auth.signIn') }}</template>
+        <template v-else-if="mode === 'signup'">{{ $t('auth.signUp') }}</template>
+        <template v-else>{{ $t('auth.resetPassword') }}</template>
       </h2>
 
       <div v-if="signUpDone" class="auth-view__success">
@@ -85,30 +85,30 @@ function switchMode(newMode: 'signin' | 'signup' | 'reset') {
 
       <template v-else>
         <div class="form-row">
-          <label>Email</label>
-          <input v-model="form.email" type="email" placeholder="you@example.com" />
+          <label>{{ $t('auth.email') }}</label>
+          <input v-model="form.email" type="email" :placeholder="$t('auth.placeholderEmail')" />
         </div>
         <template v-if="mode === 'signup'">
           <div class="form-row">
-            <label>Display Name *</label>
-            <input v-model="form.displayName" type="text" placeholder="Your name" />
+            <label>{{ $t('auth.displayName') }}</label>
+            <input v-model="form.displayName" type="text" :placeholder="$t('auth.placeholderName')" />
           </div>
         </template>
         <template v-if="mode !== 'reset'">
           <div class="form-row">
-            <label>Password</label>
-            <input v-model="form.password" type="password" placeholder="password" />
+            <label>{{ $t('auth.password') }}</label>
+            <input v-model="form.password" type="password" :placeholder="$t('auth.placeholderPassword')" />
           </div>
           <div v-if="mode === 'signup'" class="form-row">
-            <label>Confirm Password</label>
+            <label>{{ $t('auth.confirmPassword') }}</label>
             <input
               v-model="form.passwordConfirm"
               type="password"
-              placeholder="repeat password"
+              :placeholder="$t('auth.placeholderRepeatPassword')"
               :class="{ 'auth-view__input--error': passwordMismatch }"
             />
             <span v-if="passwordMismatch" class="auth-view__field-error">
-              Passwords do not match.
+              {{ $t('auth.passwordsDoNotMatch') }}
             </span>
           </div>
         </template>
@@ -120,8 +120,8 @@ function switchMode(newMode: 'signin' | 'signup' | 'reset') {
           :disabled="loading || passwordMismatch"
           @click="submit"
         >
-          <template v-if="mode === 'signin'">Sign In</template>
-          <template v-else-if="mode === 'signup'">Sign Up</template>
+          <template v-if="mode === 'signin'">{{ $t('auth.signIn') }}</template>
+          <template v-else-if="mode === 'signup'">{{ $t('auth.signUp') }}</template>
           <template v-else>Send Password Reset Link</template>
         </button>
 

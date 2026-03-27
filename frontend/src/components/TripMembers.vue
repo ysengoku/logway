@@ -6,6 +6,7 @@ import { profilesApi } from '@/api/client';
 import type { Profile } from '@shared/types/profile';
 import type { Trip } from '@shared/types/trip';
 import { ref, onMounted, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   trip: Trip;
@@ -18,6 +19,7 @@ const success = ref<string | null>(null);
 const profiles = ref<Profile[]>([]);
 
 const isOwner = computed(() => authStore.user?.id === props.trip.owner_id);
+const { t } = useI18n();
 
 function getDisplayName(userId: string): string {
   return profiles.value.find((p) => p.id === userId)?.display_name ?? userId;
@@ -32,18 +34,18 @@ onMounted(async () => {
 });
 
 async function remove(userId: string) {
-  if (!confirm('Remove this member?')) return;
+  if (!confirm(t('members.removeConfirm'))) return;
   await membersStore.remove(props.trip.id, userId);
 }
 
 async function copyCodeToClipboard() {
   navigator.clipboard.writeText(props.trip.invite_code)
     .then(() => {
-      success.value = 'Invite code copied to clipboard!';
+      success.value = t('members.inviteCopied');
       setTimeout(() => success.value = null, 3000);
     })
     .catch(() => {
-      error.value = 'Failed to copy invite code.';
+      error.value = t('members.inviteCopyFailed');
       setTimeout(() => error.value = null, 3000);
     });
 }
@@ -51,7 +53,7 @@ async function copyCodeToClipboard() {
 
 <template>
   <div class="trip-members">
-    <h2 class="trip-members__title">Members</h2>
+    <h2 class="trip-members__title">{{ $t('trip.members') }}</h2>
     <div class="trip-members__list">
       <div
         v-for="member in membersStore.members"
@@ -77,10 +79,10 @@ async function copyCodeToClipboard() {
     </div>
 
     <div v-if="isOwner" class="trip-members__invite">
-      <div class="trip-members__invite-code-label">Share this code to invite friends: </div>
+      <div class="trip-members__invite-code-label">{{ $t('members.inviteShareLabel') }}</div>
       <div class="trip-members__invite-code">
         <span class="trip-members__invite-code-value">{{ props.trip.invite_code }}</span>
-        <button @click="copyCodeToClipboard" class="trip-members__invite-code-copy" title="Copy invite code">
+        <button @click="copyCodeToClipboard" class="trip-members__invite-code-copy" :title="$t('members.copyInviteTitle')">
           <AppIcon name="copy" :size="16" />
         </button>
       </div>

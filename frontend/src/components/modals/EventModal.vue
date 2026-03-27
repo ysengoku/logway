@@ -11,6 +11,7 @@ import RestaurantForm from '@/components/forms/RestaurantForm.vue';
 import TransportForm from '@/components/forms/TransportForm.vue';
 import type { EventRow, EventType } from '@shared/types/event';
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   open: boolean;
@@ -31,6 +32,7 @@ const isEditing = ref(false);
 const saving = ref(false);
 
 const formRef = ref<{ submit: () => void } | null>(null);
+const { t } = useI18n();
 
 watch(
   () => props.open,
@@ -52,7 +54,7 @@ async function onFormSubmit(data: Partial<EventRow>) {
     }
     emit('saved');
   } catch (e) {
-    alert(e instanceof Error ? e.message : 'Failed to save event.');
+    alert(e instanceof Error ? e.message : t('common.failedToSaveEvent'));
   } finally {
     saving.value = false;
   }
@@ -67,7 +69,7 @@ function onSaveClick() {
   <Teleport to="body">
     <AppModal
       :open="open"
-      :title="isEditing ? 'Edit Event' : 'Add Event'"
+      :title="isEditing ? $t('common.edit') + ' ' + $t('event.event') : $t('event.addEvent')"
       overlay-class="event-modal__overlay"
       modal-class="event-modal"
       title-class="event-modal__title"
@@ -130,13 +132,13 @@ function onSaveClick() {
       />
 
       <div class="event-modal__actions">
-        <button class="button-secondary" @click="emit('close')">Cancel</button>
+        <button class="button-secondary" @click="emit('close')">{{ $t('common.cancel') }}</button>
         <button
           class="button-primary"
           :disabled="saving"
           @click="onSaveClick"
         >
-          {{ saving ? 'Saving...' : 'Save' }}
+          {{ saving ? $t('common.saving') : $t('common.save') }}
         </button>
       </div>
     </AppModal>

@@ -5,6 +5,7 @@ import EventMetaTransport from '@/components/eventCards/EventMetaTransport.vue';
 import { EVENT_TYPE, EVENT_TYPE_OPTIONS, TRANSPORT_MODES } from '@/constants/events';
 import type { EventRow } from '@shared/types/event';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   event: EventRow;
@@ -27,20 +28,22 @@ const eventIcon = computed(() => {
   return mode?.icon ?? '';
 });
 
+const { t } = useI18n();
+
 function getEventTitle(event: EventRow): string {
   switch (event.type) {
     case EVENT_TYPE.FLIGHT:
-      return event.flight_number ?? 'Flight';
+      return event.flight_number ?? t('event.type.flight');
     case EVENT_TYPE.TRANSPORT:
-      return event.service_number ?? event.transport_mode ?? 'Transport';
+      return event.service_number ?? event.transport_mode ?? t('event.type.transport');
     case EVENT_TYPE.HOTEL:
-      return event.name ?? 'Hotel';
+      return event.name ?? t('event.type.hotel');
     case EVENT_TYPE.RESTAURANT:
-      return event.name ?? 'Restaurant';
+      return event.name ?? t('event.type.restaurant');
     case EVENT_TYPE.ACTIVITY:
-      return event.name ?? 'Activity';
+      return event.name ?? t('event.type.activity');
     case EVENT_TYPE.LINK:
-      return event.link_title ?? 'Link';
+      return event.link_title ?? t('event.type.link');
     default:
       return '';
   }
@@ -105,7 +108,7 @@ function getEventTime(event: EventRow): string | null {
           </a>
         </div>
         <div v-if="event.booking_ref" class="day-detail__tag">
-          Ref: {{ event.booking_ref }}
+          {{ $t('event.ref', { ref: event.booking_ref }) }}
         </div>
         <p v-if="event.note" class="day-detail__note">
           {{ event.note }}

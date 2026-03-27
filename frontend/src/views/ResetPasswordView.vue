@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { supabase } from '@/lib/supabase';
 
@@ -7,6 +8,7 @@ const router = useRouter();
 const loading = ref(false);
 const error = ref<string | null>(null);
 const done = ref(false);
+const { t } = useI18n();
 
 const form = reactive({
   password: '',
@@ -17,7 +19,7 @@ async function submit() {
   error.value = null;
 
   if (form.password !== form.passwordConfirm) {
-    error.value = 'Passwords do not match.';
+    error.value = t('auth.passwordsDoNotMatch');
     return;
   }
 
@@ -28,7 +30,7 @@ async function submit() {
     done.value = true;
     setTimeout(() => router.push({ name: 'auth' }), 2000);
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'An error occurred.';
+    error.value = e instanceof Error ? e.message : t('common.errorOccurred');
   } finally {
     loading.value = false;
   }
@@ -38,20 +40,20 @@ async function submit() {
 <template>
   <div class="auth-view">
     <div class="auth-view__card">
-      <h2 class="auth-view__title">New password</h2>
+      <h2 class="auth-view__title">{{ $t('reset.newPasswordTitle') }}</h2>
 
       <div v-if="done" class="auth-view__success">
-        Password updated. Redirecting to sign in...
+        {{ $t('reset.passwordUpdated') }}
       </div>
 
       <template v-else>
         <div class="form-row">
-          <label>New Password</label>
-          <input v-model="form.password" type="password" placeholder="new password" />
+          <label>{{ $t('auth.password') }}</label>
+          <input v-model="form.password" type="password" :placeholder="$t('auth.placeholderPassword')" />
         </div>
         <div class="form-row">
-          <label>Confirm Password</label>
-          <input v-model="form.passwordConfirm" type="password" placeholder="repeat new password" />
+          <label>{{ $t('auth.confirmPassword') }}</label>
+          <input v-model="form.passwordConfirm" type="password" :placeholder="$t('auth.placeholderRepeatPassword')" />
         </div>
 
         <div v-if="error" class="auth-view__error">{{ error }}</div>
@@ -61,7 +63,7 @@ async function submit() {
           :disabled="loading"
           @click="submit"
         >
-          {{ loading ? 'Loading...' : 'Update password' }}
+          {{ loading ? $t('common.loading') : $t('reset.updatePassword') }}
         </button>
       </template>
     </div>

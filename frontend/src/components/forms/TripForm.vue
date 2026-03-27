@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { Trip } from '@shared/types/trip';
 import type { TripInput } from '@shared/types/trip';
 
@@ -15,6 +16,7 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
+const { t } = useI18n();
 const form = reactive({
   title: props.initial?.title ?? '',
   start_date: props.initial?.start_date ?? '',
@@ -38,7 +40,7 @@ function onStartDateChange() {
 
 function submit() {
   if (!form.title) {
-    alert('Trip name is required.');
+    alert(t('tripForm.tripNameRequired'));
     return;
   }
   emit('submit', {
@@ -52,12 +54,12 @@ function submit() {
 <template>
   <div class="new-trip-form">
     <div class="form-row">
-      <label>Trip Name *</label>
-      <input v-model="form.title" type="text" placeholder="e.g. Europe 2026" />
+      <label>{{ $t('tripForm.tripName') }}</label>
+      <input v-model="form.title" type="text" :placeholder="$t('tripForm.tripNamePlaceholder')" />
     </div>
     <div class="form-row-2">
       <div class="form-row">
-        <label>Start Date</label>
+        <label>{{ $t('tripForm.startDate') }}</label>
         <input
           v-model="form.start_date"
           type="date"
@@ -65,7 +67,7 @@ function submit() {
         />
       </div>
       <div class="form-row">
-        <label>End Date</label>
+        <label>{{ $t('tripForm.endDate') }}</label>
         <input
           v-model="form.end_date"
           type="date"
@@ -75,7 +77,7 @@ function submit() {
       </div>
     </div>
     <div class="new-trip-form__actions">
-      <button class="button-secondary" @click="emit('cancel')">Cancel</button>
+      <button class="button-secondary" @click="emit('cancel')">{{ $t('common.cancel') }}</button>
       <button class="button-primary" @click="submit">{{ submitLabel }}</button>
     </div>
   </div>

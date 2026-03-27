@@ -59,11 +59,7 @@ trips.get('/:id', async (c) => {
   const db = supabaseWithAuth(token);
   const id = c.req.param('id');
 
-  const { data, error } = await db
-    .from('trips')
-    .select('*')
-    .eq('id', id)
-    .single();
+  const { data, error } = await db.from('trips').select('*').eq('id', id).single();
 
   if (error) return c.json({ error: error.message }, 404);
   return c.json(data);
@@ -139,12 +135,7 @@ trips.patch('/:id', async (c) => {
   const id = c.req.param('id');
   const body = await c.req.json<Partial<TripInput>>();
 
-  const { data, error } = await db
-    .from('trips')
-    .update(body)
-    .eq('id', id)
-    .select()
-    .single();
+  const { data, error } = await db.from('trips').update(body).eq('id', id).select().single();
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data);
@@ -155,10 +146,7 @@ trips.delete('/:id', async (c) => {
   const db = supabaseWithAuth(token);
   const id = c.req.param('id');
 
-  const { error } = await db
-    .from('trips')
-    .delete()
-    .eq('id', id);
+  const { error } = await db.from('trips').delete().eq('id', id);
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json({ success: true });

@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "supabase": "./server/node_modules/.bin/supabase"
+    "dev:frontend": "pnpm --filter ./frontend dev",
+    "dev:server": "pnpm --filter ./server dev",
+    "lint": "pnpm --filter ./frontend run lint:ci && pnpm --filter ./server run lint",
+    "supabase": "pnpm --filter ./server exec -- supabase"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.28.0",
-  "devDependencies": {
-    "supabase": "^2.78.1"
-  }
+  "packageManager": "pnpm@10.28.0"
 }

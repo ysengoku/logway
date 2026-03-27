@@ -9,19 +9,16 @@ profiles.get('/', async (c) => {
   const db = await supabaseWithAuth(token);
   const userIds = c.req.query('user_ids')?.split(',').filter(Boolean) ?? [];
 
-  if (userIds .length === 0) {
+  if (userIds.length === 0) {
     return c.json([]);
   }
 
-  const { data, error } = await db
-    .from('profiles')
-    .select('*')
-    .in('id', userIds);
+  const { data, error } = await db.from('profiles').select('*').in('id', userIds);
 
-    if (error) {
-      return c.json({ error: error.message }, 500);
-    }
-    return c.json(data);
+  if (error) {
+    return c.json({ error: error.message }, 500);
+  }
+  return c.json(data);
 });
 
 export default profiles;

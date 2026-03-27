@@ -10,7 +10,8 @@ import { useTripsStore } from '@/stores/trips';
 import type { TripInput } from '@shared/types/trip';
 import type { EventRow } from '@shared/types/event';
 import { ref, onMounted, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute();
 const router = useRouter();
@@ -26,6 +27,7 @@ const modalEvent = ref<EventRow | undefined>();
 
 const loadingStore = useLoadingStore();
 const showEditModal = ref(false);
+const { t } = useI18n();
 
 onMounted(async () => {
     await eventsStore.fetchByTrip(tripId.value);
@@ -64,7 +66,7 @@ async function onEditTrip(input: TripInput) {
 }
 
 async function deleteTrip() {
-  if (!confirm(`Delete "${trip.value?.title}"? All events will also be deleted.`)) return;
+  if (!confirm(t('trip.deleteConfirm', { title: trip.value?.title }))) return;
   await tripsStore.deleteTrip(tripId.value);
   router.push({ name: 'home' });
 }
@@ -74,11 +76,11 @@ async function deleteTrip() {
   <div v-show="!loadingStore.active" class="trip-view">
     <header class="trip-view__header">
       <button class="trip-view__back" @click="router.push({ name: 'home' })">
-        ← Back
+        ← {{ $t('common.back') }}
       </button>
       <h1 class="trip-view__title">{{ trip?.title }}</h1>
       <button class="trip-view__edit-btn" @click="showEditModal = true">
-        Edit
+        {{ $t('common.edit') }}
       </button>
     </header>
 
@@ -93,7 +95,7 @@ async function deleteTrip() {
       </aside>
       <main class="trip-view__detail">
         <div v-if="!selectedDate" class="trip-view__empty">
-          Select a date to view or add events.
+          {{ $t('calendar.selectDate') }}
         </div>
         <DayDetail
           v-else
@@ -109,9 +111,9 @@ async function deleteTrip() {
     <Teleport to="body">
       <TripModal
         :open="showEditModal"
-        title="Edit Trip"
+        :title="$t('trip.editTrip')"
         :initial="trip"
-        submit-label="Save changes"
+        :submit-label="$t('common.saveChanges')"
         @close="showEditModal = false"
         @submit="onEditTrip"
       />

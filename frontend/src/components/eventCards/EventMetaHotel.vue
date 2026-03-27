@@ -18,14 +18,14 @@ function isCheckOutDate(event: EventRow): boolean {
 
 <template>
   <div v-if="isCheckOutDate(event)">
-    CHECK OUT {{ formatTime(event.check_out_time) }}
+    {{ $t('event.checkOut') }} {{ formatTime(event.check_out_time) }}
   </div>
   <div v-else>
     <div v-if="isCheckInDate(event)">
-      CHECK IN {{ formatTime(event.check_in_time) }}
+      {{ $t('event.checkIn') }} {{ formatTime(event.check_in_time) }}
     </div>
     <span v-if="event.check_out_date">
-      (CHECK OUT {{ event.check_out_date }} {{ formatTime(event.check_out_time) }})
+      ({{ $t('event.checkOut') }} {{ event.check_out_date }} {{ formatTime(event.check_out_time) }})
     </span>
   </div>
   <!-- <div v-if="event.address" class="day-detail__card-meta-address">

@@ -86,20 +86,20 @@ function formatDates(trip: Trip): string {
       <div v-show="!loadingStore.active">
         <!-- Upcoming Trips -->
         <section class="home__section">
-          <h1 class="home__title">My Trips</h1>
+          <h1 class="home__title">{{ $t('home.myTrips') }}</h1>
           <div class="home__btn-group">
             <button class="home__new-btn button-accent" @click="showNewTripModal = true">
-              + New Trip
+              {{ $t('common.newTrip') }}
             </button>
             <button class="button-secondary2" @click="openJoinTripModal">
-              Join Trip
+              {{ $t('common.joinTrip') }}
             </button>
           </div>
           <div class="home__section-header">
-            <h2 class="home__section-title">Upcoming Trips</h2>
+            <h2 class="home__section-title">{{ $t('home.upcoming') }}</h2>
           </div>
           <div v-if="tripsStore.upcomingTrips.length === 0" class="home__state">
-            No upcoming trips. Plan your next adventure!
+            {{ $t('home.noUpcoming') }}
           </div>
           <template v-else>
             <div class="home__trips">
@@ -118,7 +118,7 @@ function formatDates(trip: Trip): string {
               class="home__show-more"
               @click="showAllUpcoming = !showAllUpcoming"
             >
-              {{ showAllUpcoming ? 'Show less' : `Show all (${tripsStore.upcomingTrips.length})` }}
+              {{ showAllUpcoming ? $t('home.showLess') : $t('home.showAll', { count: tripsStore.upcomingTrips.length }) }}
             </button>
           </template>
         </section>
@@ -126,10 +126,10 @@ function formatDates(trip: Trip): string {
         <!-- Past Trips -->
         <section class="home__section">
           <div class="home__section-header">
-            <h2 class="home__section-title">Past Trips</h2>
+            <h2 class="home__section-title">{{ $t('home.past') }}</h2>
           </div>
           <div v-if="tripsStore.pastTrips.length === 0" class="home__state">
-            No past trips yet.
+            {{ $t('home.noPast') }}
           </div>
           <template v-else>
             <div class="home__trips">
@@ -148,7 +148,7 @@ function formatDates(trip: Trip): string {
               class="home__show-more"
               @click="showAllPast = !showAllPast"
             >
-              {{ showAllPast ? 'Show less' : `Show all (${tripsStore.pastTrips.length})` }}
+              {{ showAllPast ? $t('home.showLess') : $t('home.showAll', { count: tripsStore.pastTrips.length }) }}
             </button>
           </template>
         </section>
@@ -158,7 +158,7 @@ function formatDates(trip: Trip): string {
     <Teleport to="body">
       <TripModal
         :open="showNewTripModal"
-        title="New Trip"
+        :title="$t('common.newTrip')"
         @close="showNewTripModal = false"
         @submit="createTrip"
       />

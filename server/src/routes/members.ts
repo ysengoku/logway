@@ -12,10 +12,7 @@ members.get('/', async (c) => {
   const db = supabaseWithAuth(token);
   const tripId = c.req.param('tripId');
 
-  const { data, error } = await db
-    .from('trip_members')
-    .select('*')
-    .eq('trip_id', tripId);
+  const { data, error } = await db.from('trip_members').select('*').eq('trip_id', tripId);
 
   if (error) return c.json({ error: error.message }, 500);
   return c.json(data);
