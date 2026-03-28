@@ -74,12 +74,12 @@ function switchMode(newMode: 'signin' | 'signup' | 'reset') {
       </h2>
 
       <div v-if="signUpDone" class="auth-view__success">
-        Check your email to confirm your account, then sign in.
+        {{ $t('auth.emailConfirmationInstructions') }}
       </div>
       <div v-else-if="resetDone" class="auth-view__success">
-        Check your email for password reset link.
+        {{ $t('auth.resetPasswordInstructions') }}
         <button class="auth-view__switch-btn" @click="switchMode('signin')">
-          Back to Sign in
+          {{ $t('common.backToSignIn') }}
         </button>
       </div>
 
@@ -122,27 +122,27 @@ function switchMode(newMode: 'signin' | 'signup' | 'reset') {
         >
           <template v-if="mode === 'signin'">{{ $t('auth.signIn') }}</template>
           <template v-else-if="mode === 'signup'">{{ $t('auth.signUp') }}</template>
-          <template v-else>Send Password Reset Link</template>
+          <template v-else>{{ $t('auth.resetPassword') }}</template>
         </button>
 
         <p class="auth-view__links">
           <template v-if="mode === 'signin'">
             <p class="auth-view__switch">
               <button class="auth-view__switch-btn" @click="switchMode('reset')">
-                Forgot password?
+                {{ $t('auth.resetPassword') }}
               </button>
             </p>
             <p class="auth-view__switch">
-              Don't have an account yet?
+                {{ $t('auth.dontHaveAccount') }}
               <button class="auth-view__switch-btn" @click="switchMode('signup')">
-                Sign up
+                {{ $t('auth.signUp') }}
               </button>
             </p>
           </template>
           <template v-else>
             <p class="auth-view__switch">
               <button class="auth-view__switch-btn" @click="switchMode('signin')">
-                Back to Sign in
+                {{ $t('auth.signIn') }}
               </button>
             </p>
           </template>

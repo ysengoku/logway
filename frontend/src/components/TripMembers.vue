@@ -34,18 +34,18 @@ onMounted(async () => {
 });
 
 async function remove(userId: string) {
-  if (!confirm(t('members.removeConfirm'))) return;
+  if (!confirm(t('trip.members.removeConfirm'))) return;
   await membersStore.remove(props.trip.id, userId);
 }
 
 async function copyCodeToClipboard() {
   navigator.clipboard.writeText(props.trip.invite_code)
     .then(() => {
-      success.value = t('members.inviteCopied');
+      success.value = t('trip.members.inviteCopied');
       setTimeout(() => success.value = null, 3000);
     })
     .catch(() => {
-      error.value = t('members.inviteCopyFailed');
+      error.value = t('trip.members.inviteCopyFailed');
       setTimeout(() => error.value = null, 3000);
     });
 }
@@ -53,7 +53,7 @@ async function copyCodeToClipboard() {
 
 <template>
   <div class="trip-members">
-    <h2 class="trip-members__title">{{ $t('trip.members') }}</h2>
+    <h2 class="trip-members__title">{{ $t('trip.members.members') }}</h2>
     <div class="trip-members__list">
       <div
         v-for="member in membersStore.members"
@@ -79,10 +79,10 @@ async function copyCodeToClipboard() {
     </div>
 
     <div v-if="isOwner" class="trip-members__invite">
-      <div class="trip-members__invite-code-label">{{ $t('members.inviteShareLabel') }}</div>
+      <div class="trip-members__invite-code-label">{{ $t('trip.members.inviteShareLabel') }}</div>
       <div class="trip-members__invite-code">
         <span class="trip-members__invite-code-value">{{ props.trip.invite_code }}</span>
-        <button @click="copyCodeToClipboard" class="trip-members__invite-code-copy" :title="$t('members.copyInviteTitle')">
+        <button @click="copyCodeToClipboard" class="trip-members__invite-code-copy" :title="$t('trip.members.copyInviteTitle')">
           <AppIcon name="copy" :size="16" />
         </button>
       </div>

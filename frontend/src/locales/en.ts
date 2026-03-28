@@ -7,10 +7,16 @@ export const auth = {
   password: 'Password',
   confirmPassword: 'Confirm Password',
   passwordsDoNotMatch: 'Passwords do not match.',
+  dontHaveAccount: "Don't have an account yet?",
   placeholderEmail: 'you@example.com',
   placeholderName: 'Your name',
   placeholderPassword: 'password',
   placeholderRepeatPassword: 'repeat password',
+  emailConfirmationInstructions: 'Check your email to confirm your account, then sign in.',
+  resetPasswordInstructions: 'Check your email for password reset link.',
+  newPasswordTitle: 'New password',
+  passwordUpdated: 'Password updated. Redirecting to sign in...',
+  updatePassword: 'Update password',
 };
 
 export const common = {
@@ -18,6 +24,7 @@ export const common = {
   loading: 'Loading...',
   back: 'Back',
   edit: 'Edit',
+  add: 'Add',
   deleteThisTrip: 'Delete this trip',
   newTrip: '+ New Trip',
   joinTrip: 'Join Trip',
@@ -26,6 +33,7 @@ export const common = {
   save: 'Save',
   saving: 'Saving...',
   failedToSaveEvent: 'Failed to save event.',
+  backToSignIn: 'Back to Sign In',
 };
 
 export const home = {
@@ -39,42 +47,77 @@ export const home = {
 };
 
 export const trip = {
-  members: 'Members',
   deleteConfirm: 'Delete "{title}"? All events will also be deleted.',
   editTrip: 'Edit Trip',
-};
-
-export const members = {
-  removeConfirm: 'Remove this member?',
-  inviteCopied: 'Invite code copied to clipboard!',
-  inviteCopyFailed: 'Failed to copy invite code.',
-  inviteShareLabel: 'Share this code to invite friends:',
-  copyInviteTitle: 'Copy invite code',
-};
-
-export const join = {
-  inviteCodeRequired: 'Invite code is required.',
-  inviteCodeLabel: 'Invite Code *',
-  inviteCodePlaceholder: 'e.g. A1B2C3D4',
-  join: 'Join',
-};
-
-export const tripForm = {
-  tripName: 'Trip Name *',
-  tripNamePlaceholder: 'e.g. Europe 2026',
-  startDate: 'Start Date',
-  endDate: 'End Date',
-  tripNameRequired: 'Trip name is required.',
+  deleteTrip: 'Delete Trip',
+  members: {
+    members: 'Members',
+    removeConfirm: 'Remove this member?',
+    inviteCopied: 'Invite code copied to clipboard!',
+    inviteCopyFailed: 'Failed to copy invite code.',
+    inviteShareLabel: 'Share this code to invite friends:',
+    copyInviteTitle: 'Copy invite code',
+  }
 };
 
 export const calendar = {
   selectDate: 'Select a date to view events.',
 };
 
-export const reset = {
-  newPasswordTitle: 'New password',
-  passwordUpdated: 'Password updated. Redirecting to sign in...',
-  updatePassword: 'Update password',
+export const day = {
+  timeline: 'Timeline',
+  byType: 'By Type',
+  noEvents: 'No events on this day yet.',
+}
+
+export const form = {
+  title: 'Title',
+  trip: {
+    namePlaceholder: 'e.g. Europe 2026',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    nameRequired: 'Trip name is required.',
+  },
+  join: {
+    inviteCodeRequired: 'Invite code is required.',
+    inviteCodeLabel: 'Invite Code *',
+    inviteCodePlaceholder: 'e.g. A1B2C3D4',
+    join: 'Join',
+    alreadyJoined: 'You have already joined this trip.',
+  },
+  event: {
+    name: 'Name',
+    reference: 'Booking Reference',
+    from: 'From',
+    to: 'To',
+    date: 'Date',
+    time: 'Time',
+    timeZone: 'Time Zone',
+    departure: 'Departure',
+    departureTime: 'Departure Time',
+    arrival: 'Arrival',
+    arrivalTime: 'Arrival Time',
+    address: 'Address',
+    website: "Website / Booking Page",
+    notes: 'Notes',
+    timezoneHint: 'For overnight or cross-timezone journeys, enter each time in its local timezone.',
+    flight: {
+      number: 'Flight Number',
+    },
+    transport: {
+      line: 'Service / Line',
+    },
+    hotel: {
+      checkinDate: 'Check-in Date',
+      checkinTime: 'Check-in Time',
+      checkoutDate: 'Check-out Date',
+      checkoutTime: 'Check-out Time',
+    },
+    link: {
+      url: 'URL',
+      relatedDate: 'Related Date',
+    }
+  },
 };
 
 export const event = {
@@ -93,16 +136,34 @@ export const event = {
   },
 };
 
+export const datetimeFormats = {
+  short: {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  },
+  long: {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'short',
+  },
+  withTime: {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  },
+} as const;
+
 export default {
-  hello: 'Hello',
   auth,
+  calendar,
   common,
+  day,
+  event,
+  form,
   home,
   trip,
-  members,
-  join,
-  tripForm,
-  calendar,
-  reset,
-  event,
 };

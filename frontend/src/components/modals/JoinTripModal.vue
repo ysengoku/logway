@@ -14,7 +14,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <AppModal :open="open" title="Join Trip" @close="emit('close')">
+  <AppModal :open="open" :title="$t('common.joinTrip')" @close="emit('close')">
     <JoinTripForm :message="message" @submit="emit('submit', $event)" @cancel="emit('close')" />
   </AppModal>
 </template>

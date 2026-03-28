@@ -42,6 +42,15 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 export const profilesApi = {
   getByIds(userIds: string[]): Promise<Profile[]> {
     return request(`/api/profiles?user_ids=${userIds.join(',')}`);
+  },
+  getSelf(): Promise<Profile> {
+    return request('/api/profiles/self');
+  },
+  updateSelf(body: Partial<Pick<Profile, 'display_name' | 'preferred_locale'>>): Promise<Profile> {
+    return request('/api/profiles/self', {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
   }
 };
 

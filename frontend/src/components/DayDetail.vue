@@ -4,6 +4,7 @@ import EventCard from '@/components/eventCards/EventCard.vue';
 import { EVENT_TYPE_OPTIONS } from '@/constants/events';
 import { useEventsStore } from '@/stores/events';
 import type { EventRow, EventType } from '@shared/types/event';
+import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{
@@ -17,16 +18,12 @@ const emit = defineEmits<{
 
 const eventsStore = useEventsStore();
 const viewMode = ref<'timeline' | 'type'>('timeline');
+const { d } = useI18n();
 
 const events = computed(() => eventsStore.getByDate(props.date));
 
 const formattedDate = computed(() => {
-  const d = new Date(props.date + 'T00:00:00');
-  return d.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+  return d(new Date(`${props.date}T00:00:00`), 'short');
 });
 
 function getEventsByType(type: EventType) {
@@ -45,7 +42,7 @@ async function deleteEvent(id: string) {
       <div class="day-detail__header-top">
         <h2 class="day-detail__date">{{ formattedDate }}</h2>
         <button class="button-secondary2" @click="emit('addEvent', date)">
-          + Add
+          + {{ $t('common.add') }}
         </button>
       </div>
       <div class="day-detail__view-toggle">
@@ -54,20 +51,20 @@ async function deleteEvent(id: string) {
           :class="{ 'day-detail__toggle-btn--active': viewMode === 'timeline' }"
           @click="viewMode = 'timeline'"
         >
-          Timeline
+          {{ $t('day.timeline') }}
         </button>
         <button
           class="day-detail__toggle-btn"
           :class="{ 'day-detail__toggle-btn--active': viewMode === 'type' }"
           @click="viewMode = 'type'"
         >
-          By type
+          {{ $t('day.byType') }}
         </button>
       </div>
     </div>
 
     <div v-if="events.length === 0" class="day-detail__empty">
-      No events on this day yet.
+      {{ $t('day.noEvents') }}
     </div>
 
     <template v-else>

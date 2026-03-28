@@ -40,7 +40,7 @@ function onStartDateChange() {
 
 function submit() {
   if (!form.title) {
-    alert(t('tripForm.tripNameRequired'));
+    alert(t('form.trip.nameRequired'));
     return;
   }
   emit('submit', {
@@ -54,12 +54,12 @@ function submit() {
 <template>
   <div class="new-trip-form">
     <div class="form-row">
-      <label>{{ $t('tripForm.tripName') }}</label>
-      <input v-model="form.title" type="text" :placeholder="$t('tripForm.tripNamePlaceholder')" />
+      <label>{{ $t('form.title') }}</label>
+      <input v-model="form.title" type="text" :placeholder="$t('form.trip.namePlaceholder')" />
     </div>
     <div class="form-row-2">
       <div class="form-row">
-        <label>{{ $t('tripForm.startDate') }}</label>
+        <label>{{ $t('form.trip.startDate') }}</label>
         <input
           v-model="form.start_date"
           type="date"
@@ -67,7 +67,7 @@ function submit() {
         />
       </div>
       <div class="form-row">
-        <label>{{ $t('tripForm.endDate') }}</label>
+        <label>{{ $t('form.trip.endDate') }}</label>
         <input
           v-model="form.end_date"
           type="date"

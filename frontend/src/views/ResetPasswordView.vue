@@ -40,10 +40,10 @@ async function submit() {
 <template>
   <div class="auth-view">
     <div class="auth-view__card">
-      <h2 class="auth-view__title">{{ $t('reset.newPasswordTitle') }}</h2>
+      <h2 class="auth-view__title">{{ $t('auth.newPasswordTitle') }}</h2>
 
       <div v-if="done" class="auth-view__success">
-        {{ $t('reset.passwordUpdated') }}
+        {{ $t('auth.passwordUpdated') }}
       </div>
 
       <template v-else>
@@ -63,7 +63,7 @@ async function submit() {
           :disabled="loading"
           @click="submit"
         >
-          {{ loading ? $t('common.loading') : $t('reset.updatePassword') }}
+          {{ loading ? $t('common.loading') : $t('auth.updatePassword') }}
         </button>
       </template>
     </div>

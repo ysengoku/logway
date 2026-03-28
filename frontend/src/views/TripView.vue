@@ -121,7 +121,7 @@ async function deleteTrip() {
 
     <footer class="trip-view__footer">
       <button class="trip-view__delete-btn" @click="deleteTrip">
-        Delete this trip
+        {{ $t('trip.deleteTrip') }}
       </button>
     </footer>
 

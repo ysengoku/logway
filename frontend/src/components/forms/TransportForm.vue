@@ -67,71 +67,71 @@ defineExpose({ submit });
         </select>
       </div>
       <div class="form-row">
-        <label>Service / Line</label>
+        <label>{{ $t('form.event.transport.line') }}</label>
         <input v-model="form.service_number" type="text" placeholder="e.g. Eurostar 9084" />
       </div>
     </div>
 
     <div class="form-row">
-      <label>Booking Ref.</label>
+      <label>{{ $t('form.event.reference') }}</label>
       <input v-model="form.booking_ref" type="text" placeholder="Optional" />
     </div>
 
     <hr class="form-divider" />
-    <div class="form-sub">Departure</div>
+    <div class="form-sub">{{ $t('form.event.departure') }}</div>
 
     <div class="form-row">
-      <label>From</label>
+      <label>{{ $t('form.event.from') }} *</label>
       <input v-model="form.dep_place" type="text" placeholder="e.g. London St Pancras" />
     </div>
     <div class="form-row-2">
       <div class="form-row">
-        <label>Date *</label>
+        <label>{{ $t('form.event.date') }} *</label>
         <input v-model="form.dep_local_date" type="date" />
       </div>
       <div class="form-row">
-        <label>Departure Time</label>
+        <label>{{ $t('form.event.departureTime') }}</label>
         <input v-model="form.dep_local_time" type="time" />
       </div>
     </div>
     <div class="form-row">
-      <label>Timezone</label>
+      <label>{{ $t('form.event.timeZone') }}</label>
       <select v-model="form.dep_tz_id">
         <option v-for="tz in TIMEZONES" :key="tz.id" :value="tz.id">{{ tz.label }}</option>
       </select>
     </div>
 
     <hr class="form-divider" />
-    <div class="form-sub">Arrival</div>
+    <div class="form-sub">{{ $t('form.event.arrival') }}</div>
 
     <div class="form-row">
-      <label>To</label>
+      <label>{{ $t('form.event.to') }} *</label>
       <input v-model="form.arr_place" type="text" placeholder="e.g. Paris Gare du Nord" />
     </div>
     <div class="form-row-2">
       <div class="form-row">
-        <label>Date</label>
+        <label>{{ $t('form.event.date') }} *</label>
         <input v-model="form.arr_local_date" type="date" />
       </div>
       <div class="form-row">
-        <label>Arrival Time</label>
+        <label>{{ $t('form.event.arrivalTime') }}</label>
         <input v-model="form.arr_local_time" type="time" />
       </div>
     </div>
     <div class="form-row">
-      <label>Timezone</label>
+      <label>{{ $t('form.event.timeZone') }}</label>
       <select v-model="form.arr_tz_id">
         <option v-for="tz in TIMEZONES" :key="tz.id" :value="tz.id">{{ tz.label }}</option>
       </select>
     </div>
 
     <p class="form-hint">
-      For overnight or cross-timezone journeys, enter each time in its local timezone.
+      {{ $t('form.event.timezoneHint') }}
     </p>
 
     <hr class="form-divider" />
     <div class="form-row">
-      <label>Notes</label>
+      <label>{{ $t('form.event.notes') }}</label>
       <textarea v-model="form.note" placeholder="Platform, gate, instructions, etc." />
     </div>
   </div>

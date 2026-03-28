@@ -12,12 +12,12 @@ const emit = defineEmits<{
 }>();
 
 const form = reactive({
-  name:            props.initial?.name ?? '',
-  address:         props.initial?.address ?? '',
+  name:             props.initial?.name ?? '',
+  address:          props.initial?.address ?? '',
   reservation_date: props.initial?.reservation_date ?? props.defaultDate ?? '',
   reservation_time: props.initial?.reservation_time ?? '',
-  url:             props.initial?.url ?? '',
-  note:            props.initial?.note ?? '',
+  url:              props.initial?.url ?? '',
+  note:             props.initial?.note ?? '',
 });
 
 function submit() {
@@ -43,11 +43,11 @@ defineExpose({ submit });
 <template>
   <div class="restaurant-form">
     <div class="form-row">
-      <label>Restaurant Name *</label>
+      <label>{{ $t('form.event.name') }} *</label>
       <input v-model="form.name" type="text" placeholder="e.g. Le Grand Véfour" />
     </div>
     <div class="form-row">
-      <label>Address</label>
+      <label>{{ $t('form.event.address') }}</label>
       <input v-model="form.address" type="text" placeholder="e.g. 17 Rue de Beaujolais, Paris" />
     </div>
 
@@ -55,11 +55,11 @@ defineExpose({ submit });
 
     <div class="form-row-2">
       <div class="form-row">
-        <label>Reservation Date *</label>
+        <label>{{ $t('form.event.date') }} *</label>
         <input v-model="form.reservation_date" type="date" />
       </div>
       <div class="form-row">
-        <label>Reservation Time *</label>
+        <label>{{ $t('form.event.time') }} *</label>
         <input v-model="form.reservation_time" type="time" />
       </div>
     </div>
@@ -67,11 +67,11 @@ defineExpose({ submit });
     <hr class="form-divider" />
 
     <div class="form-row">
-      <label>Website / Reservation Page</label>
+      <label>{{ $t('form.event.website') }}</label>
       <input v-model="form.url" type="url" placeholder="https://..." />
     </div>
     <div class="form-row">
-      <label>Notes</label>
+      <label>{{ $t('form.event.notes') }}</label>
       <textarea v-model="form.note" placeholder="Allergies, dress code, etc." />
     </div>
   </div>

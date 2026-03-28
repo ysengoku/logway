@@ -19,7 +19,7 @@ const form = reactive({
 function submit() {
   const inviteCode = form.invite_code.trim().toUpperCase();
   if (!inviteCode) {
-    alert(t('join.inviteCodeRequired'));
+    alert(t('trip.join.inviteCodeRequired'));
     return;
   }
   emit('submit', inviteCode);
@@ -31,18 +31,18 @@ function submit() {
     <div v-if="message" class="home__state">{{ message }}</div>
 
     <div class="form-row">
-      <label>{{ $t('join.inviteCodeLabel') }}</label>
+      <label>{{ $t('form.join.inviteCodeLabel') }}</label>
       <input
         v-model="form.invite_code"
         type="text"
-        :placeholder="$t('join.inviteCodePlaceholder')"
+        :placeholder="$t('form.join.inviteCodePlaceholder')"
         maxlength="8"
       />
     </div>
 
     <div class="new-trip-form__actions">
       <button class="button-secondary" @click="emit('cancel')">{{ $t('common.cancel') }}</button>
-      <button class="button-primary" @click="submit">{{ $t('join.join') }}</button>
+      <button class="button-primary" @click="submit">{{ $t('form.join.join') }}</button>
     </div>
   </div>
 </template>

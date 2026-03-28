@@ -1,5 +1,14 @@
-import en from './en';
+import en, { datetimeFormats as enDatetimeFormats } from './en';
+import fr, { datetimeFormats as frDatetimeFormats } from './fr';
 
-export default {
+const messages = {
   en,
+  fr,
 };
+
+export const datetimeFormats = {
+  en: enDatetimeFormats,
+  fr: frDatetimeFormats,
+};
+
+export default messages;

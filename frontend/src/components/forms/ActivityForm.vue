@@ -43,11 +43,11 @@ defineExpose({ submit });
 <template>
   <div class="activity-form">
     <div class="form-row">
-      <label>Name *</label>
+      <label>{{ $t('form.event.name') }} *</label>
       <input v-model="form.name" type="text" placeholder="e.g. Louvre Museum" />
     </div>
     <div class="form-row">
-      <label>Address</label>
+      <label>{{ $t('form.event.address') }}</label>
       <input v-model="form.address" type="text" placeholder="e.g. Rue de Rivoli, 75001 Paris" />
     </div>
 
@@ -55,11 +55,11 @@ defineExpose({ submit });
 
     <div class="form-row-2">
       <div class="form-row">
-        <label>Date *</label>
+        <label>{{ $t('form.event.date') }} *</label>
         <input v-model="form.schedule_date" type="date" />
       </div>
       <div class="form-row">
-        <label>Start Time</label>
+        <label>{{ $t('form.event.time') }} </label>
         <input v-model="form.schedule_time" type="time" />
       </div>
     </div>
@@ -67,11 +67,11 @@ defineExpose({ submit });
     <hr class="form-divider" />
 
     <div class="form-row">
-      <label>Website / Tickets</label>
+      <label>{{ $t('form.event.website') }}</label>
       <input v-model="form.url" type="url" placeholder="https://..." />
     </div>
     <div class="form-row">
-      <label>Notes</label>
+      <label>{{ $t('form.event.notes') }}</label>
       <textarea v-model="form.note" placeholder="Ticket number, what to bring, etc." />
     </div>
   </div>

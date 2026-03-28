@@ -4,6 +4,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useEventsStore } from '@/stores/events';
 import { useTripsStore } from '@/stores/trips';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   selectedDate: string | null;
@@ -15,6 +16,7 @@ const emit = defineEmits<{
 }>();
 
 const eventsStore = useEventsStore();
+const { locale } = useI18n({ useScope: 'global' });
 
 // Initialize calendar to initialDate if provided, otherwise try trip start date, fallback to today
 const today = new Date();
@@ -48,11 +50,24 @@ onMounted(async () => {
   }
 });
 
-const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const monthLabel = computed(() => {
+  const formatter = new Intl.DateTimeFormat(locale.value, {
+    month: 'long',
+    year: 'numeric',
+  });
+  return formatter.format(new Date(currentYear.value, currentMonth.value, 1));
+});
+
+const dayLabels = computed(() => {
+  const formatter = new Intl.DateTimeFormat(locale.value, {
+    weekday: 'short',
+    timeZone: 'UTC',
+  });
+  // 2024-01-07 is Sunday in UTC; keep Sunday-first calendar layout.
+  return Array.from({ length: 7 }, (_, index) =>
+    formatter.format(new Date(Date.UTC(2024, 0, 7 + index))),
+  );
+});
 
 function prevMonth() {
   if (currentMonth.value === 0) {
@@ -132,7 +147,7 @@ const calendarDays = computed(() => {
         <AppIcon name="arrow_back" :size="20" />
       </button>
       <span class="calendar-grid__month">
-        {{ MONTHS[currentMonth] }} {{ currentYear }}
+        {{ monthLabel }}
       </span>
       <button class="calendar-grid__arrow" @click="nextMonth">
         <AppIcon name="arrow_forward" :size="20" />
@@ -140,7 +155,7 @@ const calendarDays = computed(() => {
     </div>
 
     <div class="calendar-grid__dow">
-      <span v-for="d in DAYS" :key="d">{{ d }}</span>
+      <span v-for="label in dayLabels" :key="label">{{ label }}</span>
     </div>
 
     <div class="calendar-grid__cells">

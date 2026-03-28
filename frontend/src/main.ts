@@ -5,19 +5,26 @@ import { createI18n } from 'vue-i18n';
 import App from './App.vue';
 import router from './router';
 import './assets/styles/main.scss';
-import messages from './locales';
+import messages, { datetimeFormats } from './locales';
+import { DEFAULT_LOCALE, resolveInitialLocale } from './lib/locale';
 
-const app = createApp(App);
+async function bootstrap() {
+	const locale = await resolveInitialLocale();
+	const app = createApp(App);
 
-const i18n = createI18n({
-	legacy: false,
-	locale: 'en',
-	fallbackLocale: 'en',
-	messages,
-});
+	const i18n = createI18n({
+		legacy: false,
+		locale,
+		fallbackLocale: DEFAULT_LOCALE,
+		messages,
+		datetimeFormats,
+	});
 
-app.use(createPinia());
-app.use(router);
-app.use(i18n);
+	app.use(createPinia());
+	app.use(router);
+	app.use(i18n);
 
-app.mount('#app');
+	app.mount('#app');
+}
+
+void bootstrap();

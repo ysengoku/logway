@@ -3,12 +3,12 @@ import JoinTripModal from '@/components/modals/JoinTripModal.vue';
 import TripModal from '@/components/modals/TripModal.vue';
 import { ApiError } from '@/api/client';
 import { ERROR_CODE_ALREADY_JOINED } from '@shared/constants/errorCodes';
-import { JOIN_TRIP_ALREADY_JOINED_MESSAGE } from '@/constants/messages';
 import { useLoadingStore } from '@/stores/loading';
 import { useTripsStore } from '@/stores/trips';
 import type { TripInput } from '@shared/types/trip';
 import type { Trip } from '@shared/types/trip';
 import { onMounted, ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 const PREVIEW_COUNT = 3;
@@ -16,6 +16,7 @@ const PREVIEW_COUNT = 3;
 const router = useRouter();
 const tripsStore = useTripsStore();
 const loadingStore = useLoadingStore();
+const { d } = useI18n({ useScope: 'global' });
 const showNewTripModal = ref(false);
 const showJoinTripModal = ref(false);
 const joinTripMessage = ref<string | null>(null);
@@ -52,7 +53,7 @@ async function joinTrip(inviteCode: string) {
     router.push({ name: 'trip', params: { id: trip.id } });
   } catch (error) {
     if (error instanceof ApiError && error.code === ERROR_CODE_ALREADY_JOINED) {
-      joinTripMessage.value = JOIN_TRIP_ALREADY_JOINED_MESSAGE;
+      joinTripMessage.value = 'form.join.alreadyJoined';
       return;
     }
     throw error;
@@ -75,8 +76,13 @@ function goToTrip(trip: Trip) {
 
 function formatDates(trip: Trip): string {
   if (!trip.start_date && !trip.end_date) return '';
-  if (trip.start_date && trip.end_date) return `${trip.start_date} → ${trip.end_date}`;
-  return trip.start_date ?? trip.end_date ?? '';
+  if (trip.start_date && trip.end_date) return `${formatDate(trip.start_date)} → ${formatDate(trip.end_date)}`;
+  return trip.start_date ? formatDate(trip.start_date) : formatDate(trip.end_date ?? '');
+}
+
+function formatDate(date: string): string {
+  if (!date) return '';
+  return d(new Date(`${date}T00:00:00`), 'short');
 }
 </script>
 
@@ -165,7 +171,7 @@ function formatDates(trip: Trip): string {
 
       <JoinTripModal
         :open="showJoinTripModal"
-        :message="joinTripMessage"
+        :message="joinTripMessage ? $t(joinTripMessage) : null"
         @close="closeJoinTripModal"
         @submit="joinTrip"
       />

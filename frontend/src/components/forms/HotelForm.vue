@@ -49,15 +49,15 @@ defineExpose({ submit });
 <template>
   <div class="hotel-form">
     <div class="form-row">
-      <label>Property Name *</label>
+      <label>{{ $t('form.event.name') }} *</label>
       <input v-model="form.name" type="text" placeholder="e.g. Hôtel Lutetia" />
     </div>
     <div class="form-row">
-      <label>Booking Ref.</label>
+      <label>{{ $t('form.event.reference') }}</label>
       <input v-model="form.booking_ref" type="text" placeholder="e.g. RES-789456" />
     </div>
     <div class="form-row">
-      <label>Address</label>
+      <label>{{ $t('form.event.address') }}</label>
       <input v-model="form.address" type="text" placeholder="e.g. 45 Blvd Raspail, Paris" />
     </div>
 
@@ -65,21 +65,21 @@ defineExpose({ submit });
 
     <div class="form-row-2">
       <div class="form-row">
-        <label>Check-in Date *</label>
+        <label>{{ $t('form.event.hotel.checkinDate') }} *</label>
         <input v-model="form.check_in_date" type="date" />
       </div>
       <div class="form-row">
-        <label>Check-in Time</label>
+        <label>{{ $t('form.event.hotel.checkinTime') }}</label>
         <input v-model="form.check_in_time" type="time" />
       </div>
     </div>
     <div class="form-row-2">
       <div class="form-row">
-        <label>Check-out Date</label>
+        <label>{{ $t('form.event.hotel.checkoutDate') }} *</label>
         <input v-model="form.check_out_date" type="date" />
       </div>
       <div class="form-row">
-        <label>Check-out Time</label>
+        <label>{{ $t('form.event.hotel.checkoutTime') }}</label>
         <input v-model="form.check_out_time" type="time" />
       </div>
     </div>
@@ -87,11 +87,11 @@ defineExpose({ submit });
     <hr class="form-divider" />
 
     <div class="form-row">
-      <label>Website / Booking Page</label>
+      <label>{{ $t('form.event.website') }}</label>
       <input v-model="form.url" type="url" placeholder="https://..." />
     </div>
     <div class="form-row">
-      <label>Notes</label>
+      <label>{{ $t('form.event.notes') }}</label>
       <textarea v-model="form.note" placeholder="Breakfast included, room number, etc." />
     </div>
   </div>

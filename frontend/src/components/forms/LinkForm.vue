@@ -39,19 +39,19 @@ defineExpose({ submit });
 <template>
   <div class="link-form">
     <div class="form-row">
-      <label>Title *</label>
+      <label>{{ $t('form.title') }} *</label>
       <input v-model="form.link_title" type="text" placeholder="e.g. Local transport info" />
     </div>
     <div class="form-row">
-      <label>URL *</label>
+      <label>{{ $t('form.event.link.url') }} *</label>
       <input v-model="form.link_url" type="url" placeholder="https://..." />
     </div>
     <div class="form-row">
-      <label>Related Date (optional)</label>
+      <label>{{ $t('form.event.link.relatedDate') }}</label>
       <input v-model="form.related_date" type="date" />
     </div>
     <div class="form-row">
-      <label>Notes</label>
+      <label>{{ $t('form.event.notes') }}</label>
       <textarea v-model="form.note" placeholder="Description, context, etc." />
     </div>
   </div>
