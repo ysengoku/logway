@@ -75,6 +75,16 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function updatePassword(newPassword: string) {
+    loadingStore.start();
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+    } finally {
+      loadingStore.stop();
+    }
+  }
+
   return {
     user,
     initialized,
@@ -84,5 +94,6 @@ export const useAuthStore = defineStore('auth', () => {
     signIn,
     signOut,
     resetPassword,
+    updatePassword,
   };
 });

@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/auth';
+import { useLoadingStore } from '@/stores/loading';
 import { ref, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const loadingStore = useLoadingStore();
 
 const mode = ref<'signin' | 'signup' | 'reset' >('signin');
-const loading = ref(false);
 const error = ref<string | null>(null);
 const signUpDone = ref(false);
 const resetDone = ref(false);
@@ -33,7 +34,6 @@ async function submit() {
     return;
   }
 
-  loading.value = true;
   try {
     switch (mode.value) {
       case 'signin':
@@ -51,8 +51,6 @@ async function submit() {
     }
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'An error occurred.';
-  } finally {
-    loading.value = false;
   }
 }
 
@@ -117,7 +115,7 @@ function switchMode(newMode: 'signin' | 'signup' | 'reset') {
 
         <button
           class="auth-view__submit"
-          :disabled="loading || passwordMismatch"
+          :disabled="loadingStore.active || passwordMismatch"
           @click="submit"
         >
           <template v-if="mode === 'signin'">{{ $t('auth.signIn') }}</template>

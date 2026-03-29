@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/auth';
+import { useLoadingStore } from '@/stores/loading';
 import { ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { supabase } from '@/lib/supabase';
 
 const router = useRouter();
-const loading = ref(false);
+const authStore = useAuthStore();
+const loadingStore = useLoadingStore();
 const error = ref<string | null>(null);
 const done = ref(false);
 const { t } = useI18n();
@@ -23,16 +25,12 @@ async function submit() {
     return;
   }
 
-  loading.value = true;
   try {
-    const { error: err } = await supabase.auth.updateUser({ password: form.password });
-    if (err) throw err;
+    await authStore.updatePassword(form.password);
     done.value = true;
     setTimeout(() => router.push({ name: 'auth' }), 2000);
   } catch (e) {
     error.value = e instanceof Error ? e.message : t('common.errorOccurred');
-  } finally {
-    loading.value = false;
   }
 }
 </script>
@@ -60,10 +58,10 @@ async function submit() {
 
         <button
           class="auth-view__submit"
-          :disabled="loading"
+          :disabled="loadingStore.active"
           @click="submit"
         >
-          {{ loading ? $t('common.loading') : $t('auth.updatePassword') }}
+          {{ $t('auth.updatePassword') }}
         </button>
       </template>
     </div>
