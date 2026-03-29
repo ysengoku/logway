@@ -2,6 +2,7 @@ export const TIMEZONES = [
   { id: 'Asia/Tokyo',          label: 'Tokyo (JST, +9)' },
   { id: 'Asia/Seoul',          label: 'Seoul (KST, +9)' },
   { id: 'Asia/Shanghai',       label: 'Shanghai (CST, +8)' },
+  { id: 'Asia/Taipei',         label: 'Taipei (CST, +8)' },
   { id: 'Asia/Hong_Kong',      label: 'Hong Kong (HKT, +8)' },
   { id: 'Asia/Singapore',      label: 'Singapore (SGT, +8)' },
   { id: 'Asia/Bangkok',        label: 'Bangkok (ICT, +7)' },

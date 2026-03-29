@@ -28,8 +28,4 @@ function isCheckOutDate(event: EventRow): boolean {
       ({{ $t('event.checkOut') }} {{ event.check_out_date }} {{ formatTime(event.check_out_time) }})
     </span>
   </div>
-  <!-- <div v-if="event.address" class="day-detail__card-meta-address">
-    <AppIcon name="location" :size="16" />
-    {{ event.address }}
-  </div> -->
 </template>

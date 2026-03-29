@@ -136,7 +136,7 @@
     font-size: 14px;
     font-weight: 500;
     color: $text;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 
       .day-detail__card-icon {
         font-size: 16px;
@@ -174,7 +174,7 @@
 
   &__card-meta-address {
     display: flex;
-    align-items: start;
+    align-items: center;
     gap: 4px;
     margin-top: 4px;
 
@@ -200,13 +200,6 @@
         text-decoration: underline;
       }
     }
-
-    .app-icon {
-      color: $text-dim;
-      &:hover {
-        color: $accent-hover;
-      }
-    }
   }
 
   &__tag {
@@ -228,12 +221,13 @@
 
   &__card-actions {
     display: flex;
-    gap: 2px;
+    gap: 4px;
     flex-shrink: 0;
 
     button {
-      width: 20px;
-      height: 20px;
+      font-size: 14px;
+      color: rgba($text-muted, 0.6);
+      padding: 0;
       border-radius: $radius-sm;
       border: none;
       background: none;
@@ -243,12 +237,8 @@
       justify-content: center;
       transition: background 0.15s;
 
-      .app-icon {
-        color: rgba($text-muted, 0.6);
-
-        &:hover {
-          background: $surface2;
-        }
+      &:hover {
+          color: $text-muted;
       }
     }
   }

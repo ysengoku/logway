@@ -1,6 +1,8 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { createI18n } from 'vue-i18n';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import './lib/faIcons';
 
 import App from './App.vue';
 import router from './router';
@@ -23,6 +25,7 @@ async function bootstrap() {
 	app.use(createPinia());
 	app.use(router);
 	app.use(i18n);
+	app.component('FaIcon', FontAwesomeIcon);
 
 	app.mount('#app');
 }

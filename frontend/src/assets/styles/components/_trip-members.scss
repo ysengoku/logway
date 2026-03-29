@@ -78,8 +78,8 @@
 
   &__invite-code {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    align-items: start;
+    gap: 4px;
     padding: 0 0 8px 8px;
 
     button {
@@ -106,7 +106,7 @@
   &__invite-code-copy {
     border: none;
     color: rgba($text-muted, 0.6);
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.15s;
 

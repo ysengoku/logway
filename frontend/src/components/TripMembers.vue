@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import AppIcon from './AppIcon.vue';
 import { useMembersStore } from '@/stores/members';
 import { useAuthStore } from '@/stores/auth';
 import { profilesApi } from '@/api/client';
@@ -83,7 +82,7 @@ async function copyCodeToClipboard() {
       <div class="trip-members__invite-code">
         <span class="trip-members__invite-code-value">{{ props.trip.invite_code }}</span>
         <button @click="copyCodeToClipboard" class="trip-members__invite-code-copy" :title="$t('trip.members.copyInviteTitle')">
-          <AppIcon name="copy" :size="16" />
+          <FaIcon icon="fa-solid fa-copy" />
         </button>
       </div>
       <p v-if="success" class="trip-members__success">{{ success }}</p>

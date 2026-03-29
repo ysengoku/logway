@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { EVENT_TYPE_OPTIONS } from '@/constants/events';
+import { getFaIcon } from '@/lib/faIcons';
 import { useEventsStore } from '@/stores/events';
 import ActivityForm from '@/components/forms/ActivityForm.vue';
-import AppIcon from '@/components/AppIcon.vue';
 import AppModal from '@/components/AppModal.vue';
 import FlightForm from '@/components/forms/FlightForm.vue';
 import HotelForm from '@/components/forms/HotelForm.vue';
@@ -83,7 +83,7 @@ function onSaveClick() {
           :class="{ 'event-modal__type-opt--selected': selectedType === t.type }"
           @click="selectedType = t.type"
         >
-          <AppIcon :name="t.icon" />
+          <FaIcon :icon="getFaIcon(t.icon)" />
           <span>{{ t.label }}</span>
         </button>
       </div>

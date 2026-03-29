@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import AppIcon from './AppIcon.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useEventsStore } from '@/stores/events';
@@ -144,13 +143,13 @@ const calendarDays = computed(() => {
   <div class="calendar-grid">
     <div class="calendar-grid__nav">
       <button class="calendar-grid__arrow" @click="prevMonth">
-        <AppIcon name="arrow_back" :size="20" />
+        <FaIcon icon="fa-solid fa-chevron-left" />
       </button>
       <span class="calendar-grid__month">
         {{ monthLabel }}
       </span>
       <button class="calendar-grid__arrow" @click="nextMonth">
-        <AppIcon name="arrow_forward" :size="20" />
+        <FaIcon icon="fa-solid fa-chevron-right" />
       </button>
     </div>
 

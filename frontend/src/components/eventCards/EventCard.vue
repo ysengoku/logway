@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue';
 import EventMetaHotel from '@/components/eventCards/EventMetaHotel.vue';
 import EventMetaTransport from '@/components/eventCards/EventMetaTransport.vue';
 import { EVENT_TYPE, EVENT_TYPE_OPTIONS, TRANSPORT_MODES } from '@/constants/events';
 import type { EventRow } from '@shared/types/event';
+import { getFaIcon } from '@/lib/faIcons';
 import { computed } from 'vue';
+import { faLink, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
@@ -20,12 +21,13 @@ const emit = defineEmits<{
 
 const eventIcon = computed(() => {
   const mode = EVENT_TYPE_OPTIONS.find((eventType) => eventType.type === props.event.type);
-  console.log(mode);
+
   if (mode?.type === EVENT_TYPE.TRANSPORT) {
     const transportMode = TRANSPORT_MODES.find((m) => m.value === props.event.transport_mode);
-    return transportMode?.icon ?? '';
+    return getFaIcon(transportMode?.icon ?? '');
+
   }
-  return mode?.icon ?? '';
+  return getFaIcon(mode?.icon ?? '');
 });
 
 const { t } = useI18n();
@@ -82,7 +84,7 @@ function getEventTime(event: EventRow): string | null {
     </div>
     <div class="day-detail__card-content">
       <div class="day-detail__card-title">
-        <AppIcon v-if="mode === 'timeline'" :name="eventIcon" class="day-detail__card-icon material-icons" />
+        <FaIcon v-if="mode === 'timeline'" :icon="eventIcon" class="day-detail__card-icon material-icons" />
         {{ getEventTitle(event) }}
       </div>
       <div class="day-detail__card-meta">
@@ -94,17 +96,17 @@ function getEventTime(event: EventRow): string | null {
           :date="date"
         />
         <div v-if="event.address" class="day-detail__card-meta-address">
-          <AppIcon name="location" :size="16" />
+          <FaIcon :icon="faLocationDot" />
           {{ event.address }}
         </div>
         <div v-if="event.link_url || event.url" class="day-detail__card-meta-link">
           <a v-if="event.link_url" :href="event.link_url" target="_blank" rel="noopener">
             <span>{{ event.link_url }}</span>
-            <AppIcon name="link" :size="14" />
+            <FaIcon :icon="faLink" />
           </a>
           <a v-else-if="event.url" :href="event.url" target="_blank" rel="noopener">
             <span>{{ event.url }}</span>
-            <AppIcon name="link" :size="14" />
+            <FaIcon :icon="faLink" />
           </a>
         </div>
         <div v-if="event.booking_ref" class="day-detail__tag">
@@ -117,10 +119,10 @@ function getEventTime(event: EventRow): string | null {
     </div>
     <div class="day-detail__card-actions">
       <button @click="emit('edit', event)">
-        <AppIcon name="edit" :size="20" />
+        <FaIcon icon="fa-solid fa-pen" />
       </button>
       <button @click="emit('delete', event.id)">
-        <AppIcon name="delete" :size="20" />
+        <FaIcon icon="fa-solid fa-trash" />
       </button>
     </div>
   </div>

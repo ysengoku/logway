@@ -1,6 +1,7 @@
 export const auth = {
   signIn: 'Sign In',
   signUp: 'Sign Up',
+  signOut: 'Sign Out',
   resetPassword: 'Reset Password',
   email: 'Email',
   displayName: 'Display Name *',

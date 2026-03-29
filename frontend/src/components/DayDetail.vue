@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue';
 import EventCard from '@/components/eventCards/EventCard.vue';
 import { EVENT_TYPE_OPTIONS } from '@/constants/events';
+import { getFaIcon } from '@/lib/faIcons';
 import { useEventsStore } from '@/stores/events';
 import type { EventRow, EventType } from '@shared/types/event';
 import { useI18n } from 'vue-i18n';
@@ -89,7 +89,7 @@ async function deleteEvent(id: string) {
         >
           <template v-if="getEventsByType(group.type).length">
             <div class="day-detail__group-label">
-              <AppIcon :name="group.icon" :size="20" />
+              <FaIcon :icon="getFaIcon(group.icon)" class="day-detail__group-faicon" />
               {{ group.label }}
             </div>
             <div class="day-detail__list">

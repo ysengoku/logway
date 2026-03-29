@@ -1,6 +1,7 @@
 export const auth = {
   signIn: 'Se connecter',
   signUp: "S'inscrire",
+  signOut: 'Se deconnecter',
   resetPassword: 'Reinitialiser le mot de passe',
   email: 'Email',
   displayName: "Nom d'affichage *",
