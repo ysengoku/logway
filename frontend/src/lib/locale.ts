@@ -1,5 +1,5 @@
 import messages from '@/locales';
-import { profilesApi } from '@/api/client';
+import { useProfileStore } from '@/stores/profile';
 
 const DEFAULT_LOCALE = 'en';
 const LOCALE_STORAGE_KEY = 'logway.locale';
@@ -12,8 +12,8 @@ function isSupportedLocale(value: unknown): value is SupportedLocale {
 
 export async function resolveInitialLocale(): Promise<SupportedLocale> {
   try {
-    const profile = await profilesApi.getSelf();
-    const localeFromDb = profile.preferred_locale;
+    const profileStore = useProfileStore();
+    const localeFromDb = profileStore.profile?.preferred_locale ?? undefined;
     if (isSupportedLocale(localeFromDb)) {
       localStorage.setItem(LOCALE_STORAGE_KEY, localeFromDb);
       return localeFromDb;
@@ -26,7 +26,6 @@ export async function resolveInitialLocale(): Promise<SupportedLocale> {
   if (isSupportedLocale(localeFromStorage)) {
     return localeFromStorage;
   }
-
   return DEFAULT_LOCALE;
 }
 
@@ -34,7 +33,8 @@ export async function persistLocalePreference(locale: SupportedLocale): Promise<
   localStorage.setItem(LOCALE_STORAGE_KEY, locale);
 
   try {
-    await profilesApi.updateSelf({ preferred_locale: locale });
+    const profileStore = useProfileStore();
+    await profileStore.updateProfile({ preferred_locale: locale });
   } catch {
     // Keep localStorage as fallback when profile patch is unavailable.
   }

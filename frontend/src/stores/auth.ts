@@ -1,4 +1,5 @@
 import { useLoadingStore } from './loading';
+import { useProfileStore } from './profile';
 import { supabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import { defineStore } from 'pinia';
@@ -8,18 +9,25 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null);
   const initialized = ref(false);
   const loadingStore = useLoadingStore();
+  const profileStore = useProfileStore();
 
   const isAuthenticated = computed(() => !!user.value);
 
   async function init() {
-    if (initialized.value) return;
+    if (initialized.value) {
+      return;
+    }
+
     loadingStore.start();
     const { data } = await supabase.auth.getSession();
     user.value = data.session?.user ?? null;
+
+    user.value ? await profileStore.fetchProfile() : profileStore.clearProfile();
     loadingStore.stop();
 
-    supabase.auth.onAuthStateChange((_event, session) => {
+    supabase.auth.onAuthStateChange(async (_event, session) => {
       user.value = session?.user ?? null;
+      user.value ? await profileStore.fetchProfile() : profileStore.clearProfile();
     });
     initialized.value = true;
   }
@@ -36,7 +44,9 @@ export const useAuthStore = defineStore('auth', () => {
           }
         }
       });
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
     } finally {
       loadingStore.stop();
     }
@@ -46,7 +56,9 @@ export const useAuthStore = defineStore('auth', () => {
     loadingStore.start();
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
     } finally {
       loadingStore.stop();
     }
@@ -56,7 +68,9 @@ export const useAuthStore = defineStore('auth', () => {
     loadingStore.start();
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
       user.value = null;
     } finally {
       loadingStore.stop();
@@ -69,7 +83,9 @@ export const useAuthStore = defineStore('auth', () => {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
     } finally {
       loadingStore.stop();
     }
@@ -79,7 +95,9 @@ export const useAuthStore = defineStore('auth', () => {
     loadingStore.start();
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
     } finally {
       loadingStore.stop();
     }
