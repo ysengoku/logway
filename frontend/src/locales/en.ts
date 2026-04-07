@@ -4,9 +4,13 @@ export const auth = {
   signOut: 'Sign Out',
   resetPassword: 'Reset Password',
   email: 'Email',
+  emailAddress: 'Email Address',
   displayName: 'Display Name *',
   password: 'Password',
   confirmPassword: 'Confirm Password',
+  currentPassword: 'Current Password',
+  newPassword: 'New Password',
+  confirmNewPassword: 'Confirm New Password',
   passwordsDoNotMatch: 'Passwords do not match.',
   dontHaveAccount: "Don't have an account yet?",
   placeholderEmail: 'you@example.com',
@@ -137,6 +141,24 @@ export const event = {
   },
 };
 
+export const icons = {
+  cat: 'Cat',
+  dog: 'Dog',
+  dove: 'Dove',
+  fish: 'Fish',
+  frog: 'Frog',
+  shrimp: 'Shrimp',
+  'apple-whole': 'Apple',
+  seedling: 'Seedling',
+  'user-astronaut': 'Astronaut',
+  'user-secret': 'Mysterious Man',
+  'chess-knight': 'Chess Knight',
+  'face-grin-hearts': 'Grinning Hearts',
+  'face-grin-squint-tears': 'Lol',
+  'face-smile': 'Smiling Face',
+  'face-smile-wink': 'Winking Face',
+}
+
 export const datetimeFormats = {
   short: {
     year: 'numeric',
@@ -166,5 +188,6 @@ export default {
   event,
   form,
   home,
+  icons,
   trip,
 };

@@ -52,7 +52,7 @@ async function copyCodeToClipboard() {
 
 <template>
   <div class="trip-members">
-    <h2 class="trip-members__title">{{ $t('trip.members.members') }}</h2>
+    <h2 class="section-title">{{ $t('trip.members.members') }}</h2>
     <div class="trip-members__list">
       <div
         v-for="member in membersStore.members"

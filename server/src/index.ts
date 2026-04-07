@@ -3,7 +3,6 @@ import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
 import { supabase } from './db/supabase';
 import events from './routes/events';
-import members from './routes/members';
 import profiles from './routes/profiles';
 import trips from './routes/trips';
 

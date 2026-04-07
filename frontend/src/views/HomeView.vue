@@ -92,7 +92,7 @@ function formatDate(date: string): string {
       <div v-show="!loadingStore.active">
         <!-- Upcoming Trips -->
         <section class="home__section">
-          <h1 class="home__title">{{ $t('home.myTrips') }}</h1>
+          <h1 class="page-title">{{ $t('home.myTrips') }}</h1>
           <div class="home__btn-group">
             <button class="home__new-btn button-accent" @click="showNewTripModal = true">
               {{ $t('common.newTrip') }}
@@ -102,7 +102,7 @@ function formatDate(date: string): string {
             </button>
           </div>
           <div class="home__section-header">
-            <h2 class="home__section-title">{{ $t('home.upcoming') }}</h2>
+            <h2 class="section-title">{{ $t('home.upcoming') }}</h2>
           </div>
           <div v-if="tripsStore.upcomingTrips.length === 0" class="home__state">
             {{ $t('home.noUpcoming') }}
@@ -132,7 +132,7 @@ function formatDate(date: string): string {
         <!-- Past Trips -->
         <section class="home__section">
           <div class="home__section-header">
-            <h2 class="home__section-title">{{ $t('home.past') }}</h2>
+            <h2 class="section-title">{{ $t('home.past') }}</h2>
           </div>
           <div v-if="tripsStore.pastTrips.length === 0" class="home__state">
             {{ $t('home.noPast') }}

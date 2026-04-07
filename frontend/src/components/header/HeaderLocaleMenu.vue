@@ -100,7 +100,7 @@ onBeforeUnmount(() => {
     <div
       v-if="localeMenuOpen"
       ref="localeMenuRef"
-      class="app-header-locale-menu"
+      class="app-header__locale-menu"
       role="menu"
       :style="{
         top: `${localeMenuTop}px`,
@@ -111,8 +111,8 @@ onBeforeUnmount(() => {
       <button
         v-for="option in localeOptions"
         :key="option.value"
-        class="app-header-locale-menu__item"
-        :class="{ 'app-header-locale-menu__item--active': locale === option.value }"
+        class="app-header__locale-menu__item"
+        :class="{ 'app-header__locale-menu__item--active': locale === option.value }"
         role="menuitemradio"
         :aria-pressed="locale === option.value"
         @click="onSelectLocale(option.value)"

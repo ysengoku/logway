@@ -8,7 +8,7 @@ export const profilesApi = {
   getSelf(): Promise<Profile> {
     return request('/api/profiles/self');
   },
-  updateSelf(body: Partial<Pick<Profile, 'display_name' | 'preferred_locale' | 'icon'>>): Promise<Profile> {
+  updateSelf(body: Partial<Pick<Profile, 'display_name' | 'preferred_locale' | 'icon' | 'icon_color' | 'icon_bg_color'>>): Promise<Profile> {
     return request('/api/profiles/self', {
       method: 'PATCH',
       body: JSON.stringify(body),

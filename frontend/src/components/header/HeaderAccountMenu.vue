@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { useProfileStore } from '@/stores/profile';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 
+const profileStore = useProfileStore();
 const authStore = useAuthStore();
 const router = useRouter();
 
@@ -11,6 +13,12 @@ const accountTriggerRef = ref<HTMLElement | null>(null);
 const accountMenuRef = ref<HTMLElement | null>(null);
 const accountMenuTop = ref(0);
 const accountMenuRight = ref(0);
+
+const iconName = computed(() => {
+  return profileStore.profile ? `fa-solid fa-${profileStore.profile.icon}` : 'fa-solid fa-user';
+});
+const iconColor = computed(() => profileStore.profile?.icon_color ?? '#EEECE9');
+const iconBgColor = computed(() => profileStore.profile?.icon_bg_color ?? '#1B3A5C');
 
 function updateAccountMenuPosition() {
   if (!accountTriggerRef.value) return;
@@ -39,7 +47,7 @@ async function onSignOut() {
 
 async function goToProfileSettings() {
   closeAccountMenu();
-  await router.push({ name: 'profile-settings' });
+  await router.push({ name: 'settings' });
 }
 
 function onDocumentClick(event: MouseEvent) {
@@ -80,25 +88,32 @@ onBeforeUnmount(() => {
     aria-haspopup="menu"
     aria-label="Open account menu"
     @click="toggleAccountMenu"
+    :style="{
+      color: iconColor,
+      backgroundColor: iconBgColor,
+    }"
   >
-    <FaIcon icon="fa-solid fa-user" />
+    <FaIcon
+      :icon="iconName"
+    />
   </button>
 
   <Teleport to="body">
     <div
       v-if="accountMenuOpen"
       ref="accountMenuRef"
-      class="app-header-account-menu"
+      class="app-header__account-menu"
       role="menu"
       :style="{
         top: `${accountMenuTop}px`,
         right: `${accountMenuRight}px`,
       }"
     >
-      <button class="app-header-account-menu__item" role="menuitem" @click="goToProfileSettings">
+      <span class="app-header__account-menu__user">{{ profileStore.profile?.display_name }}</span>
+      <button class="app-header__account-menu__item" role="menuitem" @click="goToProfileSettings">
         Profile settings
       </button>
-      <button class="app-header-account-menu__item" role="menuitem" @click="onSignOut">
+      <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut">
         {{ $t('auth.signOut') }}
       </button>
     </div>

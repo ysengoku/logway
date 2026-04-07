@@ -78,7 +78,7 @@ async function deleteTrip() {
       <button class="trip-view__back" @click="router.push({ name: 'home' })">
         ← {{ $t('common.back') }}
       </button>
-      <h1 class="trip-view__title">{{ trip?.title }}</h1>
+      <h1 class="trip-view__title page-title">{{ trip?.title }}</h1>
       <button class="trip-view__edit-btn" @click="showEditModal = true">
         {{ $t('common.edit') }}
       </button>
