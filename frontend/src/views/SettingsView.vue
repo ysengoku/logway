@@ -151,8 +151,13 @@ async function submitChanges() {
     !authStore.authError.password &&
     !authStore.authError.auth;
 
-  isProfileSaved && Object.assign(initialProfileForm, profileForm.value);
-  isAuthSaved && Object.assign(initialUserForm, userForm.value);
+  if (isProfileSaved) {
+    Object.assign(initialProfileForm, profileForm.value);
+  }
+
+  if (isAuthSaved) {
+    Object.assign(initialUserForm, userForm.value);
+  }
   clearPasswordFields();
 }
 </script>
