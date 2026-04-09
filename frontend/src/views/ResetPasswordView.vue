@@ -26,7 +26,7 @@ async function submit() {
   }
 
   try {
-    await authStore.updateUserCredentials({ password: form.password });
+    await authStore.updatePassword(form.password);
     done.value = true;
     setTimeout(() => router.push({ name: 'auth' }), 2000);
   } catch (e) {

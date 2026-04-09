@@ -150,9 +150,46 @@
       border-radius: 50%;
       border: none;
     }
+  }
 
-    .error-message {
-      width: min(680px, 100%);
+  &__email-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+  }
+
+  &__email-value {
+    font-size: 14px;
+    color: $text;
+  }
+
+  &__email-edit-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: none;
+
+    &:hover {
+      color: $accent-hover;
+      transform: scale(1.1);
+      background-color: transparent;
+      border: none;
     }
+  }
+
+  &__email-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__email-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .error-message {
+    width: min(680px, 100%);
   }
 }

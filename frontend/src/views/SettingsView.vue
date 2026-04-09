@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import ErrorMessage from '@/components/ErrorMessage.vue';
+import FeedbackMessage from '@/components/FeedbackMessage.vue';
 import ProfileSettings from '@/components/ProfileSettings.vue';
 import UserSettings from '@/components/UserSettings.vue';
 import { useProfileStore } from '@/stores/profile';
 import { useAuthStore } from '@/stores/auth';
 import type { ProfileForm, UserForm } from '@shared/types/profile';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const profileStore = useProfileStore();
 const authStore = useAuthStore();
+const { t, te } = useI18n();
 
 type ProfilePayload = Parameters<typeof profileStore.updateProfile>[0];
-type UserCredentialsPayload = Parameters<typeof authStore.updateUserCredentials>[0];
-type ErrorField = 'displayName' | 'icon' | 'profile' | 'email' | 'password' | 'auth';
+type ErrorField = 'displayName' | 'icon' | 'profile' | 'password' | 'auth';
 
 const profileForm = ref<ProfileForm>({
   displayName: profileStore.profile?.display_name ?? '',
@@ -27,8 +28,10 @@ const userForm = ref<UserForm>({
   confirmNewPassword: '',
 });
 
+const updateSuccess = ref({ profile: false, user: false });
+const emailChangePending = ref(false);
+
 const initialProfileForm = Object.assign({ ...profileForm.value });
-const initialUserForm = Object.assign({ ...userForm.value });
 
 function buildProfilePayload(): ProfilePayload {
   const changes: ProfilePayload = {};
@@ -59,14 +62,14 @@ function validatePassword(): { valid: boolean; message?: string } {
   ) {
     return {
       valid: false,
-      message: 'Both new password and confirmation are required to change password.',
+      message: 'missingPassword',
     };
   }
 
   if (userForm.value.newPassword !== userForm.value.confirmNewPassword) {
     return {
       valid: false,
-      message: 'New password and confirmation do not match.',
+      message: 'passwordMismatch',
     };
   }
 
@@ -76,8 +79,6 @@ function validatePassword(): { valid: boolean; message?: string } {
 function clearPasswordFields() {
   userForm.value.newPassword = '';
   userForm.value.confirmNewPassword = '';
-  initialUserForm.newPassword = '';
-  initialUserForm.confirmNewPassword = '';
 }
 
 function clearErrorField(field: ErrorField) {
@@ -85,7 +86,6 @@ function clearErrorField(field: ErrorField) {
     displayName: profileStore.error.displayName,
     icon: profileStore.error.icon,
     profile: profileStore.error.profile,
-    email: authStore.authError.email,
     password: authStore.authError.password,
     auth: authStore.authError.auth,
   };
@@ -95,76 +95,86 @@ function clearErrorField(field: ErrorField) {
   }
 
   currentError[field] = null;
-  if (field === 'email' || field === 'password' || field === 'auth') {
-    authStore.setAuthError(currentError.email, currentError.password, currentError.auth);
+  if (field === 'password' || field === 'auth') {
+    authStore.setAuthError(null, currentError.password, currentError.auth);
   } else {
     profileStore.setProfileError(currentError.displayName, currentError.icon, currentError.profile);
   }
 }
 
+function resolveErrorMessage(key: string) {
+  if (te(key)) {
+    return t(key);
+  }
+
+  const i18nKey = `settings.errors.${key}`;
+  return te(i18nKey) ? t(i18nKey) : key;
+}
+
+const errorMessages = computed(() => {
+  const keys = [
+    profileStore.error.displayName,
+    profileStore.error.icon,
+    profileStore.error.profile,
+    authStore.authError.password,
+    authStore.authError.auth,
+  ].filter((key): key is string => Boolean(key));
+
+  return keys.map(resolveErrorMessage);
+});
+
 async function updateProfile(): Promise<void> {
   const profilePayload: ProfilePayload = buildProfilePayload();
   if (Object.keys(profilePayload).length === 0) {
+    updateSuccess.value.profile = true;
     return;
   }
 
   await profileStore.updateProfile(profilePayload);
 }
 
-async function updateUserCredentials(): Promise<void> {
-  const authPayload: UserCredentialsPayload = {};
-
-  if (userForm.value.email !== initialUserForm.email) {
-    authPayload.email = userForm.value.email;
-  }
-
-  if (userForm.value.newPassword || userForm.value.confirmNewPassword) {
-    const passwordValidation = validatePassword();
-    if (!passwordValidation.valid) {
-      authStore.setAuthError(null, passwordValidation.message || 'Password validation failed.');
-      return;
-    }
-    authPayload.password = userForm.value.newPassword;
-  }
-
-  if (Object.keys(authPayload).length === 0) {
+async function updatePassword(): Promise<void> {
+  if (!userForm.value.newPassword && !userForm.value.confirmNewPassword) {
+    updateSuccess.value.user = true;
     return;
   }
 
-  await authStore.updateUserCredentials(authPayload);
+  const passwordValidation = validatePassword();
+  if (!passwordValidation.valid) {
+    authStore.setAuthError(null, passwordValidation.message || 'auth.errors.validationFailed');
+    return;
+  }
+  const authUpdated = await authStore.updatePassword(userForm.value.newPassword);
+  if (authUpdated) {
+    updateSuccess.value.user = true;
+  }
 }
 
 async function submitChanges() {
-  const [profileResult, authResult] = await Promise.allSettled([
-    updateProfile(),
-    updateUserCredentials(),
-  ]);
+  updateSuccess.value = { profile: false, user: false };
+  authStore.setAuthError(null, null, null);
+  profileStore.setProfileError(null, null, null);
+  emailChangePending.value = false;
+
+  const [profileResult] = await Promise.allSettled([updateProfile(), updatePassword()]);
 
   const isProfileSaved =
     profileResult.status === 'fulfilled' &&
     !profileStore.error.displayName &&
     !profileStore.error.icon &&
     !profileStore.error.profile;
-  const isAuthSaved =
-    authResult.status === 'fulfilled' &&
-    !authStore.authError.email &&
-    !authStore.authError.password &&
-    !authStore.authError.auth;
-
   if (isProfileSaved) {
     Object.assign(initialProfileForm, profileForm.value);
+    updateSuccess.value.profile = true;
   }
 
-  if (isAuthSaved) {
-    Object.assign(initialUserForm, userForm.value);
-  }
   clearPasswordFields();
 }
 </script>
 
 <template>
   <main class="settings">
-    <h1 class="page-title">Settings</h1>
+    <h1 class="page-title">{{ $t('settings.settings') }}</h1>
     <ProfileSettings
       v-model="profileForm"
       :error="profileStore.error"
@@ -177,12 +187,18 @@ async function submitChanges() {
     />
 
     <div class="settings__card">
-      <ErrorMessage v-if="profileStore.error.displayName" :message="profileStore. error.displayName" />
-      <ErrorMessage v-if="profileStore.error.icon" :message="profileStore.error.  icon" />
-      <ErrorMessage v-if="profileStore.error.profile" :message="profileStore.error. profile" />
-      <ErrorMessage v-if="authStore.authError.email" :message="authStore.authError. email" />
-      <ErrorMessage v-if="authStore.authError.password" :message="authStore.  authError.password" />
-      <ErrorMessage v-if="authStore.authError.auth" :message="authStore.authError.auth" />
+      <FeedbackMessage
+        v-for="message in errorMessages"
+        :key="message"
+        :message="message"
+        :type="'error'"
+      />
+      <FeedbackMessage
+        v-if="updateSuccess.user && updateSuccess.profile && errorMessages.length === 0"
+        class="success-message"
+        :message="$t('settings.updateSuccess')"
+        :type="'success'"
+      />
     </div>
 
     <div class="settings__button-wrapper">
@@ -192,4 +208,3 @@ async function submitChanges() {
     </div>
   </main>
 </template>
-  

@@ -1,14 +1,24 @@
 <script setup lang="ts">
+import EmailChangeModal from '@/components/modals/EmailChangeModal.vue';
+import FeedbackMessage from './FeedbackMessage.vue';
+import { getFaIcon } from '@/lib/faIcons';
+import { useAuthStore } from '@/stores/auth';
 import type { UserForm } from '@shared/types/profile';
+import { ref } from 'vue';
 
 const props = defineProps<{
   modelValue: UserForm;
   authError?: { email: string | null; password: string | null; auth: string | null } | null;
 }>();
 
+const authStore = useAuthStore();
+
+const isEmailEditorOpen = ref(false);
+const isEmailChangePending = ref(false);
+
 const emit = defineEmits<{
   (e: 'update:modelValue', value: UserForm): void;
-  (e: 'clearAuthError', field: 'email' | 'password' | 'auth'): void;
+  (e: 'clearAuthError', field: 'password' | 'auth'): void;
 }>();
 
 function updateField<UserFormKey extends keyof UserForm>(
@@ -16,13 +26,17 @@ function updateField<UserFormKey extends keyof UserForm>(
   value: UserForm[UserFormKey],
 ) {
   emit('update:modelValue', { ...props.modelValue, [key]: value });
-  if (key === 'email') emit('clearAuthError', 'email');
   if (key === 'newPassword' || key === 'confirmNewPassword') {
     emit('clearAuthError', 'password');
   }
-  if (key === 'email' || key === 'newPassword' || key === 'confirmNewPassword') {
+  if (key === 'newPassword' || key === 'confirmNewPassword') {
     emit('clearAuthError', 'auth');
   }
+}
+
+function openEmailEditor() {
+  isEmailChangePending.value = false;
+  isEmailEditorOpen.value = true;
 }
 </script>
 
@@ -31,19 +45,33 @@ function updateField<UserFormKey extends keyof UserForm>(
     <h2 class="section-title">
       {{ $t('auth.emailAddress') }}
     </h2>
-    <div class="form-row">
-      <label class="sr-only" for="email">
-        {{ $t('auth.emailAddress') }}
-      </label>
-      <input
-        id="email"
-        type="email"
-        :class="{'is_error': !!props.authError?.email}"
-        :placeholder="$t('auth.emailAddress')"
-        :value="props.modelValue.email"
-        @input="updateField('email', ($event.target as HTMLInputElement)?.value)"
-      />
+    <div class="settings__email-display">
+      <span class="settings__email-value">{{
+        authStore.user?.email ?? props.modelValue.email
+      }}</span>
+      <button
+        type="button"
+        class="button-secondary settings__email-edit-btn"
+        :disabled="isEmailChangePending"
+        @click="openEmailEditor"
+      >
+        {{ $t('auth.changeEmail') }}
+        <FaIcon :icon="getFaIcon('pen')" />
+      </button>
     </div>
+
+    <EmailChangeModal
+      :open="isEmailEditorOpen"
+      :current-email="authStore.user?.email ?? props.modelValue.email"
+      @close="isEmailEditorOpen = false"
+      @pending="isEmailChangePending = true"
+    />
+
+    <FeedbackMessage
+      v-if="isEmailChangePending"
+      :message="$t('settings.emailChangePending')"
+      :type="'info'"
+    />
 
     <h2 class="section-title">
       {{ $t('auth.password') }}
@@ -55,7 +83,7 @@ function updateField<UserFormKey extends keyof UserForm>(
       <input
         id="newPassword"
         type="password"
-        :class="{'is_error': !!props.authError?.password}"
+        :class="{ is_error: !!props.authError?.password }"
         :aria-invalid="!!props.authError?.password"
         :placeholder="$t('auth.newPassword')"
         :value="props.modelValue.newPassword"
@@ -69,7 +97,7 @@ function updateField<UserFormKey extends keyof UserForm>(
       <input
         id="confirmPassword"
         type="password"
-        :class="{'is_error': !!props.authError?.password}"
+        :class="{ is_error: !!props.authError?.password }"
         :aria-invalid="!!props.authError?.password"
         :value="props.modelValue.confirmNewPassword"
         :placeholder="$t('auth.confirmNewPassword')"

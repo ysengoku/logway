@@ -94,7 +94,7 @@ profiles.patch('/self', async (c) => {
     if (!trimmed) {
       return c.json(
         {
-          error: 'Display name cannot be empty.',
+          error: 'emptyDisplayName',
           code: ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY,
         },
         400,
@@ -111,7 +111,7 @@ profiles.patch('/self', async (c) => {
     if (!isProfileIconName(body.icon)) {
       return c.json(
         {
-          error: 'Icon name is invalid.',
+          error: 'invalidIcon',
           code: ERROR_CODE_PROFILE_ICON_INVALID,
         },
         400,
@@ -124,7 +124,7 @@ profiles.patch('/self', async (c) => {
     if (!HEX_COLOR_REGEX.test(body.icon_color)) {
       return c.json(
         {
-          error: 'Icon color must be a hex color.',
+          error: 'invalidIconColor',
           code: ERROR_CODE_PROFILE_ICON_INVALID,
         },
         400,
@@ -137,7 +137,7 @@ profiles.patch('/self', async (c) => {
     if (!HEX_COLOR_REGEX.test(body.icon_bg_color)) {
       return c.json(
         {
-          error: 'Icon background color must be a hex color.',
+          error: 'invalidIconBgColor',
           code: ERROR_CODE_PROFILE_ICON_INVALID,
         },
         400,

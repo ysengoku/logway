@@ -5,6 +5,7 @@ export const auth = {
   resetPassword: 'Reset Password',
   email: 'Email',
   emailAddress: 'Email Address',
+  changeEmail: 'Change',
   displayName: 'Display Name *',
   password: 'Password',
   confirmPassword: 'Confirm Password',
@@ -22,6 +23,32 @@ export const auth = {
   newPasswordTitle: 'New password',
   passwordUpdated: 'Password updated. Redirecting to sign in...',
   updatePassword: 'Update password',
+  errors: {
+    emailRequired: 'Email is required.',
+    invalidEmail: 'Please enter a valid email address.',
+    sameEmail: 'Please enter a different email address.',
+    emailExists: 'This email address is already in use.',
+    emailNotConfirmed: 'Please confirm your current email address first.',
+    emailProviderDisabled: 'Email sign-in is currently unavailable.',
+    emailSsoManaged: 'This account is managed by single sign-on.',
+    weakPassword: 'Please choose a stronger password.',
+    samePassword: 'Please enter a different password.',
+    reauthenticationNeeded: 'Please sign in again and retry.',
+    validationFailed: 'Please review your input and try again.',
+    tooManyRequests: 'Too many requests. Please try again later.',
+    requestTimeout: 'Request timed out. Please try again.',
+    unknown: 'An error occurred. Please try again.',
+  },
+};
+
+export const calendar = {
+  selectDate: 'Select a date to view events.',
+};
+
+export const day = {
+  timeline: 'Timeline',
+  byType: 'By Type',
+  noEvents: 'No events on this day yet.',
 };
 
 export const common = {
@@ -51,29 +78,21 @@ export const home = {
   showAll: 'Show all ({count})',
 };
 
-export const trip = {
-  deleteConfirm: 'Delete "{title}"? All events will also be deleted.',
-  editTrip: 'Edit Trip',
-  deleteTrip: 'Delete Trip',
-  members: {
-    members: 'Members',
-    removeConfirm: 'Remove this member?',
-    inviteCopied: 'Invite code copied to clipboard!',
-    inviteCopyFailed: 'Failed to copy invite code.',
-    inviteShareLabel: 'Share this code to invite friends:',
-    copyInviteTitle: 'Copy invite code',
-  }
+export const event = {
+  checkIn: 'CHECK IN',
+  checkOut: 'CHECK OUT',
+  ref: 'Ref: {ref}',
+  event: 'Event',
+  addEvent: 'Add Event',
+  type: {
+    flight: 'Flight',
+    transport: 'Transport',
+    hotel: 'Hotel',
+    restaurant: 'Restaurant',
+    activity: 'Activity',
+    link: 'Link',
+  },
 };
-
-export const calendar = {
-  selectDate: 'Select a date to view events.',
-};
-
-export const day = {
-  timeline: 'Timeline',
-  byType: 'By Type',
-  noEvents: 'No events on this day yet.',
-}
 
 export const form = {
   title: 'Title',
@@ -103,9 +122,10 @@ export const form = {
     arrival: 'Arrival',
     arrivalTime: 'Arrival Time',
     address: 'Address',
-    website: "Website / Booking Page",
+    website: 'Website / Booking Page',
     notes: 'Notes',
-    timezoneHint: 'For overnight or cross-timezone journeys, enter each time in its local timezone.',
+    timezoneHint:
+      'For overnight or cross-timezone journeys, enter each time in its local timezone.',
     flight: {
       number: 'Flight Number',
     },
@@ -121,23 +141,7 @@ export const form = {
     link: {
       url: 'URL',
       relatedDate: 'Related Date',
-    }
-  },
-};
-
-export const event = {
-  checkIn: 'CHECK IN',
-  checkOut: 'CHECK OUT',
-  ref: 'Ref: {ref}',
-  event: 'Event',
-  addEvent: 'Add Event',
-  type: {
-    flight: 'Flight',
-    transport: 'Transport',
-    hotel: 'Hotel',
-    restaurant: 'Restaurant',
-    activity: 'Activity',
-    link: 'Link',
+    },
   },
 };
 
@@ -157,7 +161,35 @@ export const icons = {
   'face-grin-squint-tears': 'Lol',
   'face-smile': 'Smiling Face',
   'face-smile-wink': 'Winking Face',
-}
+};
+
+export const settings = {
+  settings: 'Settings',
+  updateSuccess: 'Updated successfully.',
+  emailChangePending: 'Check your inbox to confirm your new email address.',
+  errors: {
+    emptyDisplayName: 'Display name cannot be empty.',
+    invalidIcon: 'Selected icon is invalid.',
+    invalidIconColor: 'Icon color must be a hex color.',
+    invalidIconBgColor: 'Icon background color must be a hex color.',
+    missingPassword: 'Both new password and confirmation are required to change password.',
+    passwordMismatch: 'New password and confirmation do not match.',
+  },
+};
+
+export const trip = {
+  deleteConfirm: 'Delete "{title}"? All events will also be deleted.',
+  editTrip: 'Edit Trip',
+  deleteTrip: 'Delete Trip',
+  members: {
+    members: 'Members',
+    removeConfirm: 'Remove this member?',
+    inviteCopied: 'Invite code copied to clipboard!',
+    inviteCopyFailed: 'Failed to copy invite code.',
+    inviteShareLabel: 'Share this code to invite friends:',
+    copyInviteTitle: 'Copy invite code',
+  },
+};
 
 export const datetimeFormats = {
   short: {
@@ -189,5 +221,6 @@ export default {
   form,
   home,
   icons,
+  settings,
   trip,
 };

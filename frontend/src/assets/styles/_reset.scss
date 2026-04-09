@@ -133,12 +133,20 @@ textarea.is_error {
   margin: 24px 0 12px 0;
 }
 
-.error-message {
+.feedback-message {
   display: block;
   width: 100%;
   margin: 8px 0;
-  color: $accent2;
   font-size: 14px;
+}
+
+.feedback-info,
+.feedback-success {
+  color: $accent;
+}
+
+.feedback-error {
+  color: $accent2;
 }
 
 .sr-only {
