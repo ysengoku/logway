@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
-import { ref, reactive } from 'vue';
+import { ref, reactive, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
@@ -17,6 +17,14 @@ const form = reactive({
   passwordConfirm: '',
 });
 
+let redirectTimeoutId: number | undefined;
+
+onBeforeUnmount(() => {
+  if (redirectTimeoutId !== undefined) {
+    window.clearTimeout(redirectTimeoutId);
+  }
+});
+
 async function submit() {
   error.value = null;
 
@@ -28,7 +36,12 @@ async function submit() {
   try {
     await authStore.updatePassword(form.password);
     done.value = true;
-    setTimeout(() => router.push({ name: 'auth' }), 2000);
+    if (redirectTimeoutId !== undefined) {
+      window.clearTimeout(redirectTimeoutId);
+    }
+    redirectTimeoutId = window.setTimeout(() => {
+      router.push({ name: 'auth' });
+    }, 2000);
   } catch (e) {
     error.value = e instanceof Error ? e.message : t('common.errorOccurred');
   }
@@ -47,20 +60,24 @@ async function submit() {
       <template v-else>
         <div class="form-row">
           <label>{{ $t('auth.password') }}</label>
-          <input v-model="form.password" type="password" :placeholder="$t('auth.placeholderPassword')" />
+          <input
+            v-model="form.password"
+            type="password"
+            :placeholder="$t('auth.placeholderPassword')"
+          />
         </div>
         <div class="form-row">
           <label>{{ $t('auth.confirmPassword') }}</label>
-          <input v-model="form.passwordConfirm" type="password" :placeholder="$t('auth.placeholderRepeatPassword')" />
+          <input
+            v-model="form.passwordConfirm"
+            type="password"
+            :placeholder="$t('auth.placeholderRepeatPassword')"
+          />
         </div>
 
         <div v-if="error" class="auth-view__error">{{ error }}</div>
 
-        <button
-          class="auth-view__submit"
-          :disabled="loadingStore.active"
-          @click="submit"
-        >
+        <button class="auth-view__submit" :disabled="loadingStore.active" @click="submit">
           {{ $t('auth.updatePassword') }}
         </button>
       </template>

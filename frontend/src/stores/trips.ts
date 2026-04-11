@@ -8,18 +8,47 @@ export const useTripsStore = defineStore('trips', () => {
   const trips = ref<Trip[]>([]);
   const error = ref<string | null>(null);
   const loadingStore = useLoadingStore();
+  
+  const MIDNIGHT_BUFFER_MS = 1000;
+  let dayTickTimeout: number | undefined;
+  const today = ref(initializeToday());
 
-  const today = new Date().toISOString().slice(0, 10);
+  function msUntilNextMidnight(): number {
+    const now = new Date();
+    const nextMidnight = new Date(now);
+    nextMidnight.setHours(24, 0, 0, 0);
+    return Math.max(1, nextMidnight.getTime() - now.getTime());
+  }
+
+  function scheduleDayTick() {
+    const delayMs = msUntilNextMidnight() + MIDNIGHT_BUFFER_MS;
+    dayTickTimeout = window.setTimeout(() => {
+      today.value = new Date().toISOString().slice(0, 10);
+      scheduleDayTick();
+    }, delayMs);
+  }
+
+  function initializeToday(): string {
+    scheduleDayTick();
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  // Clear the timeout when the store is hot-reloaded to prevent multiple timers
+  import.meta.hot?.dispose(() => {
+    if (dayTickTimeout !== undefined) {
+      window.clearTimeout(dayTickTimeout);
+    }
+  });
 
   const upcomingTrips = computed(() =>
     trips.value
-      .filter((t) => !t.end_date || t.end_date >= today)
+      .filter((t) => !t.end_date || t.end_date >= today.value)
       .sort((a, b) => (a.start_date ?? '').localeCompare(b.start_date ?? '')),
   );
 
   const pastTrips = computed(() =>
     trips.value
-      .filter((t) => t.end_date && t.end_date < today)
+      .filter((t) => t.end_date && t.end_date < today.value)
       .sort((a, b) => (b.start_date ?? '').localeCompare(a.start_date ?? '')),
   );
 

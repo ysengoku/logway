@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/auth';
 import { profilesApi } from '@/api/client';
 import type { Profile } from '@shared/types/profile';
 import type { Trip } from '@shared/types/trip';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
@@ -16,9 +16,20 @@ const authStore = useAuthStore();
 const error = ref<string | null>(null);
 const success = ref<string | null>(null);
 const profiles = ref<Profile[]>([]);
+let successTimeoutId: number | undefined;
+let errorTimeoutId: number | undefined;
 
 const isOwner = computed(() => authStore.user?.id === props.trip.owner_id);
 const { t } = useI18n();
+
+onBeforeUnmount(() => {
+  if (successTimeoutId !== undefined) {
+    window.clearTimeout(successTimeoutId);
+  }
+  if (errorTimeoutId !== undefined) {
+    window.clearTimeout(errorTimeoutId);
+  }
+});
 
 function getDisplayName(userId: string): string {
   return profiles.value.find((p) => p.id === userId)?.display_name ?? userId;
@@ -38,14 +49,25 @@ async function remove(userId: string) {
 }
 
 async function copyCodeToClipboard() {
-  navigator.clipboard.writeText(props.trip.invite_code)
+  navigator.clipboard
+    .writeText(props.trip.invite_code)
     .then(() => {
+      if (successTimeoutId !== undefined) {
+        window.clearTimeout(successTimeoutId);
+      }
       success.value = t('trip.members.inviteCopied');
-      setTimeout(() => success.value = null, 3000);
+      successTimeoutId = window.setTimeout(() => {
+        success.value = null;
+      }, 3000);
     })
     .catch(() => {
+      if (errorTimeoutId !== undefined) {
+        window.clearTimeout(errorTimeoutId);
+      }
       error.value = t('trip.members.inviteCopyFailed');
-      setTimeout(() => error.value = null, 3000);
+      errorTimeoutId = window.setTimeout(() => {
+        error.value = null;
+      }, 3000);
     });
 }
 </script>
@@ -54,11 +76,7 @@ async function copyCodeToClipboard() {
   <div class="trip-members">
     <h2 class="section-title">{{ $t('trip.members.members') }}</h2>
     <div class="trip-members__list">
-      <div
-        v-for="member in membersStore.members"
-        :key="member.id"
-        class="trip-members__item"
-      >
+      <div v-for="member in membersStore.members" :key="member.id" class="trip-members__item">
         <div class="trip-members__item-info">
           <span class="trip-members__name">
             {{ getDisplayName(member.user_id) }}
@@ -81,12 +99,16 @@ async function copyCodeToClipboard() {
       <div class="trip-members__invite-code-label">{{ $t('trip.members.inviteShareLabel') }}</div>
       <div class="trip-members__invite-code">
         <span class="trip-members__invite-code-value">{{ props.trip.invite_code }}</span>
-        <button @click="copyCodeToClipboard" class="trip-members__invite-code-copy" :title="$t('trip.members.copyInviteTitle')">
+        <button
+          @click="copyCodeToClipboard"
+          class="trip-members__invite-code-copy"
+          :title="$t('trip.members.copyInviteTitle')"
+        >
           <FaIcon icon="fa-solid fa-copy" />
         </button>
       </div>
       <p v-if="success" class="trip-members__success">{{ success }}</p>
-      <p v-if="error" class="trip-members__error">{{ error }}</p> 
+      <p v-if="error" class="trip-members__error">{{ error }}</p>
 
       <!-- <div class="form-row">
         <label>Send the code</label>
