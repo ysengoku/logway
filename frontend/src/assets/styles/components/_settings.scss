@@ -189,6 +189,12 @@
     gap: 8px;
   }
 
+  &__modal-close-btn {
+    margin-top: 16px;
+    align-self: center;
+    width: fit-content;
+  }
+
   .error-message {
     width: min(680px, 100%);
   }

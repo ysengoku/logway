@@ -95,11 +95,15 @@ function clearErrorField(field: ErrorField) {
   }
 
   currentError[field] = null;
-  if (field === 'password' || field === 'auth') {
+  if (field === 'password') {
     authStore.setAuthError(null, currentError.password, currentError.auth);
   } else {
     profileStore.setProfileError(currentError.displayName, currentError.icon, currentError.profile);
   }
+}
+
+function clearSuccessFeedback() {
+  updateSuccess.value = { profile: false, user: false };
 }
 
 function resolveErrorMessage(key: string) {
@@ -121,6 +125,14 @@ const errorMessages = computed(() => {
   ].filter((key): key is string => Boolean(key));
 
   return keys.map(resolveErrorMessage);
+});
+
+const hasChanges = computed(() => {
+  const hasProfileChanges = Object.keys(buildProfilePayload()).length > 0;
+  const hasPasswordChanges =
+    Boolean(userForm.value.newPassword) || Boolean(userForm.value.confirmNewPassword);
+
+  return hasProfileChanges || hasPasswordChanges;
 });
 
 async function updateProfile(): Promise<void> {
@@ -151,6 +163,10 @@ async function updatePassword(): Promise<void> {
 }
 
 async function submitChanges() {
+  if (!hasChanges.value) {
+    return;
+  }
+
   updateSuccess.value = { profile: false, user: false };
   authStore.setAuthError(null, null, null);
   profileStore.setProfileError(null, null, null);
@@ -179,11 +195,13 @@ async function submitChanges() {
       v-model="profileForm"
       :error="profileStore.error"
       @clear-profile-error="clearErrorField"
+      @clear-feedback="clearSuccessFeedback"
     />
     <UserSettings
       v-model="userForm"
       :auth-error="authStore.authError"
       @clear-auth-error="clearErrorField"
+      @clear-feedback="clearSuccessFeedback"
     />
 
     <div class="settings__card">
@@ -202,7 +220,12 @@ async function submitChanges() {
     </div>
 
     <div class="settings__button-wrapper">
-      <button class="settings__submit-btn button-primary" type="submit" @click.stop="submitChanges">
+      <button
+        class="settings__submit-btn button-primary"
+        type="submit"
+        :disabled="!hasChanges"
+        @click.stop="submitChanges"
+      >
         {{ $t('common.saveChanges') }}
       </button>
     </div>

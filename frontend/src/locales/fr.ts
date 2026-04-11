@@ -5,6 +5,7 @@ export const auth = {
   resetPassword: 'Reinitialiser le mot de passe',
   email: 'Email',
   emailAddress: 'Adresse e-mail',
+  newEmail: 'Nouvelle adresse e-mail',
   changeEmail: 'Modifier',
   displayName: "Nom d'affichage *",
   password: 'Mot de passe',
@@ -48,6 +49,7 @@ export const calendar = {
 
 export const common = {
   cancel: 'Annuler',
+  close: 'Fermer',
   loading: 'Chargement...',
   back: 'Retour',
   edit: 'Modifier',

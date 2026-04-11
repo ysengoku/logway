@@ -18,7 +18,8 @@ const isEmailChangePending = ref(false);
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: UserForm): void;
-  (e: 'clearAuthError', field: 'password' | 'auth'): void;
+  (e: 'clearAuthError', field: 'password'): void;
+  (e: 'clearFeedback'): void;
 }>();
 
 function updateField<UserFormKey extends keyof UserForm>(
@@ -28,9 +29,7 @@ function updateField<UserFormKey extends keyof UserForm>(
   emit('update:modelValue', { ...props.modelValue, [key]: value });
   if (key === 'newPassword' || key === 'confirmNewPassword') {
     emit('clearAuthError', 'password');
-  }
-  if (key === 'newPassword' || key === 'confirmNewPassword') {
-    emit('clearAuthError', 'auth');
+    emit('clearFeedback');
   }
 }
 

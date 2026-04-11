@@ -14,6 +14,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:modelValue', value: ProfileForm): void;
   (e: 'clearProfileError', key: 'displayName' | 'icon' | 'profile'): void;
+  (e: 'clearFeedback'): void;
 }>();
 
 function updateField<ProfileFormKey extends keyof ProfileForm>(
@@ -21,8 +22,14 @@ function updateField<ProfileFormKey extends keyof ProfileForm>(
   value: ProfileForm[ProfileFormKey],
 ) {
   emit('update:modelValue', { ...props.modelValue, [key]: value });
-  if (key === 'displayName' || key === 'icon') {
-    emit('clearProfileError', key);
+  emit('clearFeedback');
+
+  if (key === 'displayName') {
+    emit('clearProfileError', 'displayName');
+    return;
+  }
+  if (key === 'icon' || key === 'iconColor' || key === 'iconBgColor') {
+    emit('clearProfileError', 'icon');
   }
 }
 

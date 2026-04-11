@@ -20,6 +20,7 @@ const authStore = useAuthStore();
 const { t, te } = useI18n();
 const emailDraft = ref('');
 const isSubmitting = ref(false);
+const submitted = ref(false);
 const errorMessage = ref<string | null>(null);
 
 watch(
@@ -28,8 +29,9 @@ watch(
     if (!open) {
       return;
     }
-    emailDraft.value = props.currentEmail;
+    emailDraft.value = '';
     errorMessage.value = null;
+    submitted.value = false;
   },
 );
 
@@ -70,7 +72,7 @@ async function submitEmailChange() {
 
     if (result.status === 'pending') {
       emit('pending');
-      emit('close');
+      submitted.value = true;
       return;
     }
 
@@ -85,21 +87,24 @@ async function submitEmailChange() {
 <template>
   <Teleport to="body">
     <AppModal :open="open" :title="$t('auth.emailAddress')" @close="closeModal">
-      <div class="settings__email-modal-body">
+      <div v-if="!submitted" class="settings__email-modal-body">
         <div class="form-row">
           <label for="newEmail">
-            {{ $t('auth.emailAddress') }}
+            {{ $t('auth.newEmail') }}
           </label>
           <input
             id="newEmail"
             type="email"
             :class="{ is_error: !!errorMessage }"
-            :placeholder="$t('auth.emailAddress')"
-            :value="emailDraft"
+            :placeholder="$t('auth.newEmail')"
             @input="emailDraft = ($event.target as HTMLInputElement)?.value"
           />
         </div>
-        <FeedbackMessage v-if="errorMessage" :message="errorMessage" :type="'error'" />
+        <FeedbackMessage
+          v-if="errorMessage"
+          :message="errorMessage"
+          :type="'error'"
+        />
         <div class="settings__email-actions">
           <button
             type="button"
@@ -118,6 +123,20 @@ async function submitEmailChange() {
             {{ $t('common.cancel') }}
           </button>
         </div>
+      </div>
+
+      <div v-else class="settings__email-modal-body">
+        <FeedbackMessage
+          :message="$t('settings.emailChangePending')"
+          :type="'info'"
+        />
+        <button
+          type="button"
+          class="button-primary settings__modal-close-btn"
+          @click="closeModal"
+        >
+          {{ $t('common.close') }}
+        </button>
       </div>
     </AppModal>
   </Teleport>

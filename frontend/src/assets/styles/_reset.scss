@@ -46,6 +46,11 @@ button {
   font-weight: 500;
   padding: 7px 12px;
   transition: all 0.15s;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 }
 
 .button-primary {

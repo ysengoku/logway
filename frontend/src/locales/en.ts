@@ -5,6 +5,7 @@ export const auth = {
   resetPassword: 'Reset Password',
   email: 'Email',
   emailAddress: 'Email Address',
+  newEmail: 'New Email Address',
   changeEmail: 'Change',
   displayName: 'Display Name *',
   password: 'Password',
@@ -53,6 +54,7 @@ export const day = {
 
 export const common = {
   cancel: 'Cancel',
+  close: 'Close',
   loading: 'Loading...',
   back: 'Back',
   edit: 'Edit',
