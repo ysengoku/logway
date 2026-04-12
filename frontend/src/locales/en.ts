@@ -14,7 +14,7 @@ export const auth = {
   newPassword: 'New Password',
   confirmNewPassword: 'Confirm New Password',
   dontHaveAccount: "Don't have an account yet?",
-  placeholderEmail: 'you@example.com',
+  placeholderEmail: "you{'@'}example.com",
   placeholderName: 'Your name',
   placeholderPassword: 'password',
   placeholderRepeatPassword: 'repeat password',
@@ -31,6 +31,7 @@ export const auth = {
     emailNotConfirmed: 'Please confirm your current email address first.',
     emailProviderDisabled: 'Email sign-in is currently unavailable.',
     emailSsoManaged: 'This account is managed by single sign-on.',
+    passwordRequired: 'Password is required.',
     weakPassword:
       'Password must be at least 12 characters and include uppercase, lowercase, a number, and a symbol.',
     samePassword: 'Please enter a different password.',

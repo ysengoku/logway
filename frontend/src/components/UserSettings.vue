@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import EmailChangeModal from '@/components/modals/EmailChangeModal.vue';
 import FeedbackMessage from './FeedbackMessage.vue';
+import PasswordField from './forms/PasswordField.vue';
 import { getFaIcon } from '@/lib/faIcons';
 import { useAuthStore } from '@/stores/auth';
 import type { UserForm } from '@shared/types/profile';
@@ -75,33 +76,28 @@ function openEmailEditor() {
     <h2 class="section-title">
       {{ $t('auth.password') }}
     </h2>
-    <div class="form-row">
-      <label for="newPassword">
-        {{ $t('auth.newPassword') }}
-      </label>
-      <input
-        id="newPassword"
-        type="password"
-        :class="{ is_error: !!props.authError?.password }"
-        :aria-invalid="!!props.authError?.password"
-        :placeholder="$t('auth.newPassword')"
-        :value="props.modelValue.newPassword"
-        @input="updateField('newPassword', ($event.target as HTMLInputElement)?.value)"
-      />
-    </div>
-    <div class="form-row">
-      <label for="confirmPassword">
-        {{ $t('auth.confirmNewPassword') }}
-      </label>
-      <input
-        id="confirmPassword"
-        type="password"
-        :class="{ is_error: !!props.authError?.password }"
-        :aria-invalid="!!props.authError?.password"
-        :value="props.modelValue.confirmNewPassword"
-        :placeholder="$t('auth.confirmNewPassword')"
-        @input="updateField('confirmNewPassword', ($event.target as HTMLInputElement)?.value)"
-      />
-    </div>
+    <PasswordField
+      :model-value="props.modelValue.newPassword"
+      input-id="settings-new-password"
+      :label="$t('auth.newPassword')"
+      :placeholder="$t('auth.newPassword')"
+      :has-error="!!props.authError?.password"
+      :show-aria-label="'Show new password'"
+      :hide-aria-label="'Hide new password'"
+      autocomplete="new-password"
+      @update:model-value="(value) => updateField('newPassword', value)"
+    />
+
+    <PasswordField
+      :model-value="props.modelValue.confirmNewPassword"
+      input-id="settings-confirm-password"
+      :label="$t('auth.confirmNewPassword')"
+      :placeholder="$t('auth.confirmNewPassword')"
+      :has-error="!!props.authError?.password"
+      :show-aria-label="'Show password confirmation'"
+      :hide-aria-label="'Hide password confirmation'"
+      autocomplete="new-password"
+      @update:model-value="(value) => updateField('confirmNewPassword', value)"
+    />
   </section>
 </template>

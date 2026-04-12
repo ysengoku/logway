@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FeedbackMessage from '@/components/FeedbackMessage.vue';
+import PasswordField from '@/components/forms/PasswordField.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
 import { validatePassword } from '@/validators';
@@ -61,28 +62,28 @@ async function submit() {
       </div>
 
       <template v-else>
-        <div class="form-row">
-          <label>{{ $t('auth.password') }} *</label>
-          <input
-            v-model="form.password"
-            type="password"
-            :placeholder="$t('auth.placeholderPassword')"
-          />
-        </div>
-        <div class="form-row">
-          <label>{{ $t('auth.confirmPassword') }} *</label>
-          <input
-            v-model="form.passwordConfirm"
-            type="password"
-            :placeholder="$t('auth.placeholderRepeatPassword')"
-          />
-        </div>
-
-        <FeedbackMessage
-          v-if="error"
-          :message="error"
-          :type="'error'"
+        <PasswordField
+          v-model="form.password"
+          input-id="reset-password"
+          :label="`${$t('auth.password')} *`"
+          :placeholder="$t('auth.placeholderPassword')"
+          :has-error="!!error"
+          :show-aria-label="'Show password'"
+          :hide-aria-label="'Hide password'"
+          autocomplete="new-password"
         />
+        <PasswordField
+          v-model="form.passwordConfirm"
+          input-id="reset-password-confirm"
+          :label="`${$t('auth.confirmPassword')} *`"
+          :placeholder="$t('auth.placeholderRepeatPassword')"
+          :has-error="!!error"
+          :show-aria-label="'Show password confirmation'"
+          :hide-aria-label="'Hide password confirmation'"
+          autocomplete="new-password"
+        />
+
+        <FeedbackMessage v-if="error" :message="error" :type="'error'" />
 
         <button
           class="auth-view__submit"
