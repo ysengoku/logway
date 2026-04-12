@@ -1,6 +1,7 @@
 import { useLoadingStore } from './loading';
 import { useProfileStore } from './profile';
 import { supabase } from '@/lib/supabase';
+import { validateDisplayName } from '@/validators';
 import type { User } from '@supabase/supabase-js';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
@@ -39,6 +40,7 @@ type AuthErrorState = {
   email: string | null;
   password: string | null;
   auth: string | null;
+  displayName?: string | null;
 };
 
 type EmailChangeResult = {
@@ -53,10 +55,11 @@ export const useAuthStore = defineStore('auth', () => {
   const loadingStore = useLoadingStore();
   const profileStore = useProfileStore();
 
-  const authError = ref<{ email: string | null; password: string | null; auth: string | null }>({
+  const authError = ref<{ email: string | null; password: string | null; auth: string | null; displayName?: string | null }>({
     email: null,
     password: null,
     auth: null,
+    displayName: null,
   });
 
   const isAuthenticated = computed(() => !!user.value);
@@ -93,8 +96,14 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function signUp(email: string, password: string, displayName: string) {
-    loadingStore.start();
     clearAuthError();
+    const displayNameErrorKey = validateDisplayName(displayName);
+    if (displayNameErrorKey) {
+      setAuthError(null, null, null, `settings.errors.${displayNameErrorKey}`);
+      return;
+    }
+    
+    loadingStore.start();
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -241,7 +250,7 @@ export const useAuthStore = defineStore('auth', () => {
       return AUTH_ERROR_KEY_BY_CODE[code];
     }
 
-    return error.message || 'auth.errors.unknown';
+    return error.message || 'common.unknownError';
   }
 
   function setAuthErrorByUpdateContext(
@@ -249,19 +258,20 @@ export const useAuthStore = defineStore('auth', () => {
     error: { message: string; code?: string | null },
   ) {
     const mapped = mapAuthErrorByUpdateContext(updates, error);
-    setAuthError(mapped.email, mapped.password, mapped.auth);
+    setAuthError(mapped.email, mapped.password, mapped.auth, null);
   }
 
   function setAuthError(
     emailMessage: string | null,
     passwordMessage: string | null,
     authMessage: string | null = null,
+    displayNameMessage: string | null = null,
   ) {
-    authError.value = { email: emailMessage, password: passwordMessage, auth: authMessage };
+    authError.value = { email: emailMessage, password: passwordMessage, auth: authMessage, displayName: displayNameMessage };
   }
 
   function clearAuthError() {
-    authError.value = { email: null, password: null, auth: null };
+    authError.value = { email: null, password: null, auth: null, displayName: null };
   }
 
   return {
