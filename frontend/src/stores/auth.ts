@@ -250,7 +250,7 @@ export const useAuthStore = defineStore('auth', () => {
       return AUTH_ERROR_KEY_BY_CODE[code];
     }
 
-    return error.message || 'common.errors.unknown';
+    return error.message || 'common.unknownError';
   }
 
   function setAuthErrorByUpdateContext(
