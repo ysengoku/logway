@@ -1,15 +1,11 @@
 import { PROFILE_ICON_NAMES } from '@shared/types/profileIcon';
 import {
   ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY,
-  ERROR_CODE_PROFILE_DISPLAY_NAME_INVALID,
   ERROR_CODE_PROFILE_ICON_INVALID,
 } from '@shared/constants/errorCodes';
-import {
-  DISPLAY_NAME_ALLOWED_REGEX,
-  RESERVED_DISPLAY_NAMES,
-  HEX_COLOR_REGEX,
-} from '@shared/constants/regex';
+import { HEX_COLOR_REGEX } from '@shared/constants/regex';
 import { supabaseWithAuth } from '../db/supabase';
+import { mapDisplayNameValidationErrorToCode, validateDisplayName } from './profileValidation';
 import type { ProfileIconName } from '@shared/types/profileIcon';
 import { Hono, type Context } from 'hono';
 
@@ -42,41 +38,6 @@ function getAuthContext(c: Context): AuthContext | null {
   }
   const db = supabaseWithAuth(token);
   return { token, userId, db };
-}
-
-function validateDisplayName(
-  value: unknown,
-): { valid: true; value: string } | { valid: false; error: string } {
-  if (typeof value !== 'string') {
-    return { valid: false, error: 'emptyDisplayName' };
-  }
-
-  const trimmed = value.trim();
-  if (!trimmed) {
-    return { valid: false, error: 'emptyDisplayName' };
-  }
-
-  if (value !== trimmed) {
-    return { valid: false, error: 'displayNameLeadingOrTrailingSpaces' };
-  }
-
-  if (trimmed.includes('  ')) {
-    return { valid: false, error: 'displayNameConsecutiveSpaces' };
-  }
-
-  if (trimmed.length < 2 || trimmed.length > 16) {
-    return { valid: false, error: 'displayNameLength' };
-  }
-
-  if (!DISPLAY_NAME_ALLOWED_REGEX.test(trimmed)) {
-    return { valid: false, error: 'displayNameCharacters' };
-  }
-
-  if (RESERVED_DISPLAY_NAMES.has(trimmed.toLowerCase())) {
-    return { valid: false, error: 'displayNameReserved' };
-  }
-
-  return { valid: true, value: trimmed };
 }
 
 // GET /api/profiles?user_ids=1,2,3
@@ -132,10 +93,7 @@ profiles.patch('/self', async (c) => {
       return c.json(
         {
           error: validation.error,
-          code:
-            validation.error === 'emptyDisplayName'
-              ? ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY
-              : ERROR_CODE_PROFILE_DISPLAY_NAME_INVALID,
+          code: mapDisplayNameValidationErrorToCode(validation.error),
         },
         400,
       );

@@ -38,6 +38,9 @@ jobs:
       - name: Frontend type check
         run: pnpm --filter ./frontend run type-check
 
+      - name: Frontend unit tests
+        run: pnpm --filter ./frontend run test:unit
+
       - name: Frontend build
         run: pnpm --filter ./frontend run build
 
@@ -62,7 +65,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Server lint
-        run: pnpm --filter ./server run lint
+        run: pnpm --filter server run lint
+
+      - name: Server unit tests
+        run: pnpm --filter server run test:unit
 
       - name: Server build
-        run: pnpm --filter ./server run build
+        run: pnpm --filter server run build
