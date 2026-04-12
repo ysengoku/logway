@@ -7,7 +7,7 @@ import {
 import {
   DISPLAY_NAME_ALLOWED_REGEX,
   RESERVED_DISPLAY_NAMES,
-  HEX_COLOR_REGEX
+  HEX_COLOR_REGEX,
 } from '@shared/constants/regex';
 import { supabaseWithAuth } from '../db/supabase';
 import type { ProfileIconName } from '@shared/types/profileIcon';
