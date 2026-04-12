@@ -13,7 +13,6 @@ export const auth = {
   currentPassword: 'Current Password',
   newPassword: 'New Password',
   confirmNewPassword: 'Confirm New Password',
-  passwordsDoNotMatch: 'Passwords do not match.',
   dontHaveAccount: "Don't have an account yet?",
   placeholderEmail: 'you@example.com',
   placeholderName: 'Your name',
@@ -32,13 +31,15 @@ export const auth = {
     emailNotConfirmed: 'Please confirm your current email address first.',
     emailProviderDisabled: 'Email sign-in is currently unavailable.',
     emailSsoManaged: 'This account is managed by single sign-on.',
-    weakPassword: 'Please choose a stronger password.',
+    weakPassword:
+      'Password must be at least 12 characters and include uppercase, lowercase, a number, and a symbol.',
     samePassword: 'Please enter a different password.',
+    missingPassword: 'Enter both password and confirmation.',
+    passwordsDoNotMatch: 'Password and confirmation do not match.',
     reauthenticationNeeded: 'Please sign in again and retry.',
     validationFailed: 'Please review your input and try again.',
     tooManyRequests: 'Too many requests. Please try again later.',
     requestTimeout: 'Request timed out. Please try again.',
-    unknown: 'An error occurred. Please try again.',
   },
 };
 
@@ -68,16 +69,7 @@ export const common = {
   saving: 'Saving...',
   failedToSaveEvent: 'Failed to save event.',
   backToSignIn: 'Back to Sign In',
-};
-
-export const home = {
-  myTrips: 'My Trips',
-  upcoming: 'Upcoming Trips',
-  past: 'Past Trips',
-  noUpcoming: 'No upcoming trips. Plan your next adventure!',
-  noPast: 'No past trips yet.',
-  showLess: 'Show less',
-  showAll: 'Show all ({count})',
+  unknownError: 'An error occurred. Please try again.',
 };
 
 export const event = {
@@ -147,6 +139,16 @@ export const form = {
   },
 };
 
+export const home = {
+  myTrips: 'My Trips',
+  upcoming: 'Upcoming Trips',
+  past: 'Past Trips',
+  noUpcoming: 'No upcoming trips. Plan your next adventure!',
+  noPast: 'No past trips yet.',
+  showLess: 'Show less',
+  showAll: 'Show all ({count})',
+};
+
 export const icons = {
   cat: 'Cat',
   dog: 'Dog',
@@ -171,11 +173,14 @@ export const settings = {
   emailChangePending: 'Check your inbox to confirm your new email address.',
   errors: {
     emptyDisplayName: 'Display name cannot be empty.',
+    displayNameLength: 'Display name must be between 2 and 16 characters.',
+    displayNameCharacters: 'Display name can only contain letters, numbers, spaces, _ and -.',
+    displayNameLeadingOrTrailingSpaces: 'Display name cannot start or end with spaces.',
+    displayNameConsecutiveSpaces: 'Display name cannot contain consecutive spaces.',
+    displayNameReserved: 'This display name is reserved and cannot be used.',
     invalidIcon: 'Selected icon is invalid.',
     invalidIconColor: 'Icon color must be a hex color.',
     invalidIconBgColor: 'Icon background color must be a hex color.',
-    missingPassword: 'Both new password and confirmation are required to change password.',
-    passwordMismatch: 'New password and confirmation do not match.',
   },
 };
 

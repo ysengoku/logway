@@ -1,9 +1,14 @@
 import { PROFILE_ICON_NAMES } from '@shared/types/profileIcon';
 import {
   ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY,
+  ERROR_CODE_PROFILE_DISPLAY_NAME_INVALID,
   ERROR_CODE_PROFILE_ICON_INVALID,
 } from '@shared/constants/errorCodes';
-import { HEX_COLOR_REGEX } from '@shared/constants/regex';
+import {
+  DISPLAY_NAME_ALLOWED_REGEX,
+  RESERVED_DISPLAY_NAMES,
+  HEX_COLOR_REGEX
+} from '@shared/constants/regex';
 import { supabaseWithAuth } from '../db/supabase';
 import type { ProfileIconName } from '@shared/types/profileIcon';
 import { Hono, type Context } from 'hono';
@@ -37,6 +42,41 @@ function getAuthContext(c: Context): AuthContext | null {
   }
   const db = supabaseWithAuth(token);
   return { token, userId, db };
+}
+
+function validateDisplayName(
+  value: unknown,
+): { valid: true; value: string } | { valid: false; error: string } {
+  if (typeof value !== 'string') {
+    return { valid: false, error: 'emptyDisplayName' };
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return { valid: false, error: 'emptyDisplayName' };
+  }
+
+  if (value !== trimmed) {
+    return { valid: false, error: 'displayNameLeadingOrTrailingSpaces' };
+  }
+
+  if (trimmed.includes('  ')) {
+    return { valid: false, error: 'displayNameConsecutiveSpaces' };
+  }
+
+  if (trimmed.length < 2 || trimmed.length > 16) {
+    return { valid: false, error: 'displayNameLength' };
+  }
+
+  if (!DISPLAY_NAME_ALLOWED_REGEX.test(trimmed)) {
+    return { valid: false, error: 'displayNameCharacters' };
+  }
+
+  if (RESERVED_DISPLAY_NAMES.has(trimmed.toLowerCase())) {
+    return { valid: false, error: 'displayNameReserved' };
+  }
+
+  return { valid: true, value: trimmed };
 }
 
 // GET /api/profiles?user_ids=1,2,3
@@ -87,20 +127,20 @@ profiles.patch('/self', async (c) => {
   const updates: UpdateSelfProfileBody = {};
 
   if (body.display_name !== undefined) {
-    let trimmed = '';
-    if (typeof body.display_name === 'string') {
-      trimmed = body.display_name.trim();
-    }
-    if (!trimmed) {
+    const validation = validateDisplayName(body.display_name);
+    if (!validation.valid) {
       return c.json(
         {
-          error: 'emptyDisplayName',
-          code: ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY,
+          error: validation.error,
+          code:
+            validation.error === 'emptyDisplayName'
+              ? ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY
+              : ERROR_CODE_PROFILE_DISPLAY_NAME_INVALID,
         },
         400,
       );
     }
-    updates.display_name = trimmed;
+    updates.display_name = validation.value;
   }
 
   if (body.preferred_locale !== undefined && typeof body.preferred_locale === 'string') {

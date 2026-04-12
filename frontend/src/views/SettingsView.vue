@@ -4,6 +4,7 @@ import ProfileSettings from '@/components/ProfileSettings.vue';
 import UserSettings from '@/components/UserSettings.vue';
 import { useProfileStore } from '@/stores/profile';
 import { useAuthStore } from '@/stores/auth';
+import { validateDisplayName, validatePassword } from '@/validators';
 import type { ProfileForm, UserForm } from '@shared/types/profile';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -53,27 +54,6 @@ function buildProfilePayload(): ProfilePayload {
   }
 
   return changes;
-}
-
-function validatePassword(): { valid: boolean; message?: string } {
-  if (
-    (userForm.value.newPassword && !userForm.value.confirmNewPassword) ||
-    (!userForm.value.newPassword && userForm.value.confirmNewPassword)
-  ) {
-    return {
-      valid: false,
-      message: 'missingPassword',
-    };
-  }
-
-  if (userForm.value.newPassword !== userForm.value.confirmNewPassword) {
-    return {
-      valid: false,
-      message: 'passwordMismatch',
-    };
-  }
-
-  return { valid: true };
 }
 
 function clearPasswordFields() {
@@ -142,6 +122,14 @@ async function updateProfile(): Promise<void> {
     return;
   }
 
+  if (profilePayload.display_name !== undefined) {
+    const displayNameErrorKey = validateDisplayName(profilePayload.display_name);
+    if (displayNameErrorKey) {
+      profileStore.setProfileError(displayNameErrorKey, null, null);
+      return;
+    }
+  }
+
   await profileStore.updateProfile(profilePayload);
 }
 
@@ -151,9 +139,13 @@ async function updatePassword(): Promise<void> {
     return;
   }
 
-  const passwordValidation = validatePassword();
-  if (!passwordValidation.valid) {
-    authStore.setAuthError(null, passwordValidation.message || 'auth.errors.validationFailed');
+  const passwordErrorKey = validatePassword(
+    userForm.value.newPassword,
+    userForm.value.confirmNewPassword,
+    true,
+  );
+  if (passwordErrorKey) {
+    authStore.setAuthError(null, `auth.errors.${passwordErrorKey}`);
     return;
   }
   const authUpdated = await authStore.updatePassword(userForm.value.newPassword);

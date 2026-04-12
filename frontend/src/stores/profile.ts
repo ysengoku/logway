@@ -1,6 +1,7 @@
 import { ApiError } from '@/api/http';
 import {
   ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY,
+  ERROR_CODE_PROFILE_DISPLAY_NAME_INVALID,
   ERROR_CODE_PROFILE_ICON_INVALID,
 } from '@shared/constants/errorCodes';
 import { profilesApi } from '../api/client';
@@ -41,7 +42,11 @@ export const useProfileStore = defineStore('profile', () => {
     try {
       profile.value = await profilesApi.updateSelf(updates);
     } catch (e: unknown) {
-      if (e instanceof ApiError && e.code === ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY) {
+      if (
+        e instanceof ApiError &&
+        (e.code === ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY ||
+          e.code === ERROR_CODE_PROFILE_DISPLAY_NAME_INVALID)
+      ) {
         setProfileError(e.message, null, null);
         return;
       }

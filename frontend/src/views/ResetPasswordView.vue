@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import FeedbackMessage from '@/components/FeedbackMessage.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
+import { validatePassword } from '@/validators';
 import { ref, reactive, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
@@ -28,8 +30,9 @@ onBeforeUnmount(() => {
 async function submit() {
   error.value = null;
 
-  if (form.password !== form.passwordConfirm) {
-    error.value = t('auth.passwordsDoNotMatch');
+  const passwordErrorKey = validatePassword(form.password, form.passwordConfirm, true);
+  if (passwordErrorKey) {
+    error.value = t(`auth.errors.${passwordErrorKey}`);
     return;
   }
 
@@ -59,7 +62,7 @@ async function submit() {
 
       <template v-else>
         <div class="form-row">
-          <label>{{ $t('auth.password') }}</label>
+          <label>{{ $t('auth.password') }} *</label>
           <input
             v-model="form.password"
             type="password"
@@ -67,7 +70,7 @@ async function submit() {
           />
         </div>
         <div class="form-row">
-          <label>{{ $t('auth.confirmPassword') }}</label>
+          <label>{{ $t('auth.confirmPassword') }} *</label>
           <input
             v-model="form.passwordConfirm"
             type="password"
@@ -75,9 +78,17 @@ async function submit() {
           />
         </div>
 
-        <div v-if="error" class="auth-view__error">{{ error }}</div>
+        <FeedbackMessage
+          v-if="error"
+          :message="error"
+          :type="'error'"
+        />
 
-        <button class="auth-view__submit" :disabled="loadingStore.active" @click="submit">
+        <button
+          class="auth-view__submit"
+          :disabled="loadingStore.active"
+          @click="submit"
+        >
           {{ $t('auth.updatePassword') }}
         </button>
       </template>

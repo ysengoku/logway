@@ -13,7 +13,7 @@ export const auth = {
   currentPassword: 'Mot de passe actuel',
   newPassword: 'Nouveau mot de passe',
   confirmNewPassword: 'Confirmer le nouveau mot de passe',
-  passwordsDoNotMatch: 'Les mots de passe ne correspondent pas.',
+  passwordsDoNotMatch: 'Le mot de passe et sa confirmation ne correspondent pas.',
   dontHaveAccount: "Vous n'avez pas encore de compte ?",
   placeholderEmail: 'vous@exemple.com',
   placeholderName: 'Votre nom',
@@ -33,13 +33,15 @@ export const auth = {
     emailNotConfirmed: "Veuillez d'abord confirmer votre adresse e-mail actuelle.",
     emailProviderDisabled: 'La connexion par e-mail est actuellement indisponible.',
     emailSsoManaged: 'Ce compte est gere via le SSO.',
-    weakPassword: 'Veuillez choisir un mot de passe plus robuste.',
+    weakPassword:
+      'Le mot de passe doit contenir au moins 12 caracteres, avec majuscule, minuscule, chiffre et symbole.',
     samePassword: 'Veuillez saisir un mot de passe different.',
+    missingPassword: 'Saisissez le mot de passe et sa confirmation.',
+    passwordsDoNotMatch: 'Le mot de passe et sa confirmation ne correspondent pas.',
     reauthenticationNeeded: 'Veuillez vous reconnecter puis reessayer.',
     validationFailed: 'Veuillez verifier vos saisies puis reessayer.',
     tooManyRequests: 'Trop de requetes. Veuillez reessayer plus tard.',
     requestTimeout: 'La requete a expire. Veuillez reessayer.',
-    unknown: "Une erreur s'est produite. Veuillez reessayer.",
   },
 };
 
@@ -63,6 +65,7 @@ export const common = {
   saving: 'Enregistrement...',
   failedToSaveEvent: "Echec de l'enregistrement de l'evenement.",
   backToSignIn: 'Retour a la connexion',
+  unknownError: "Une erreur s'est produite. Veuillez reessayer.",
 };
 
 export const day = {
@@ -172,12 +175,16 @@ export const settings = {
   emailChangePending: 'Verifiez votre boite mail pour confirmer votre nouvelle adresse e-mail.',
   errors: {
     emptyDisplayName: "Le nom d'affichage ne peut pas être vide.",
+    displayNameLength: "Le nom d'affichage doit contenir entre 2 et 16 caracteres.",
+    displayNameCharacters:
+      "Le nom d'affichage ne peut contenir que des lettres, chiffres, espaces, _ et -.",
+    displayNameLeadingOrTrailingSpaces:
+      "Le nom d'affichage ne peut pas commencer ou se terminer par un espace.",
+    displayNameConsecutiveSpaces: "Le nom d'affichage ne peut pas contenir d'espaces consecutifs.",
+    displayNameReserved: "Ce nom d'affichage est reserve et ne peut pas etre utilise.",
     invalidIcon: "Le nom de l'icône est invalide.",
     invalidIconColor: "La couleur de l'icône doit être un code hexadécimal.",
     invalidIconBgColor: "La couleur de fond de l'icône doit être un code hexadécimal.",
-    missingPassword:
-      'Le nouveau mot de passe et sa confirmation sont requis pour changer le mot de passe.',
-    passwordMismatch: 'Le nouveau mot de passe et sa confirmation ne correspondent pas.',
   },
 };
 
