@@ -51,6 +51,7 @@ function handleInput(event: Event) {
         :placeholder="placeholder"
         class="password-field__input"
         :class="{ is_error: hasError }"
+        :aria-invalid="hasError"
         :autocomplete="autocomplete"
         @input="handleInput"
       />
