@@ -8,10 +8,25 @@ import trips from './routes/trips';
 
 const app = new Hono();
 
+const allowedOrigins = (
+  process.env.ALLOWED_ORIGINS ??
+  process.env.SITE_URL ??
+  'http://localhost:5173'
+)
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 app.use(
   '*',
   cors({
-    origin: 'http://localhost:5173',
+    origin: (origin) => {
+      // Allow requests with no Origin header (server-to-server, curl, health checks).
+      if (!origin) {
+        return origin;
+      }
+      return allowedOrigins.includes(origin) ? origin : '';
+    },
   }),
 );
 
@@ -58,6 +73,7 @@ serve(
     port: PORT,
   },
   () => {
+    console.log(`Allowed CORS origins: ${allowedOrigins.join(', ') || '(none)'}`);
     console.log(`LogWay server running at http://localhost:${PORT}`);
   },
 );
