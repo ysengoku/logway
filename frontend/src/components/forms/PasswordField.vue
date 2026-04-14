@@ -68,25 +68,3 @@ function handleInput(event: Event) {
     </div>
   </div>
 </template>
-
-<style scoped>
-.password-field__input-wrap {
-  position: relative;
-}
-
-.password-field__input {
-  padding-right: 2.5rem;
-}
-
-.password-field__toggle {
-  position: absolute;
-  top: 50%;
-  right: 0.5rem;
-  transform: translateY(-50%);
-  border: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  padding: 0;
-}
-</style>
