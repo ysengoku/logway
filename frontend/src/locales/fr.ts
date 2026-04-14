@@ -19,6 +19,12 @@ export const auth = {
   placeholderName: 'Votre nom',
   placeholderPassword: 'mot de passe',
   placeholderRepeatPassword: 'repetez le mot de passe',
+  showPassword: 'Afficher le mot de passe',
+  hidePassword: 'Masquer le mot de passe',
+  showNewPassword: 'Afficher le nouveau mot de passe',
+  hideNewPassword: 'Masquer le nouveau mot de passe',
+  showPasswordConfirmation: 'Afficher la confirmation du mot de passe',
+  hidePasswordConfirmation: 'Masquer la confirmation du mot de passe',
   emailConfirmationInstructions:
     'Verifiez votre email pour confirmer votre compte, puis connectez-vous.',
   resetPasswordInstructions: 'Verifiez votre email pour le lien de reinitialisation.',

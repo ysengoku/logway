@@ -82,8 +82,8 @@ function openEmailEditor() {
       :label="$t('auth.newPassword')"
       :placeholder="$t('auth.newPassword')"
       :has-error="!!props.authError?.password"
-      :show-aria-label="'Show new password'"
-      :hide-aria-label="'Hide new password'"
+      :show-aria-label="$t('auth.showNewPassword')"
+      :hide-aria-label="$t('auth.hideNewPassword')"
       autocomplete="new-password"
       @update:model-value="(value) => updateField('newPassword', value)"
     />
@@ -94,8 +94,8 @@ function openEmailEditor() {
       :label="$t('auth.confirmNewPassword')"
       :placeholder="$t('auth.confirmNewPassword')"
       :has-error="!!props.authError?.password"
-      :show-aria-label="'Show password confirmation'"
-      :hide-aria-label="'Hide password confirmation'"
+      :show-aria-label="$t('auth.showPasswordConfirmation')"
+      :hide-aria-label="$t('auth.hidePasswordConfirmation')"
       autocomplete="new-password"
       @update:model-value="(value) => updateField('confirmNewPassword', value)"
     />

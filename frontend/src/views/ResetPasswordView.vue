@@ -68,8 +68,8 @@ async function submit() {
           :label="`${$t('auth.password')} *`"
           :placeholder="$t('auth.placeholderPassword')"
           :has-error="!!error"
-          :show-aria-label="'Show password'"
-          :hide-aria-label="'Hide password'"
+          :show-aria-label="$t('auth.showPassword')"
+          :hide-aria-label="$t('auth.hidePassword')"
           autocomplete="new-password"
         />
         <PasswordField
@@ -78,8 +78,8 @@ async function submit() {
           :label="`${$t('auth.confirmPassword')} *`"
           :placeholder="$t('auth.placeholderRepeatPassword')"
           :has-error="!!error"
-          :show-aria-label="'Show password confirmation'"
-          :hide-aria-label="'Hide password confirmation'"
+          :show-aria-label="$t('auth.showPasswordConfirmation')"
+          :hide-aria-label="$t('auth.hidePasswordConfirmation')"
           autocomplete="new-password"
         />
 

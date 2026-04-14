@@ -209,8 +209,8 @@ async function submit() {
             :label="`${$t('auth.password')} *`"
             :placeholder="$t('auth.placeholderPassword')"
             :has-error="!!errors.password"
-            :show-aria-label="'Show password'"
-            :hide-aria-label="'Hide password'"
+            :show-aria-label="$t('auth.showPassword')"
+            :hide-aria-label="$t('auth.hidePassword')"
             autocomplete="current-password"
             @input="clearErrors"
           />
@@ -221,8 +221,8 @@ async function submit() {
             :label="`${$t('auth.confirmPassword')} *`"
             :placeholder="$t('auth.placeholderRepeatPassword')"
             :has-error="!!errors.password"
-            :show-aria-label="'Show password confirmation'"
-            :hide-aria-label="'Hide password confirmation'"
+            :show-aria-label="$t('auth.showPasswordConfirmation')"
+            :hide-aria-label="$t('auth.hidePasswordConfirmation')"
             autocomplete="new-password"
             @input="clearErrors"
           />

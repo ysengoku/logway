@@ -9,15 +9,13 @@ const props = withDefaults(
     label: string;
     placeholder?: string;
     hasError?: boolean;
-    showAriaLabel?: string;
-    hideAriaLabel?: string;
+    showAriaLabel: string;
+    hideAriaLabel: string;
     autocomplete?: string;
   }>(),
   {
     placeholder: '',
     hasError: false,
-    showAriaLabel: 'Show password',
-    hideAriaLabel: 'Hide password',
     autocomplete: 'current-password',
   },
 );
