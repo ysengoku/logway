@@ -12,6 +12,7 @@ const requiredAuthErrorKeys = [
   'weakPassword',
   'samePassword',
   'missingPassword',
+  'passwordRequired',
   'passwordsDoNotMatch',
   'reauthenticationNeeded',
   'validationFailed',

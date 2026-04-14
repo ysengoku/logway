@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { EMAIL_FORMAT_REGEX } from '@/constants/regex';
 import FeedbackMessage from '@/components/FeedbackMessage.vue';
+import PasswordField from '@/components/forms/PasswordField.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
 import { validateDisplayName, validatePassword } from '@/validators';
@@ -60,9 +61,10 @@ function validateInput() {
     return;
   }
 
-  // validate strong password
-
   if (mode.value === 'signin') {
+    if (!form.password) {
+      errors.value.password = 'auth.errors.passwordRequired';
+    }
     return;
   }
 
@@ -201,26 +203,29 @@ async function submit() {
           </div>
         </template>
         <template v-if="mode !== 'reset'">
-          <div class="form-row">
-            <label>{{ $t('auth.password') }} *</label>
-            <input
-              v-model="form.password"
-              type="password"
-              :placeholder="$t('auth.placeholderPassword')"
-              :class="{ is_error: !!errors.password }"
-              @input="clearErrors"
-            />
-          </div>
-          <div v-if="mode === 'signup'" class="form-row">
-            <label>{{ $t('auth.confirmPassword') }} *</label>
-            <input
-              v-model="form.passwordConfirm"
-              type="password"
-              :placeholder="$t('auth.placeholderRepeatPassword')"
-              :class="{ is_error: !!errors.password }"
-              @input="clearErrors"
-            />
-          </div>
+          <PasswordField
+            v-model="form.password"
+            input-id="auth-password"
+            :label="`${$t('auth.password')} *`"
+            :placeholder="$t('auth.placeholderPassword')"
+            :has-error="!!errors.password"
+            :show-aria-label="$t('auth.showPassword')"
+            :hide-aria-label="$t('auth.hidePassword')"
+            autocomplete="current-password"
+            @input="clearErrors"
+          />
+          <PasswordField
+            v-if="mode === 'signup'"
+            v-model="form.passwordConfirm"
+            input-id="auth-password-confirm"
+            :label="`${$t('auth.confirmPassword')} *`"
+            :placeholder="$t('auth.placeholderRepeatPassword')"
+            :has-error="!!errors.password"
+            :show-aria-label="$t('auth.showPasswordConfirmation')"
+            :hide-aria-label="$t('auth.hidePasswordConfirmation')"
+            autocomplete="new-password"
+            @input="clearErrors"
+          />
         </template>
 
         <FeedbackMessage

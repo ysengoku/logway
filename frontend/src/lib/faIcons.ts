@@ -12,6 +12,8 @@ import {
   faCircleXmark,
   faCopy,
   faDesktop,
+  faEye,
+  faEyeSlash,
   faGlobe,
   faLink,
   faLocationDot,
@@ -54,6 +56,8 @@ library.add(
   faCircleXmark,
   faCopy,
   faDesktop,
+  faEye,
+  faEyeSlash,
   faGlobe,
   faLink,
   faLocationDot,
@@ -87,5 +91,5 @@ library.add(
 export const PROFILE_ICON_OPTIONS = PROFILE_ICON_NAMES;
 
 export function getFaIcon(iconName: string): string {
-    return iconName.startsWith('fa-') ? `fa-solid ${iconName}` : `fa-solid fa-${iconName}`;
+  return iconName.startsWith('fa-') ? `fa-solid ${iconName}` : `fa-solid fa-${iconName}`;
 }
