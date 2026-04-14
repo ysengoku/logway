@@ -1,4 +1,4 @@
-import messages from '@/locales';
+import messages from '@/locales/index';
 import { useProfileStore } from '@/stores/profile';
 
 const DEFAULT_LOCALE = 'en';
