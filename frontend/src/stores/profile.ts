@@ -21,20 +21,14 @@ export const useProfileStore = defineStore('profile', () => {
   });
 
   async function fetchProfile() {
-    const traceId = `profile-fetch-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-    console.log('[profile] fetchProfile:start', { traceId });
     loadingStore.start();
     clearProfileError();
     try {
-      console.log('[profile] fetchProfile:api:start', { traceId });
       profile.value = await profilesApi.getSelf();
-      console.log('[profile] fetchProfile:api:end', { traceId, userId: profile.value?.id ?? null });
     } catch (e) {
-      console.log('[profile] fetchProfile:error', { traceId, error: e });
       error.value.profile = e instanceof Error ? e.message : 'Failed to fetch profile';
     } finally {
       loadingStore.stop();
-      console.log('[profile] fetchProfile:end', { traceId });
     }
   }
 
@@ -43,19 +37,11 @@ export const useProfileStore = defineStore('profile', () => {
       Pick<Profile, 'display_name' | 'preferred_locale' | 'icon' | 'icon_color' | 'icon_bg_color'>
     >,
   ) {
-    const traceId = `profile-update-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-    console.log('[profile] updateProfile:start', { traceId, updates });
     loadingStore.start();
     clearProfileError();
     try {
-      console.log('[profile] updateProfile:api:start', { traceId });
       profile.value = await profilesApi.updateSelf(updates);
-      console.log('[profile] updateProfile:api:end', {
-        traceId,
-        userId: profile.value?.id ?? null,
-      });
     } catch (e: unknown) {
-      console.log('[profile] updateProfile:error', { traceId, error: e });
       if (
         e instanceof ApiError &&
         (e.code === ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY ||
@@ -71,7 +57,6 @@ export const useProfileStore = defineStore('profile', () => {
       error.value.profile = e instanceof Error ? e.message : 'Failed to updateprofile';
     } finally {
       loadingStore.stop();
-      console.log('[profile] updateProfile:end', { traceId });
     }
   }
 
