@@ -51,11 +51,17 @@ type EmailChangeResult = {
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null);
+  const accessToken = ref<string | null>(null);
   const initialized = ref(false);
   const loadingStore = useLoadingStore();
   const profileStore = useProfileStore();
 
-  const authError = ref<{ email: string | null; password: string | null; auth: string | null; displayName?: string | null }>({
+  const authError = ref<{
+    email: string | null;
+    password: string | null;
+    auth: string | null;
+    displayName?: string | null;
+  }>({
     email: null,
     password: null,
     auth: null,
@@ -65,7 +71,11 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!user.value);
 
   async function syncProfileForCurrentUser() {
-    return user.value ? profileStore.fetchProfile() : Promise.resolve(profileStore.clearProfile());
+    if (user.value) {
+      await profileStore.fetchProfile();
+      return;
+    }
+    profileStore.clearProfile();
   }
 
   async function init() {
@@ -77,6 +87,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const { data } = await supabase.auth.getSession();
       user.value = data.session?.user ?? null;
+      accessToken.value = data.session?.access_token ?? null;
       await syncProfileForCurrentUser();
     } finally {
       loadingStore.stop();
@@ -84,15 +95,15 @@ export const useAuthStore = defineStore('auth', () => {
 
     supabase.auth.onAuthStateChange(async (event, session) => {
       user.value = session?.user ?? null;
-
-      // Password/email updates emit USER_UPDATED, which does not require profile refetch.
-      if (event === 'USER_UPDATED') {
-        return;
-      }
-
+      accessToken.value = session?.access_token ?? null;
       await syncProfileForCurrentUser();
     });
+
     initialized.value = true;
+  }
+
+  function getAccessToken() {
+    return accessToken.value;
   }
 
   async function signUp(email: string, password: string, displayName: string) {
@@ -102,7 +113,7 @@ export const useAuthStore = defineStore('auth', () => {
       setAuthError(null, null, null, `settings.errors.${displayNameErrorKey}`);
       return;
     }
-    
+
     loadingStore.start();
     try {
       const { error } = await supabase.auth.signUp({
@@ -144,6 +155,7 @@ export const useAuthStore = defineStore('auth', () => {
         setAuthErrorByUpdateContext({}, error);
       }
       user.value = null;
+      accessToken.value = null;
     } finally {
       loadingStore.stop();
     }
@@ -158,6 +170,23 @@ export const useAuthStore = defineStore('auth', () => {
       });
       if (error) {
         setAuthErrorByUpdateContext({}, error);
+      }
+    } finally {
+      loadingStore.stop();
+    }
+  }
+
+  async function updateUserCredentials(updates: { email?: string; password?: string }) {
+    if (!updates.email && !updates.password) {
+      return;
+    }
+
+    loadingStore.start();
+    clearAuthError();
+    try {
+      const { error } = await supabase.auth.updateUser(updates);
+      if (error) {
+        setAuthErrorByUpdateContext(updates, error);
       }
     } finally {
       loadingStore.stop();
@@ -267,7 +296,12 @@ export const useAuthStore = defineStore('auth', () => {
     authMessage: string | null = null,
     displayNameMessage: string | null = null,
   ) {
-    authError.value = { email: emailMessage, password: passwordMessage, auth: authMessage, displayName: displayNameMessage };
+    authError.value = {
+      email: emailMessage,
+      password: passwordMessage,
+      auth: authMessage,
+      displayName: displayNameMessage,
+    };
   }
 
   function clearAuthError() {
@@ -280,12 +314,14 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     authError,
     init,
+    getAccessToken,
     signUp,
     signIn,
     signOut,
     resetPassword,
     requestEmailChange,
     updatePassword,
+    updateUserCredentials,
     setAuthError,
   };
 });

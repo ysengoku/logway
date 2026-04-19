@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { useAuthStore } from '@/stores/auth';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
@@ -15,15 +15,20 @@ export class ApiError extends Error {
 }
 
 export async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
+  const authStore = useAuthStore();
+  const token = authStore.getAccessToken();
+
+  const headers = new Headers(options?.headers);
+  if (!(options?.body instanceof FormData) && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
 
   const res = await fetch(`${BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
     ...options,
+    headers,
   });
 
   if (!res.ok) {
@@ -32,6 +37,5 @@ export async function request<T>(path: string, options?: RequestInit): Promise<T
       .catch(() => ({ error: res.statusText, code: undefined as string | undefined }));
     throw new ApiError(error.error ?? 'Request failed', res.status, error.code);
   }
-
   return res.json();
 }
