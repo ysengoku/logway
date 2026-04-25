@@ -1,38 +1,114 @@
 @use '../variables' as *;
 
-.app-loader {
+@mixin loader-container($bg, $z: 9998, $background: null) {
   position: fixed;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background: rgba($bg, 0.5);
-  z-index: 9999;
+  z-index: $z;
+  @if $background != null {
+    background: $background;
+  } @else {
+    background: rgba($bg, 0.5);
+  }
+}
+
+@mixin loader-content($font-size: 28px, $color: null) {
+  display: inline-flex;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 600;
+  font-family: $font-display;
+  font-size: $font-size;
+  @if $color != null {
+    color: $color;
+  }
+}
+
+.app-loader {
+  @include loader-container($bg, 9998);
 
   .loader {
-    display: inline-flex;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: 600;
-    font-family: $font-display;
-    font-size: 28px;
+    @include loader-content(28px);
   }
 
   .loader::before {
-    content:"Loadi";
+    content: "Loadi";
     animation: l27 2s infinite;
     color: $accent2;
   }
 
   .loader::after {
-    content:"ng...";
+    content: "ng...";
     animation: l27 2s infinite 1s;
     color: $accent2;
   }
 
-  @keyframes l27{
-     50%,100%{transform:rotate(1turn)}
+  @keyframes l27 {
+    50%, 100% { transform: rotate(1turn); }
   }
+}
+
+.app-boot-loader {
+  @include loader-container($bg, 9999, linear-gradient(135deg, $header-gradient-start 0%, $accent 100%));
+
+  .loader {
+    @include loader-content(32px, rgba($bg, 0.5));
+    position: relative;
+    background: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    padding: 0;
+  }
+
+  #logway {
+    width: 180px;
+    height: 70px;
+    margin: 0 auto;
+    display: block;
+    background: none;
+    transform: translate3d(0,0,0);
+  }
+
+  .motion {
+    fill: currentColor;
+    fill-opacity: 0;
+    stroke: currentColor;
+    stroke-opacity: 0.7;
+    stroke-width: 1;
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    animation: draw 3s ease forwards;
+  }
+
+  .white {
+    color: #EEECE9;
+  }
+
+  .red {
+    color: #E55A4D;
+  }
+
+  @keyframes draw {
+    0%   { stroke-dashoffset: 2000; fill-opacity: 0; }
+    100% { stroke-dashoffset: 0; fill-opacity: 0.7; }
+  }
+
+  .logway-6 { animation-delay: 0s; }
+  .logway-5 { animation-delay: 0.4s; }
+  .logway-4 { animation-delay: 0.8s; }
+  .logway-3 { animation-delay: 1.2s; }
+  .logway-2 { animation-delay: 1.9s; }
+  .logway-1 { animation-delay: 2.2s; }
+}
+
+.app-boot-loader.fade-boot-loader-leave-active {
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.app-boot-loader.fade-boot-loader-leave-to {
+  opacity: 0 !important;
 }
