@@ -90,7 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
         accessToken.value = data.session?.access_token ?? null;
         await syncProfileForCurrentUser();
       })(),
-      new Promise((resolve) => setTimeout(resolve, 4000)),
+      new Promise((resolve) => setTimeout(resolve, 3600)),
     ]);
 
     supabase.auth.onAuthStateChange(async (event, session) => {

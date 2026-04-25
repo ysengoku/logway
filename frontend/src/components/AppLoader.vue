@@ -1,22 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
 
 const authStore = useAuthStore();
 const loadingStore = useLoadingStore();
-
-const isText = ref(false);
-let timeoutId: number | undefined;
-
-onMounted(() => {
-  timeoutId = window.setTimeout(() => {
-    isText.value = true;
-  }, 100);
-});
-onUnmounted(() => {
-  if (timeoutId) clearTimeout(timeoutId);
-});
 </script>
 
 <template>
