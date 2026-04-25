@@ -83,15 +83,15 @@ export const useAuthStore = defineStore('auth', () => {
       return;
     }
 
-    loadingStore.start();
-    try {
-      const { data } = await supabase.auth.getSession();
-      user.value = data.session?.user ?? null;
-      accessToken.value = data.session?.access_token ?? null;
-      await syncProfileForCurrentUser();
-    } finally {
-      loadingStore.stop();
-    }
+    await Promise.all([
+      (async () => {
+        const { data } = await supabase.auth.getSession();
+        user.value = data.session?.user ?? null;
+        accessToken.value = data.session?.access_token ?? null;
+        await syncProfileForCurrentUser();
+      })(),
+      new Promise((resolve) => setTimeout(resolve, 4000)),
+    ]);
 
     supabase.auth.onAuthStateChange(async (event, session) => {
       user.value = session?.user ?? null;
@@ -147,18 +147,13 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function signOut() {
-    loadingStore.start();
     clearAuthError();
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        setAuthErrorByUpdateContext({}, error);
-      }
-      user.value = null;
-      accessToken.value = null;
-    } finally {
-      loadingStore.stop();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      setAuthErrorByUpdateContext({}, error);
     }
+    user.value = null;
+    accessToken.value = null;
   }
 
   async function resetPassword(email: string) {
