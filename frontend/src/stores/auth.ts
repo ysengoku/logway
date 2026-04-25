@@ -151,6 +151,7 @@ export const useAuthStore = defineStore('auth', () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
       setAuthErrorByUpdateContext({}, error);
+      return;
     }
     user.value = null;
     accessToken.value = null;
