@@ -38,6 +38,9 @@ jobs:
       - name: Frontend type check
         run: pnpm --filter ./frontend run type-check
 
+      - name: Check for exposed secrets in frontend
+        run: grep -rE "SUPABASE_SERVICE_ROLE_KEY|VITE_SUPABASE|VITE_.*SERVICE_ROLE" ./frontend || true
+
       - name: Frontend unit tests
         run: pnpm --filter ./frontend run test:unit
 
@@ -69,6 +72,9 @@ jobs:
 
       - name: Server unit tests
         run: pnpm --filter server run test:unit
+
+      - name: API health check
+        run: curl -s "${{ secrets.API_URL }}/api/health" | grep '"status":"ok"'
 
       - name: Server build
         run: pnpm --filter server run build
