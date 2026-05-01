@@ -2,10 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import 'dotenv/config';
 
 export function createSupabaseClient() {
-  return createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!
-  );
+  return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!);
 }
 
 // Create a client with user's JWT token

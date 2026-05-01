@@ -15,9 +15,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const init: RequestInit = {
     method: req.method,
     headers,
-    body: req.method === 'GET'
-      ? undefined
-      : req.body ? JSON.stringify(req.body) : undefined,
+    body: req.method === 'GET' ? undefined : req.body ? JSON.stringify(req.body) : undefined,
   };
   const request = new Request(url.toString(), init);
 
