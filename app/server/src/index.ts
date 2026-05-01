@@ -42,9 +42,14 @@ app.use('/api/*', async (c, next) => {
 
   const token = authHeader.slice(7);
   const supabase = createSupabaseClient();
-  const { data, error } = await supabase.auth.getUser(token);
+  type AuthGetUserResult = { data: { user: { id: string } | null } | null; error: any };
+  interface AuthWithGetUser {
+    getUser(token?: string): Promise<AuthGetUserResult>;
+  }
+  const result = await (supabase.auth as unknown as AuthWithGetUser).getUser(token);
+  const { data, error } = result;
 
-  if (error || !data.user) {
+  if (error || !data?.user) {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 

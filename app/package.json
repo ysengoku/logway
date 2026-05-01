@@ -12,6 +12,11 @@
     "build:server": "pnpm --filter server run build",
     "build": "pnpm run build:frontend && pnpm run build:server"
   },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@vercel/node": "^5.7.13",
+    "@types/node": "^24.10.13"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

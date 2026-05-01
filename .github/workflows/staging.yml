@@ -26,9 +26,9 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache-dependency-path: app/pnpm-lock.yaml
 
-      - run: pnpm install --frozen-lockfile
+      - run: cd app && pnpm install --frozen-lockfile
       - run: pnpm dlx vercel@${{ env.VERCEL_CLI_VERSION }} --version
 
       - name: Validate required Vercel secrets

@@ -21,9 +21,6 @@ importers:
         specifier: ^4.12.2
         version: 4.12.2
     devDependencies:
-      '@types/node':
-        specifier: ^24.10.13
-        version: 24.12.2
       '@vercel/node':
         specifier: ^5.7.13
         version: 5.7.13
@@ -36,9 +33,6 @@ importers:
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
       vitest:
         specifier: ^4.1.4
         version: 4.1.4(@edge-runtime/vm@3.2.0)(@types/node@24.12.2)(vite@8.0.8(@types/node@24.12.2)(esbuild@0.27.3)(tsx@4.21.0))
