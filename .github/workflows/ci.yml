@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - staging
       - dev
   workflow_dispatch:
 
@@ -14,9 +15,16 @@ concurrency:
 jobs:
   frontend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Debug list repo root
+        run: |
+          echo "PWD: $(pwd)"
+          ls -la
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -28,6 +36,7 @@ jobs:
         with:
           node-version: 24.x
           cache: pnpm
+          cache-dependency-path: app/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -49,6 +58,9 @@ jobs:
 
   server:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,6 +75,7 @@ jobs:
         with:
           node-version: 24.x
           cache: pnpm
+          cache-dependency-path: app/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
