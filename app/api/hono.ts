@@ -1,21 +1,26 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import app from '../index';
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import app from "../server/src/index";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const host = req.headers.host || 'localhost';
-  const url = new URL(req.url || '/', `https://${host}`);
+  const host = req.headers.host || "localhost";
+  const url = new URL(req.url || "/", `https://${host}`);
 
   const headers = new Headers();
   Object.entries(req.headers || {}).forEach(([key, value]) => {
     if (value) {
-      headers.set(key, Array.isArray(value) ? value.join(',') : String(value));
+      headers.set(key, Array.isArray(value) ? value.join(",") : String(value));
     }
   });
 
   const init: RequestInit = {
     method: req.method,
     headers,
-    body: req.method === 'GET' ? undefined : req.body ? JSON.stringify(req.body) : undefined,
+    body:
+      req.method === "GET"
+        ? undefined
+        : req.body
+          ? JSON.stringify(req.body)
+          : undefined,
   };
   const request = new Request(url.toString(), init);
 
