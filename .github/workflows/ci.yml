@@ -74,7 +74,9 @@ jobs:
         run: pnpm --filter server run test:unit
 
       - name: API health check
-        run: curl -s "${{ secrets.API_URL }}/api/health" | grep '"status":"ok"'
+        env:
+          API_URL: ${{ secrets.API_URL }}
+        run: curl -s "$API_URL/api/health" | grep '"status":"ok"'
 
       - name: Server build
         run: pnpm --filter server run build
