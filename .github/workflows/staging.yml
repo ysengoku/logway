@@ -1,16 +1,39 @@
-name: Vercel Preview deploy for staging (manual)
+name: Vercel Preview deploy for staging
 
 on:
   workflow_dispatch:
 
 jobs:
-  trigger-deploy-hook:
+  deploy-preview:
     runs-on: ubuntu-latest
+    environment: Preview
     env:
-      DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_STAGING }}
-    steps:
-      - name: Validate deploy hook secret
-        run: '[[ -n "$DEPLOY_HOOK_URL" ]] || { echo "Missing VERCEL_DEPLOY_HOOK_STAGING"; exit 1; }'
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_CLI_VERSION: 50.42.0
 
-      - name: Trigger Vercel deploy hook
-        run: curl --fail --silent --show-error -X POST "$DEPLOY_HOOK_URL"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: app/pnpm-lock.yaml
+
+      - run: cd app && pnpm install --frozen-lockfile
+      - run: pnpm dlx vercel@${{ env.VERCEL_CLI_VERSION }} --version
+
+      - name: Validate required Vercel secrets
+        run: |
+          [[ -n "$VERCEL_TOKEN" ]] || { echo "Missing VERCEL_TOKEN"; exit 1; }
+          [[ -n "$VERCEL_ORG_ID" ]] || { echo "Missing VERCEL_ORG_ID"; exit 1; }
+          [[ -n "$VERCEL_PROJECT_ID" ]] || { echo "Missing VERCEL_PROJECT_ID"; exit 1; }
+
+      - run: pnpm dlx vercel@${{ env.VERCEL_CLI_VERSION }} pull --yes --environment=preview --token="$VERCEL_TOKEN"
+      - run: pnpm dlx vercel@${{ env.VERCEL_CLI_VERSION }} deploy --yes --token="$VERCEL_TOKEN"
