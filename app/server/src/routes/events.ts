@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { supabaseWithAuth } from '../db/supabase';
-import type { EventRow } from '@shared/types/event';
+import type { EventRow } from '../../../shared/types/event';
 
 const events = new Hono();
 

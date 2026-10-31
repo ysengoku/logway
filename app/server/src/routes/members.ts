@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { supabaseWithAuth } from '../db/supabase';
-import { ERROR_CODE_ALREADY_JOINED } from '@shared/constants/errorCodes';
+import { ERROR_CODE_ALREADY_JOINED } from '../../../shared/constants/errorCodes';
 
 const members = new Hono();
 // PostgreSQL unique_violation: duplicate key value violates unique constraint.

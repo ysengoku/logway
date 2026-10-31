@@ -1,12 +1,12 @@
-import { PROFILE_ICON_NAMES } from '@shared/types/profileIcon';
+import { PROFILE_ICON_NAMES } from '../../../shared/types/profileIcon';
 import {
   ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY,
   ERROR_CODE_PROFILE_ICON_INVALID,
-} from '@shared/constants/errorCodes';
-import { HEX_COLOR_REGEX } from '@shared/constants/regex';
+} from '../../../shared/constants/errorCodes';
+import { HEX_COLOR_REGEX } from '../../../shared/constants/regex';
 import { supabaseWithAuth } from '../db/supabase';
 import { mapDisplayNameValidationErrorToCode, validateDisplayName } from './profileValidation';
-import type { ProfileIconName } from '@shared/types/profileIcon';
+import type { ProfileIconName } from '../../../shared/types/profileIcon';
 import { Hono, type Context } from 'hono';
 
 const profiles = new Hono();

@@ -1,8 +1,8 @@
 import {
   ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY,
   ERROR_CODE_PROFILE_DISPLAY_NAME_INVALID,
-} from '@shared/constants/errorCodes';
-import { DISPLAY_NAME_ALLOWED_REGEX, RESERVED_DISPLAY_NAMES } from '@shared/constants/regex';
+} from '../../../shared/constants/errorCodes';
+import { DISPLAY_NAME_ALLOWED_REGEX, RESERVED_DISPLAY_NAMES } from '../../../shared/constants/regex';
 
 export type DisplayNameValidationError =
   | 'emptyDisplayName'

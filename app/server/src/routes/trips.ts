@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import members from './members';
 import { supabaseWithAuth } from '../db/supabase';
-import type { TripInput } from '@shared/types/trip';
+import type { TripInput } from '../../../shared/types/trip';
 
 const trips = new Hono();
 
