@@ -1,5 +1,4 @@
-export { ApiError } from './http';
+export { ApiError } from './errors';
 export { eventsApi } from './events';
-export { membersApi } from './members';
 export { profilesApi } from './profiles';
 export { tripsApi } from './trips';

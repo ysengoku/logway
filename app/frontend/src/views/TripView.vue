@@ -3,7 +3,6 @@ import CalendarGrid from '@/components/CalendarGrid.vue';
 import DayDetail from '@/components/DayDetail.vue';
 import EventModal from '@/components/modals/EventModal.vue';
 import TripModal from '@/components/modals/TripModal.vue';
-import TripMembers from '@/components/TripMembers.vue';
 import { useEventsStore } from '@/stores/events';
 import { useLoadingStore } from '@/stores/loading';
 import { useTripsStore } from '@/stores/trips';
@@ -103,7 +102,6 @@ async function deleteTrip() {
           @add-event="onAddEvent"
           @edit-event="onEditEvent"
         />
-        <TripMembers v-if="trip" :trip="trip" />
       </main>
     </div>
 

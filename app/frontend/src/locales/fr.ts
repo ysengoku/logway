@@ -73,6 +73,7 @@ export const common = {
   failedToSaveEvent: "Echec de l'enregistrement de l'evenement.",
   backToSignIn: 'Retour a la connexion',
   unknownError: "Une erreur s'est produite. Veuillez reessayer.",
+  openInAnotherTab: 'LogWay est deja ouvert dans un autre onglet. Veuillez utiliser cet onglet.',
 };
 
 export const day = {

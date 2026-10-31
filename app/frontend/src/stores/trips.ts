@@ -1,4 +1,4 @@
-import { membersApi, tripsApi } from '@/api/client';
+import { tripsApi } from '@/api/client';
 import { useLoadingStore } from './loading';
 import type { Trip, TripInput } from '@shared/types/trip';
 import { defineStore } from 'pinia';
@@ -75,23 +75,6 @@ export const useTripsStore = defineStore('trips', () => {
     }
   }
 
-  async function joinTrip(inviteCode: string): Promise<Trip> {
-    loadingStore.start();
-    try {
-      const joined = await tripsApi.getByInviteCode(inviteCode);
-      await membersApi.add(joined.id);
-      const index = trips.value.findIndex((t) => t.id === joined.id);
-      if (index === -1) {
-        trips.value.push(joined);
-      } else {
-        trips.value[index] = joined;
-      }
-      return joined;
-    } finally {
-      loadingStore.stop();
-    }
-  }
-
   async function updateTrip(id: string, body: Partial<TripInput>): Promise<Trip> {
     loadingStore.start();
     try {
@@ -121,7 +104,6 @@ export const useTripsStore = defineStore('trips', () => {
     error,
     fetchAll,
     createTrip,
-    joinTrip,
     updateTrip,
     deleteTrip,
   };

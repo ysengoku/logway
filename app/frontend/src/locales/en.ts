@@ -77,6 +77,7 @@ export const common = {
   failedToSaveEvent: 'Failed to save event.',
   backToSignIn: 'Back to Sign In',
   unknownError: 'An error occurred. Please try again.',
+  openInAnotherTab: 'LogWay is already open in another tab. Please use that tab.',
 };
 
 export const event = {

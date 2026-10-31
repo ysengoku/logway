@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import JoinTripModal from '@/components/modals/JoinTripModal.vue';
 import TripModal from '@/components/modals/TripModal.vue';
-import { ApiError } from '@/api/client';
-import { ERROR_CODE_ALREADY_JOINED } from '@shared/constants/errorCodes';
 import { useLoadingStore } from '@/stores/loading';
 import { useTripsStore } from '@/stores/trips';
 import type { TripInput } from '@shared/types/trip';
@@ -18,8 +15,6 @@ const tripsStore = useTripsStore();
 const loadingStore = useLoadingStore();
 const { d } = useI18n({ useScope: 'global' });
 const showNewTripModal = ref(false);
-const showJoinTripModal = ref(false);
-const joinTripMessage = ref<string | null>(null);
 const showAllUpcoming = ref(false);
 const showAllPast = ref(false);
 
@@ -43,31 +38,6 @@ async function createTrip(input: TripInput) {
   const trip = await tripsStore.createTrip(input);
   showNewTripModal.value = false;
   router.push({ name: 'trip', params: { id: trip.id } });
-}
-
-async function joinTrip(inviteCode: string) {
-  joinTripMessage.value = null;
-  try {
-    const trip = await tripsStore.joinTrip(inviteCode);
-    showJoinTripModal.value = false;
-    router.push({ name: 'trip', params: { id: trip.id } });
-  } catch (error) {
-    if (error instanceof ApiError && error.code === ERROR_CODE_ALREADY_JOINED) {
-      joinTripMessage.value = 'form.join.alreadyJoined';
-      return;
-    }
-    throw error;
-  }
-}
-
-function openJoinTripModal() {
-  joinTripMessage.value = null;
-  showJoinTripModal.value = true;
-}
-
-function closeJoinTripModal() {
-  joinTripMessage.value = null;
-  showJoinTripModal.value = false;
 }
 
 function goToTrip(trip: Trip) {
@@ -96,9 +66,6 @@ function formatDate(date: string): string {
           <div class="home__btn-group">
             <button class="home__new-btn button-accent" @click="showNewTripModal = true">
               {{ $t('common.newTrip') }}
-            </button>
-            <button class="button-secondary2" @click="openJoinTripModal">
-              {{ $t('common.joinTrip') }}
             </button>
           </div>
           <div class="home__section-header">
@@ -167,13 +134,6 @@ function formatDate(date: string): string {
         :title="$t('common.newTrip')"
         @close="showNewTripModal = false"
         @submit="createTrip"
-      />
-
-      <JoinTripModal
-        :open="showJoinTripModal"
-        :message="joinTripMessage ? $t(joinTripMessage) : null"
-        @close="closeJoinTripModal"
-        @submit="joinTrip"
       />
     </Teleport>
   </div>

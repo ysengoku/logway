@@ -11,4 +11,11 @@ export default defineConfig({
       '@shared': fileURLToPath(new URL('../shared', import.meta.url)),
     },
   },
+  // Pre-bundling breaks how sqlite-wasm locates its .wasm file.
+  optimizeDeps: {
+    exclude: ['@sqlite.org/sqlite-wasm'],
+  },
+  worker: {
+    format: 'es',
+  },
 });

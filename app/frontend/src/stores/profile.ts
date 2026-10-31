@@ -1,4 +1,4 @@
-import { ApiError } from '@/api/http';
+import { ApiError } from '@/api/errors';
 import {
   ERROR_CODE_PROFILE_DISPLAY_NAME_EMPTY,
   ERROR_CODE_PROFILE_DISPLAY_NAME_INVALID,
