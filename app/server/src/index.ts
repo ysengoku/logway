@@ -1,7 +1,7 @@
 import { Hono } from 'hono/quick';
 import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
-import { supabase } from './db/supabase';
+import { createSupabaseClient } from './db/supabase';
 import events from './routes/events';
 import profiles from './routes/profiles';
 import trips from './routes/trips';
@@ -41,9 +41,15 @@ app.use('/api/*', async (c, next) => {
   }
 
   const token = authHeader.slice(7);
-  const { data, error } = await supabase.auth.getUser(token);
+  const supabase = createSupabaseClient();
+  type AuthGetUserResult = { data: { user: { id: string } | null } | null; error: any };
+  interface AuthWithGetUser {
+    getUser(token?: string): Promise<AuthGetUserResult>;
+  }
+  const result = await (supabase.auth as unknown as AuthWithGetUser).getUser(token);
+  const { data, error } = result;
 
-  if (error || !data.user) {
+  if (error || !data?.user) {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
@@ -58,6 +64,7 @@ app.route('/api/profiles', profiles);
 app.route('/api/trips', trips);
 
 app.get('/api/health', async (c) => {
+  const supabase = createSupabaseClient();
   const { error } = await supabase.from('events').select('count').limit(1);
   return c.json({
     status: error ? 'error' : 'ok',
@@ -67,15 +74,17 @@ app.get('/api/health', async (c) => {
 
 const PORT = Number(process.env.PORT) || 3000;
 
-serve(
-  {
-    fetch: app.fetch,
-    port: PORT,
-  },
-  () => {
-    console.log(`Allowed CORS origins: ${allowedOrigins.join(', ') || '(none)'}`);
-    console.log(`LogWay server running at http://localhost:${PORT}`);
-  },
-);
+if (process.env.RUN_LOCAL === 'true' || process.env.NODE_ENV === 'development') {
+  serve(
+    {
+      fetch: app.fetch,
+      port: PORT,
+    },
+    () => {
+      console.log(`Allowed CORS origins: ${allowedOrigins.join(', ') || '(none)'}`);
+      console.log(`LogWay server running at http://localhost:${PORT}`);
+    },
+  );
+}
 
 export default app;

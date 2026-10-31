@@ -7,7 +7,15 @@
     "dev:frontend": "pnpm --filter ./frontend dev",
     "dev:server": "pnpm --filter ./server dev",
     "lint": "pnpm --filter ./frontend run lint:ci && pnpm --filter ./server run lint",
-    "supabase": "pnpm --filter ./server exec -- supabase"
+    "supabase": "pnpm --filter ./server exec -- supabase",
+    "build:frontend": "pnpm --filter frontend run build",
+    "build:server": "pnpm --filter server run build",
+    "build": "pnpm run build:frontend && pnpm run build:server"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@vercel/node": "^5.7.13",
+    "@types/node": "^24.10.13"
   },
   "keywords": [],
   "author": "",
