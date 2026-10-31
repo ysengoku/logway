@@ -1,0 +1,16 @@
+name: Vercel Preview deploy for staging (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger-deploy-hook:
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_STAGING }}
+    steps:
+      - name: Validate deploy hook secret
+        run: '[[ -n "$DEPLOY_HOOK_URL" ]] || { echo "Missing VERCEL_DEPLOY_HOOK_STAGING"; exit 1; }'
+
+      - name: Trigger Vercel deploy hook
+        run: curl --fail --silent --show-error -X POST "$DEPLOY_HOOK_URL"
