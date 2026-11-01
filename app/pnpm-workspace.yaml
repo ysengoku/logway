@@ -1,9 +1,0 @@
-packages:
-  - frontend
-  - server
-  - shared
-
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - esbuild
-  - supabase
