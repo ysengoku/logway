@@ -12,50 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  frontend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Debug list repo root
-        run: |
-          echo "PWD: $(pwd)"
-          ls -la
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.28.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 26.x
-          cache: pnpm
-          cache-dependency-path: app/pnpm-lock.yaml
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Frontend lint
-        run: pnpm --filter ./frontend run lint:ci
-
-      - name: Frontend type check
-        run: pnpm --filter ./frontend run type-check
-
-      - name: Check for exposed secrets in frontend
-        run: grep -rE "SUPABASE_SERVICE_ROLE_KEY|VITE_SUPABASE|VITE_.*SERVICE_ROLE" ./frontend || true
-
-      - name: Frontend unit tests
-        run: pnpm --filter ./frontend run test:unit
-
-      - name: Frontend build
-        run: pnpm --filter ./frontend run build
-
-  server:
+  app:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -79,16 +36,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Server lint
-        run: pnpm --filter server run lint
+      - name: Lint
+        run: pnpm run lint:ci
 
-      - name: Server unit tests
-        run: pnpm --filter server run test:unit
+      - name: Type check
+        run: pnpm run type-check
 
-      - name: API health check
-        env:
-          API_URL: ${{ secrets.API_URL }}
-        run: curl -s "$API_URL/api/health" | grep '"status":"ok"'
+      - name: Check for exposed secrets in client code
+        run: grep -rE "SUPABASE_SERVICE_ROLE_KEY|VITE_SUPABASE|VITE_.*SERVICE_ROLE" ./src || true
 
-      - name: Server build
-        run: pnpm --filter server run build
+      - name: Unit tests
+        run: pnpm run test:unit
+
+      - name: Build
+        run: pnpm run build
