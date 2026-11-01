@@ -107,7 +107,15 @@ const calendarDays = computed(() => {
   }> = [];
 
   for (let i = 0; i < firstDow; i++) {
-    days.push({ date: null, day: null, isToday: false, isSelected: false, isInTrip: false, isOutOfTrip: false, eventTypes: [] });
+    days.push({
+      date: null,
+      day: null,
+      isToday: false,
+      isSelected: false,
+      isInTrip: false,
+      isOutOfTrip: false,
+      eventTypes: [],
+    });
   }
 
   for (let d = 1; d <= lastDay; d++) {
@@ -116,18 +124,14 @@ const calendarDays = computed(() => {
     const types = [...new Set(events.map((e) => e.type))].slice(0, 4);
 
     const isInTrip =
-      (!props.startDate || date >= props.startDate) &&
-      (!props.endDate || date <= props.endDate);
+      (!props.startDate || date >= props.startDate) && (!props.endDate || date <= props.endDate);
 
     const isOutOfTrip = !!(props.startDate || props.endDate) && !isInTrip;
 
     days.push({
       date,
       day: d,
-      isToday:
-        d === today.getDate() &&
-        month === today.getMonth() &&
-        year === today.getFullYear(),
+      isToday: d === today.getDate() && month === today.getMonth() && year === today.getFullYear(),
       isSelected: date === props.selectedDate,
       isInTrip,
       isOutOfTrip,

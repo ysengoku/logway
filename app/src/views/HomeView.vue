@@ -29,9 +29,7 @@ const visibleUpcoming = computed(() =>
 );
 
 const visiblePast = computed(() =>
-  showAllPast.value
-    ? tripsStore.pastTrips
-    : tripsStore.pastTrips.slice(0, PREVIEW_COUNT),
+  showAllPast.value ? tripsStore.pastTrips : tripsStore.pastTrips.slice(0, PREVIEW_COUNT),
 );
 
 async function createTrip(input: TripInput) {
@@ -46,7 +44,8 @@ function goToTrip(trip: Trip) {
 
 function formatDates(trip: Trip): string {
   if (!trip.start_date && !trip.end_date) return '';
-  if (trip.start_date && trip.end_date) return `${formatDate(trip.start_date)} → ${formatDate(trip.end_date)}`;
+  if (trip.start_date && trip.end_date)
+    return `${formatDate(trip.start_date)} → ${formatDate(trip.end_date)}`;
   return trip.start_date ? formatDate(trip.start_date) : formatDate(trip.end_date ?? '');
 }
 
@@ -91,7 +90,11 @@ function formatDate(date: string): string {
               class="home__show-more"
               @click="showAllUpcoming = !showAllUpcoming"
             >
-              {{ showAllUpcoming ? $t('home.showLess') : $t('home.showAll', { count: tripsStore.upcomingTrips.length }) }}
+              {{
+                showAllUpcoming
+                  ? $t('home.showLess')
+                  : $t('home.showAll', { count: tripsStore.upcomingTrips.length })
+              }}
             </button>
           </template>
         </section>
@@ -121,7 +124,11 @@ function formatDate(date: string): string {
               class="home__show-more"
               @click="showAllPast = !showAllPast"
             >
-              {{ showAllPast ? $t('home.showLess') : $t('home.showAll', { count: tripsStore.pastTrips.length }) }}
+              {{
+                showAllPast
+                  ? $t('home.showLess')
+                  : $t('home.showAll', { count: tripsStore.pastTrips.length })
+              }}
             </button>
           </template>
         </section>

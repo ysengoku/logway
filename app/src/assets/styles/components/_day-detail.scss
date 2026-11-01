@@ -104,12 +104,24 @@
       background: $surface2;
     }
 
-    &--flight      { border-left-color: $flight; }
-    &--transport   { border-left-color: $transport; }
-    &--hotel       { border-left-color: $hotel; }
-    &--restaurant  { border-left-color: $restaurant; }
-    &--activity    { border-left-color: $activity; }
-    &--link        { border-left-color: $link; }
+    &--flight {
+      border-left-color: $flight;
+    }
+    &--transport {
+      border-left-color: $transport;
+    }
+    &--hotel {
+      border-left-color: $hotel;
+    }
+    &--restaurant {
+      border-left-color: $restaurant;
+    }
+    &--activity {
+      border-left-color: $activity;
+    }
+    &--link {
+      border-left-color: $link;
+    }
   }
 
   &__card-time {
@@ -138,11 +150,11 @@
     color: $text;
     margin-bottom: 8px;
 
-      .day-detail__card-icon {
-        font-size: 16px;
-        color: $text-muted;
-        margin-right: 6px;
-      }
+    .day-detail__card-icon {
+      font-size: 16px;
+      color: $text-muted;
+      margin-right: 6px;
+    }
   }
 
   &__card-meta {
@@ -238,7 +250,7 @@
       transition: background 0.15s;
 
       &:hover {
-          color: $text-muted;
+        color: $text-muted;
       }
     }
   }

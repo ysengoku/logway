@@ -8,7 +8,7 @@ export const useTripsStore = defineStore('trips', () => {
   const trips = ref<Trip[]>([]);
   const error = ref<string | null>(null);
   const loadingStore = useLoadingStore();
-  
+
   const MIDNIGHT_BUFFER_MS = 1000;
   let dayTickTimeout: number | undefined;
   const today = ref(initializeToday());

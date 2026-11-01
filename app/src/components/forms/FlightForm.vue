@@ -13,39 +13,45 @@ const emit = defineEmits<{
 
 const form = reactive({
   flight_number: props.initial?.flight_number ?? '',
-  booking_ref:   props.initial?.booking_ref ?? '',
-  dep_place:     props.initial?.dep_place ?? '',
-  dep_tz_id:     props.initial?.dep_tz_id ?? 'Asia/Tokyo',
+  booking_ref: props.initial?.booking_ref ?? '',
+  dep_place: props.initial?.dep_place ?? '',
+  dep_tz_id: props.initial?.dep_tz_id ?? 'Asia/Tokyo',
   dep_local_date: props.initial?.dep_local_date ?? '',
   dep_local_time: props.initial?.dep_local_time ?? '',
-  arr_place:     props.initial?.arr_place ?? '',
-  arr_tz_id:     props.initial?.arr_tz_id ?? 'Asia/Tokyo',
+  arr_place: props.initial?.arr_place ?? '',
+  arr_tz_id: props.initial?.arr_tz_id ?? 'Asia/Tokyo',
   arr_local_date: props.initial?.arr_local_date ?? '',
   arr_local_time: props.initial?.arr_local_time ?? '',
-  note:          props.initial?.note ?? '',
+  note: props.initial?.note ?? '',
 });
 
 function submit() {
-  if (!form.flight_number || !form.dep_local_date || !form.dep_local_time || !form.arr_local_date || !form.arr_local_time) {
+  if (
+    !form.flight_number ||
+    !form.dep_local_date ||
+    !form.dep_local_time ||
+    !form.arr_local_date ||
+    !form.arr_local_time
+  ) {
     alert('Flight number, departure date/time and arrival date/time are required.');
     return;
   }
 
   emit('submit', {
     type: 'flight',
-    flight_number:  form.flight_number,
-    booking_ref:    form.booking_ref || undefined,
-    dep_place:      form.dep_place || undefined,
-    dep_tz_id:      form.dep_tz_id,
+    flight_number: form.flight_number,
+    booking_ref: form.booking_ref || undefined,
+    dep_place: form.dep_place || undefined,
+    dep_tz_id: form.dep_tz_id,
     dep_local_date: form.dep_local_date,
     dep_local_time: form.dep_local_time,
-    dep_utc:        toUTC(form.dep_local_date, form.dep_local_time, form.dep_tz_id) ?? undefined,
-    arr_place:      form.arr_place || undefined,
-    arr_tz_id:      form.arr_tz_id,
+    dep_utc: toUTC(form.dep_local_date, form.dep_local_time, form.dep_tz_id) ?? undefined,
+    arr_place: form.arr_place || undefined,
+    arr_tz_id: form.arr_tz_id,
     arr_local_date: form.arr_local_date,
     arr_local_time: form.arr_local_time,
-    arr_utc:        toUTC(form.arr_local_date, form.arr_local_time, form.arr_tz_id) ?? undefined,
-    note:           form.note || undefined,
+    arr_utc: toUTC(form.arr_local_date, form.arr_local_time, form.arr_tz_id) ?? undefined,
+    note: form.note || undefined,
   });
 }
 

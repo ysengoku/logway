@@ -15,16 +15,16 @@ const emit = defineEmits<{
 const form = reactive({
   transport_mode: (props.initial?.transport_mode ?? 'train') as TransportMode,
   service_number: props.initial?.service_number ?? '',
-  booking_ref:    props.initial?.booking_ref ?? '',
-  dep_place:      props.initial?.dep_place ?? '',
-  dep_tz_id:      props.initial?.dep_tz_id ?? 'Asia/Tokyo',
+  booking_ref: props.initial?.booking_ref ?? '',
+  dep_place: props.initial?.dep_place ?? '',
+  dep_tz_id: props.initial?.dep_tz_id ?? 'Asia/Tokyo',
   dep_local_date: props.initial?.dep_local_date ?? '',
   dep_local_time: props.initial?.dep_local_time ?? '',
-  arr_place:      props.initial?.arr_place ?? '',
-  arr_tz_id:      props.initial?.arr_tz_id ?? 'Asia/Tokyo',
+  arr_place: props.initial?.arr_place ?? '',
+  arr_tz_id: props.initial?.arr_tz_id ?? 'Asia/Tokyo',
   arr_local_date: props.initial?.arr_local_date ?? '',
   arr_local_time: props.initial?.arr_local_time ?? '',
-  note:           props.initial?.note ?? '',
+  note: props.initial?.note ?? '',
 });
 
 function submit() {
@@ -34,21 +34,21 @@ function submit() {
   }
 
   emit('submit', {
-    type:           'transport',
+    type: 'transport',
     transport_mode: form.transport_mode,
     service_number: form.service_number || undefined,
-    booking_ref:    form.booking_ref || undefined,
-    dep_place:      form.dep_place || undefined,
-    dep_tz_id:      form.dep_tz_id,
+    booking_ref: form.booking_ref || undefined,
+    dep_place: form.dep_place || undefined,
+    dep_tz_id: form.dep_tz_id,
     dep_local_date: form.dep_local_date,
     dep_local_time: form.dep_local_time || undefined,
-    dep_utc:        toUTC(form.dep_local_date, form.dep_local_time, form.dep_tz_id) ?? undefined,
-    arr_place:      form.arr_place || undefined,
-    arr_tz_id:      form.arr_tz_id,
+    dep_utc: toUTC(form.dep_local_date, form.dep_local_time, form.dep_tz_id) ?? undefined,
+    arr_place: form.arr_place || undefined,
+    arr_tz_id: form.arr_tz_id,
     arr_local_date: form.arr_local_date || undefined,
     arr_local_time: form.arr_local_time || undefined,
-    arr_utc:        toUTC(form.arr_local_date, form.arr_local_time, form.arr_tz_id) ?? undefined,
-    note:           form.note || undefined,
+    arr_utc: toUTC(form.arr_local_date, form.arr_local_time, form.arr_tz_id) ?? undefined,
+    note: form.note || undefined,
   });
 }
 

@@ -44,12 +44,7 @@ function onModalSaved() {
       <div v-if="!selectedDate" class="calendar-view__empty">
         {{ $t('calendar.selectDate') }}
       </div>
-      <DayDetail
-        v-else
-        :date="selectedDate"
-        @add-event="onAddEvent"
-        @edit-event="onEditEvent"
-      />
+      <DayDetail v-else :date="selectedDate" @add-event="onAddEvent" @edit-event="onEditEvent" />
     </main>
 
     <EventModal

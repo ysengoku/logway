@@ -12,12 +12,12 @@ const emit = defineEmits<{
 }>();
 
 const form = reactive({
-  name:             props.initial?.name ?? '',
-  address:          props.initial?.address ?? '',
+  name: props.initial?.name ?? '',
+  address: props.initial?.address ?? '',
   reservation_date: props.initial?.reservation_date ?? props.defaultDate ?? '',
   reservation_time: props.initial?.reservation_time ?? '',
-  url:              props.initial?.url ?? '',
-  note:             props.initial?.note ?? '',
+  url: props.initial?.url ?? '',
+  note: props.initial?.note ?? '',
 });
 
 function submit() {
@@ -27,13 +27,13 @@ function submit() {
   }
 
   emit('submit', {
-    type:             'restaurant',
-    name:             form.name,
-    address:          form.address || undefined,
+    type: 'restaurant',
+    name: form.name,
+    address: form.address || undefined,
     reservation_date: form.reservation_date,
     reservation_time: form.reservation_time,
-    url:              form.url || undefined,
-    note:             form.note || undefined,
+    url: form.url || undefined,
+    note: form.note || undefined,
   });
 }
 

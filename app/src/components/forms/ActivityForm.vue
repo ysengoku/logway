@@ -12,12 +12,12 @@ const emit = defineEmits<{
 }>();
 
 const form = reactive({
-  name:            props.initial?.name ?? '',
-  address:         props.initial?.address ?? '',
-  schedule_date:   props.initial?.schedule_date ?? props.defaultDate ?? '',
-  schedule_time:   props.initial?.schedule_time ?? '',
-  url:             props.initial?.url ?? '',
-  note:            props.initial?.note ?? '',
+  name: props.initial?.name ?? '',
+  address: props.initial?.address ?? '',
+  schedule_date: props.initial?.schedule_date ?? props.defaultDate ?? '',
+  schedule_time: props.initial?.schedule_time ?? '',
+  url: props.initial?.url ?? '',
+  note: props.initial?.note ?? '',
 });
 
 function submit() {
@@ -27,13 +27,13 @@ function submit() {
   }
 
   emit('submit', {
-    type:            'activity',
-    name:            form.name,
-    address:         form.address || undefined,
-    schedule_date:   form.schedule_date,
-    schedule_time:   form.schedule_time || undefined,
-    url:             form.url || undefined,
-    note:            form.note || undefined,
+    type: 'activity',
+    name: form.name,
+    address: form.address || undefined,
+    schedule_date: form.schedule_date,
+    schedule_time: form.schedule_time || undefined,
+    url: form.url || undefined,
+    note: form.note || undefined,
   });
 }
 

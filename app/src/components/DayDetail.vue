@@ -83,10 +83,7 @@ async function deleteEvent(id: string) {
 
       <!-- By type view -->
       <div v-else class="day-detail__groups">
-        <template
-          v-for="group in EVENT_TYPE_OPTIONS"
-          :key="group.type"
-        >
+        <template v-for="group in EVENT_TYPE_OPTIONS" :key="group.type">
           <template v-if="getEventsByType(group.type).length">
             <div class="day-detail__group-label">
               <FaIcon :icon="getFaIcon(group.icon)" class="day-detail__group-faicon" />

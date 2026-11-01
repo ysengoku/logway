@@ -19,7 +19,7 @@
     cursor: pointer;
     display: inline-block;
     transition: opacity 0.15s;
-    
+
     &-highlight {
       color: $accent2;
     }
@@ -110,9 +110,9 @@
     justify-content: center;
     transition: all 0.15s;
 
-      &:hover {
-        color: $bg;
-      }
+    &:hover {
+      color: $bg;
+    }
   }
 
   &__account-menu {
@@ -133,7 +133,7 @@
       font-weight: 600;
       color: $accent2;
     }
-  
+
     &__item {
       border: none;
       border-radius: 8px;
@@ -142,7 +142,7 @@
       color: rgba($bg, 0.9);
       background: transparent;
       cursor: pointer;
-    
+
       &:hover {
         background: rgba($bg, 0.14);
       }

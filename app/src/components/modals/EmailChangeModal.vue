@@ -100,11 +100,7 @@ async function submitEmailChange() {
             @input="emailDraft = ($event.target as HTMLInputElement)?.value"
           />
         </div>
-        <FeedbackMessage
-          v-if="errorMessage"
-          :message="errorMessage"
-          :type="'error'"
-        />
+        <FeedbackMessage v-if="errorMessage" :message="errorMessage" :type="'error'" />
         <div class="settings__email-actions">
           <button
             type="button"
@@ -126,15 +122,8 @@ async function submitEmailChange() {
       </div>
 
       <div v-else class="settings__email-modal-body">
-        <FeedbackMessage
-          :message="$t('settings.emailChangePending')"
-          :type="'info'"
-        />
-        <button
-          type="button"
-          class="button-primary settings__modal-close-btn"
-          @click="closeModal"
-        >
+        <FeedbackMessage :message="$t('settings.emailChangePending')" :type="'info'" />
+        <button type="button" class="button-primary settings__modal-close-btn" @click="closeModal">
           {{ $t('common.close') }}
         </button>
       </div>

@@ -82,7 +82,9 @@
       padding: 7px 9px;
       border-radius: 6px;
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
-      transition: opacity 0.14s ease, transform 0.14s ease;
+      transition:
+        opacity 0.14s ease,
+        transform 0.14s ease;
       z-index: 20;
     }
 

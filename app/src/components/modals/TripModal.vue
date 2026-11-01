@@ -4,14 +4,17 @@ import TripForm from '@/components/forms/TripForm.vue';
 import type { Trip } from '@/shared/types/trip';
 import type { TripInput } from '@/shared/types/trip';
 
-withDefaults(defineProps<{
-  open: boolean;
-  title: string;
-  initial?: Partial<Trip>;
-  submitLabel?: string;
-}>(), {
-  submitLabel: 'Create trip',
-});
+withDefaults(
+  defineProps<{
+    open: boolean;
+    title: string;
+    initial?: Partial<Trip>;
+    submitLabel?: string;
+  }>(),
+  {
+    submitLabel: 'Create trip',
+  },
+);
 
 const emit = defineEmits<{
   close: [];

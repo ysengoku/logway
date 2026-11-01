@@ -93,9 +93,7 @@ onBeforeUnmount(() => {
       backgroundColor: iconBgColor,
     }"
   >
-    <FaIcon
-      :icon="iconName"
-    />
+    <FaIcon :icon="iconName" />
   </button>
 
   <Teleport to="body">

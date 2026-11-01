@@ -12,15 +12,15 @@ const emit = defineEmits<{
 }>();
 
 const form = reactive({
-  name:             props.initial?.name ?? '',
-  booking_ref:      props.initial?.booking_ref ?? '',
-  address:          props.initial?.address ?? '',
-  check_in_date:    props.initial?.check_in_date ?? props.defaultDate ?? '',
-  check_in_time:    props.initial?.check_in_time ?? '',
-  check_out_date:   props.initial?.check_out_date ?? '',
-  check_out_time:   props.initial?.check_out_time ?? '',
-  url:              props.initial?.url ?? '',
-  note:             props.initial?.note ?? '',
+  name: props.initial?.name ?? '',
+  booking_ref: props.initial?.booking_ref ?? '',
+  address: props.initial?.address ?? '',
+  check_in_date: props.initial?.check_in_date ?? props.defaultDate ?? '',
+  check_in_time: props.initial?.check_in_time ?? '',
+  check_out_date: props.initial?.check_out_date ?? '',
+  check_out_time: props.initial?.check_out_time ?? '',
+  url: props.initial?.url ?? '',
+  note: props.initial?.note ?? '',
 });
 
 function submit() {
@@ -30,16 +30,16 @@ function submit() {
   }
 
   emit('submit', {
-    type:             'hotel',
-    name:             form.name,
-    booking_ref:      form.booking_ref || undefined,
-    address:          form.address || undefined,
-    check_in_date:    form.check_in_date,
-    check_in_time:    form.check_in_time || undefined,
-    check_out_date:   form.check_out_date || undefined,
-    check_out_time:   form.check_out_time || undefined,
-    url:              form.url || undefined,
-    note:             form.note || undefined,
+    type: 'hotel',
+    name: form.name,
+    booking_ref: form.booking_ref || undefined,
+    address: form.address || undefined,
+    check_in_date: form.check_in_date,
+    check_in_time: form.check_in_time || undefined,
+    check_out_date: form.check_out_date || undefined,
+    check_out_time: form.check_out_time || undefined,
+    url: form.url || undefined,
+    note: form.note || undefined,
   });
 }
 

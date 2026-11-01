@@ -133,11 +133,7 @@ function onSaveClick() {
 
       <div class="event-modal__actions">
         <button class="button-secondary" @click="emit('close')">{{ $t('common.cancel') }}</button>
-        <button
-          class="button-primary"
-          :disabled="saving"
-          @click="onSaveClick"
-        >
+        <button class="button-primary" :disabled="saving" @click="onSaveClick">
           {{ saving ? $t('common.saving') : $t('common.save') }}
         </button>
       </div>

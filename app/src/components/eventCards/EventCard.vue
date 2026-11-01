@@ -25,7 +25,6 @@ const eventIcon = computed(() => {
   if (mode?.type === EVENT_TYPE.TRANSPORT) {
     const transportMode = TRANSPORT_MODES.find((m) => m.value === props.event.transport_mode);
     return getFaIcon(transportMode?.icon ?? '');
-
   }
   return getFaIcon(mode?.icon ?? '');
 });
@@ -75,26 +74,25 @@ function getEventTime(event: EventRow): string | null {
 </script>
 
 <template>
-  <div
-    class="day-detail__card"
-    :class="`day-detail__card--${event.type}`"
-  >
+  <div class="day-detail__card" :class="`day-detail__card--${event.type}`">
     <div class="day-detail__card-time">
       {{ getEventTime(event) ?? '—' }}
     </div>
     <div class="day-detail__card-content">
       <div class="day-detail__card-title">
-        <FaIcon v-if="mode === 'timeline'" :icon="eventIcon" class="day-detail__card-icon material-icons" />
+        <FaIcon
+          v-if="mode === 'timeline'"
+          :icon="eventIcon"
+          class="day-detail__card-icon material-icons"
+        />
         {{ getEventTitle(event) }}
       </div>
       <div class="day-detail__card-meta">
-        <EventMetaTransport v-if="event.type === EVENT_TYPE.FLIGHT || event.type === EVENT_TYPE.TRANSPORT" 
+        <EventMetaTransport
+          v-if="event.type === EVENT_TYPE.FLIGHT || event.type === EVENT_TYPE.TRANSPORT"
           :event="event"
         />
-        <EventMetaHotel v-else-if="event.type === EVENT_TYPE.HOTEL" 
-          :event="event"
-          :date="date"
-        />
+        <EventMetaHotel v-else-if="event.type === EVENT_TYPE.HOTEL" :event="event" :date="date" />
         <div v-if="event.address" class="day-detail__card-meta-address">
           <FaIcon :icon="faLocationDot" />
           {{ event.address }}

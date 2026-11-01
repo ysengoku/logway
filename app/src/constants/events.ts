@@ -20,8 +20,8 @@ export const EVENT_TYPE_OPTIONS: { type: EventType; icon: string; label: string 
 
 export const TRANSPORT_MODES: { value: TransportMode; label: string; icon: string }[] = [
   { value: 'train', label: 'Train', icon: 'fa-train' },
-  { value: 'bus',   label: 'Bus', icon: 'fa-bus' },
+  { value: 'bus', label: 'Bus', icon: 'fa-bus' },
   { value: 'ferry', label: 'Ferry', icon: 'fa-sailboat' },
-  { value: 'car',   label: 'Car', icon: 'fa-car' },
+  { value: 'car', label: 'Car', icon: 'fa-car' },
   { value: 'other', label: 'Other', icon: 'fa-cable-car' },
 ];

@@ -12,10 +12,10 @@ const emit = defineEmits<{
 }>();
 
 const form = reactive({
-  link_title:   props.initial?.link_title ?? '',
-  link_url:     props.initial?.link_url ?? '',
+  link_title: props.initial?.link_title ?? '',
+  link_url: props.initial?.link_url ?? '',
   related_date: props.initial?.related_date ?? props.defaultDate ?? '',
-  note:         props.initial?.note ?? '',
+  note: props.initial?.note ?? '',
 });
 
 function submit() {
@@ -25,11 +25,11 @@ function submit() {
   }
 
   emit('submit', {
-    type:         'link',
-    link_title:   form.link_title,
-    link_url:     form.link_url,
+    type: 'link',
+    link_title: form.link_title,
+    link_url: form.link_url,
     related_date: form.related_date || undefined,
-    note:         form.note || undefined,
+    note: form.note || undefined,
   });
 }
 

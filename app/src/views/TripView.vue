@@ -10,7 +10,7 @@ import type { TripInput } from '@/shared/types/trip';
 import type { EventRow } from '@/shared/types/event';
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
@@ -29,10 +29,10 @@ const showEditModal = ref(false);
 const { t } = useI18n();
 
 onMounted(async () => {
-    await eventsStore.fetchByTrip(tripId.value);
-    if (tripsStore.trips.length === 0) {
-      await tripsStore.fetchAll();
-    }
+  await eventsStore.fetchByTrip(tripId.value);
+  if (tripsStore.trips.length === 0) {
+    await tripsStore.fetchAll();
+  }
 });
 
 function onSelectDate(date: string) {
@@ -96,12 +96,7 @@ async function deleteTrip() {
         <div v-if="!selectedDate" class="trip-view__empty">
           {{ $t('calendar.selectDate') }}
         </div>
-        <DayDetail
-          v-else
-          :date="selectedDate"
-          @add-event="onAddEvent"
-          @edit-event="onEditEvent"
-        />
+        <DayDetail v-else :date="selectedDate" @add-event="onAddEvent" @edit-event="onEditEvent" />
       </main>
     </div>
 

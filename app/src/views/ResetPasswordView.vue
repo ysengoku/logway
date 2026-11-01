@@ -85,11 +85,7 @@ async function submit() {
 
         <FeedbackMessage v-if="error" :message="error" :type="'error'" />
 
-        <button
-          class="auth-view__submit"
-          :disabled="loadingStore.active"
-          @click="submit"
-        >
+        <button class="auth-view__submit" :disabled="loadingStore.active" @click="submit">
           {{ $t('auth.updatePassword') }}
         </button>
       </template>

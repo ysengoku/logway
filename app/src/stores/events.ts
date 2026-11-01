@@ -30,7 +30,8 @@ export const useEventsStore = defineStore('events', () => {
   function eventDates(event: EventRow): string[] {
     switch (event.type) {
       case 'flight':
-      case 'transport':  return [event.dep_local_date].filter(Boolean) as string[];
+      case 'transport':
+        return [event.dep_local_date].filter(Boolean) as string[];
       case 'hotel': {
         if (!event.check_in_date) return [];
         if (!event.check_out_date) return [event.check_in_date];
@@ -43,10 +44,14 @@ export const useEventsStore = defineStore('events', () => {
         }
         return dates;
       }
-      case 'restaurant': return [event.reservation_date].filter(Boolean) as string[];
-      case 'activity':   return [event.schedule_date].filter(Boolean) as string[];
-      case 'link':       return [event.related_date].filter(Boolean) as string[];
-      default:           return [];
+      case 'restaurant':
+        return [event.reservation_date].filter(Boolean) as string[];
+      case 'activity':
+        return [event.schedule_date].filter(Boolean) as string[];
+      case 'link':
+        return [event.related_date].filter(Boolean) as string[];
+      default:
+        return [];
     }
   }
 
@@ -62,11 +67,16 @@ export const useEventsStore = defineStore('events', () => {
   function sortKey(event: EventRow): string {
     switch (event.type) {
       case 'flight':
-      case 'transport':  return event.dep_local_time ?? '99:99';
-      case 'hotel':      return event.check_in_time ?? '99:99';
-      case 'restaurant': return event.reservation_time ?? '99:99';
-      case 'activity':   return event.schedule_time ?? '99:99';
-      default:           return '99:99';
+      case 'transport':
+        return event.dep_local_time ?? '99:99';
+      case 'hotel':
+        return event.check_in_time ?? '99:99';
+      case 'restaurant':
+        return event.reservation_time ?? '99:99';
+      case 'activity':
+        return event.schedule_time ?? '99:99';
+      default:
+        return '99:99';
     }
   }
 
@@ -134,12 +144,18 @@ export const useEventsStore = defineStore('events', () => {
   function primaryDate(event: EventRow): string | null {
     switch (event.type) {
       case 'flight':
-      case 'transport':  return event.dep_local_date ?? null;
-      case 'hotel':      return event.check_in_date ?? null;
-      case 'restaurant': return event.reservation_date ?? null;
-      case 'activity':   return event.schedule_date ?? null;
-      case 'link':       return event.related_date ?? null;
-      default:           return null;
+      case 'transport':
+        return event.dep_local_date ?? null;
+      case 'hotel':
+        return event.check_in_date ?? null;
+      case 'restaurant':
+        return event.reservation_date ?? null;
+      case 'activity':
+        return event.schedule_date ?? null;
+      case 'link':
+        return event.related_date ?? null;
+      default:
+        return null;
     }
   }
 

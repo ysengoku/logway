@@ -17,7 +17,8 @@ function formatTime(time: string | null | undefined): string | null {
       {{ event.dep_place }} → {{ event.arr_place }}
     </div>
     <div class="day-detail__card-meta-transport-time">
-      {{ $t('form.event.arrival') }}: {{ event.arr_local_date }} {{ formatTime(event.arr_local_time) }}
+      {{ $t('form.event.arrival') }}: {{ event.arr_local_date }}
+      {{ formatTime(event.arr_local_time) }}
     </div>
   </div>
 </template>

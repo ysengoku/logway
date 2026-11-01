@@ -10,12 +10,12 @@ export interface Profile {
   updated_at: string;
 }
 
-export interface ProfileForm{
+export interface ProfileForm {
   displayName: string;
   icon: ProfileIconName;
   iconColor: string;
   iconBgColor: string;
-};
+}
 
 export interface UserForm {
   email: string;

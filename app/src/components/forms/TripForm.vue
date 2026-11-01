@@ -4,12 +4,15 @@ import { useI18n } from 'vue-i18n';
 import type { Trip } from '@/shared/types/trip';
 import type { TripInput } from '@/shared/types/trip';
 
-const props = withDefaults(defineProps<{
-  initial?: Partial<Trip>;
-  submitLabel?: string;
-}>(), {
-  submitLabel: 'Create trip',
-});
+const props = withDefaults(
+  defineProps<{
+    initial?: Partial<Trip>;
+    submitLabel?: string;
+  }>(),
+  {
+    submitLabel: 'Create trip',
+  },
+);
 
 const emit = defineEmits<{
   submit: [data: TripInput];
@@ -60,20 +63,11 @@ function submit() {
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.trip.startDate') }}</label>
-        <input
-          v-model="form.start_date"
-          type="date"
-          @change="onStartDateChange"
-        />
+        <input v-model="form.start_date" type="date" @change="onStartDateChange" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.trip.endDate') }}</label>
-        <input
-          v-model="form.end_date"
-          type="date"
-          :min="minEndDate"
-          :disabled="!form.start_date"
-        />
+        <input v-model="form.end_date" type="date" :min="minEndDate" :disabled="!form.start_date" />
       </div>
     </div>
     <div class="new-trip-form__actions">
