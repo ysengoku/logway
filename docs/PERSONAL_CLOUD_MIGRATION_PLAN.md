@@ -210,11 +210,11 @@ CREATE TABLE profile (
 | `@supabase/supabase-js` | 削除（フロントのログインで使っているため、フェーズ2の後） |
 | `supabase/`（マイグレーション、設定） | `docs/archive/supabase/` に移動済み。データ移行の方針が決まったら扱いを決める |
 | Vercel の `SUPABASE_*`, `VITE_SUPABASE_*`, `VITE_API_URL` | 削除 |
-| `ARCHITECTURE.md`, `docs/ARCHITECTURE.md` | 新しい構成に書き直す |
+| `ARCHITECTURE.md`, `docs/ARCHITECTURE.md`, `docs/SUPABASE_SETUP.md`, 旧デプロイ手順書 | 削除済み。v2 の設計は README の Architecture と ADR に書く |
 
 ## 8. 作業の順番
 
-各フェーズをブランチに分け、staging のプレビューで確認してから main に入れる。
+各フェーズをブランチに分け、v2 に PR で入れる。動作確認は Preview デプロイ（GitHub Actions から手動実行、ブランチは任意）で行う。
 
 | # | フェーズ | 内容 | 完了の条件 |
 |---|---|---|---|
@@ -225,8 +225,19 @@ CREATE TABLE profile (
 | 5 | 閲覧リンク | スナップショットの作成・更新・削除、`/share/:fileId` ページ | ログインしていないブラウザで閲覧できる |
 | 6 | Dropbox | `DropboxAdapter`、Dropbox の OAuth、ログイン画面でのプロバイダ選択 | Dropbox でもフェーズ3と5が動く |
 
-- フェーズ1〜3の間は、本番（main）は今の Supabase 版のまま動かし続ける
-- フェーズ4が完了した時点で、本番が新しい構成に切り替わる
+- フェーズ1〜4の間は、本番（main）は今の Supabase 版のまま動かし続ける
+- **フェーズ5まで完了したら v2 を main に入れてリリースする**（Google Drive のみ）。Dropbox（フェーズ6）はリリース後に追加する
+
+## 8.1 リリース前チェックリスト
+
+旧 `PRODUCTION_DEPLOY_CHECKLIST.md` から、v2 でも有効な項目を引き継いだもの。
+
+- [ ] オフライン・タイムアウト時に、ユーザーにわかるメッセージを出す。通信が戻れば再読み込みせずに続けられる
+- [ ] 回線を絞った状態（DevTools の throttling）で、起動と同期を確認する
+- [ ] Vercel のログを確認できるようにし、問題があれば直前のデプロイに戻す手順（Instant Rollback）を確認しておく
+- [ ] Google の OAuth 同意画面を「本番」にする（「テスト」のままだとリフレッシュトークンが7日で失効する）
+- [ ] プライバシーポリシーのページを用意する（セクション9）
+- [ ] README にスクリーンショット、公開 URL、Architecture を載せる
 
 ## 9. データ保護・規約
 
@@ -244,5 +255,6 @@ CREATE TABLE profile (
 1. **今の Supabase のデータを移すか**：移すなら、Supabase から書き出して SQLite に取り込む一回きりのスクリプトをフェーズ4の前に作る
 2. **データの全削除機能**：設定画面に「Drive 上のデータを含めてすべて削除」を置くか
 3. **Google のスコープ区分と審査の要否**（セクション3）
+4. **ログインなしで試せるデモモード**：同期なしで、端末内の SQLite だけに保存するモード。サーバー側の仕組みは不要で、Google アカウントなしでも試せる（旧 `DEMO_SESSION_TODO.md` の案を v2 向けに置き換えたもの）。入れる場合、画面上で「データはこのブラウザにだけ保存されます」と明示する
 
 決定済み: 閲覧リンクから予約番号を常に除外し、メモは既定で除外する（セクション6）

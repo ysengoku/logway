@@ -1,4 +1,4 @@
-name: Vercel Preview deploy for staging
+name: Vercel Preview deploy
 
 on:
   workflow_dispatch:
