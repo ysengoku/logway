@@ -7,21 +7,8 @@ export interface Executor {
 }
 
 // Shared by the Web Worker (OPFS-backed DB) and unit tests (in-memory DB).
+// Spec: tests/unit/api/*.test.ts, tests/unit/db/migrate.test.ts
 export function createExecutor(db: Database): Executor {
-  db.exec('PRAGMA foreign_keys = ON');
-
-  return {
-    query<T>(sql: string, bind?: SqlValue[]): T[] {
-      const rows = db.exec({ sql, bind, rowMode: 'object', returnValue: 'resultRows' });
-      // Rows come back with a null prototype; copy them into plain objects.
-      return rows.map((row) => ({ ...row }) as T);
-    },
-    exec(statements: Statement[]) {
-      db.transaction(() => {
-        for (const { sql, bind } of statements) {
-          db.exec({ sql, bind });
-        }
-      });
-    },
-  };
+  void db;
+  throw new Error('Not implemented');
 }

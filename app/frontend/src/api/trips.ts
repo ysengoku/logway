@@ -1,51 +1,34 @@
 import { getDb } from '@/db/client';
-import { ApiError } from './errors';
-import { insertStatement, pickColumns, updateStatement } from './sql';
 import type { Db } from '@/db/types';
 import type { Trip, TripInput } from '@shared/types/trip';
 
-const EDITABLE_COLUMNS = ['title', 'start_date', 'end_date'] as const;
-
+// Spec: tests/unit/api/trips.test.ts
 export function createTripsApi(db: () => Promise<Db>) {
-  async function getById(id: string): Promise<Trip> {
-    const [trip] = await (await db()).query<Trip>('SELECT * FROM trips WHERE id = ?', [id]);
-    if (!trip) throw new ApiError('Trip not found.', 404);
-    return trip;
-  }
+  void db;
+  const notImplemented = (): never => {
+    throw new Error('Not implemented');
+  };
 
   return {
     async getAll(): Promise<Trip[]> {
-      return (await db()).query<Trip>('SELECT * FROM trips ORDER BY start_date IS NULL, start_date');
+      return notImplemented();
     },
-    getById,
+    async getById(id: string): Promise<Trip> {
+      void id;
+      return notImplemented();
+    },
     async create(body: TripInput): Promise<Trip> {
-      if (!body.title) throw new ApiError('Title is required.', 400);
-      const id = crypto.randomUUID();
-      const now = new Date().toISOString();
-      await (await db()).exec([
-        insertStatement('trips', [
-          ['id', id],
-          ...pickColumns(body, EDITABLE_COLUMNS),
-          ['created_at', now],
-          ['updated_at', now],
-        ]),
-      ]);
-      return getById(id);
+      void body;
+      return notImplemented();
     },
     async update(id: string, body: Partial<TripInput>): Promise<Trip> {
-      await getById(id);
-      const values = pickColumns(body, EDITABLE_COLUMNS);
-      if (values.length > 0) {
-        await (await db()).exec([
-          updateStatement('trips', id, [...values, ['updated_at', new Date().toISOString()]]),
-        ]);
-      }
-      return getById(id);
+      void id;
+      void body;
+      return notImplemented();
     },
     async delete(id: string): Promise<{ success: boolean }> {
-      // Events are removed by ON DELETE CASCADE.
-      await (await db()).exec([{ sql: 'DELETE FROM trips WHERE id = ?', bind: [id] }]);
-      return { success: true };
+      void id;
+      return notImplemented();
     },
   };
 }
