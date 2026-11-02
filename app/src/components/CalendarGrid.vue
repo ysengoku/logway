@@ -45,7 +45,7 @@ onMounted(async () => {
   if (tripId) {
     if (tripsStore.trips.length === 0) await tripsStore.fetchAll();
     const trip = tripsStore.trips.find((t) => t.id === tripId);
-    if (trip?.start_date) initFromDateString(trip.start_date);
+    if (trip) initFromDateString(trip.start_date);
   }
 });
 

@@ -103,6 +103,7 @@ export const form = {
     startDate: 'Start Date',
     endDate: 'End Date',
     nameRequired: 'Trip name is required.',
+    dateRequired: 'Start and end dates are required.',
   },
   join: {
     inviteCodeRequired: 'Invite code is required.',

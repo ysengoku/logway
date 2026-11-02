@@ -1,11 +1,12 @@
 CREATE TABLE trips (
   id            TEXT PRIMARY KEY,
   title         TEXT NOT NULL,
-  start_date    TEXT,
-  end_date      TEXT,
+  start_date    TEXT NOT NULL,
+  end_date      TEXT NOT NULL,
   share_file_id TEXT,
   created_at    TEXT NOT NULL,
-  updated_at    TEXT NOT NULL
+  updated_at    TEXT NOT NULL,
+  CHECK (end_date >= start_date)
 );
 
 CREATE TABLE events (

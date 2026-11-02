@@ -43,14 +43,10 @@ function goToTrip(trip: Trip) {
 }
 
 function formatDates(trip: Trip): string {
-  if (!trip.start_date && !trip.end_date) return '';
-  if (trip.start_date && trip.end_date)
-    return `${formatDate(trip.start_date)} → ${formatDate(trip.end_date)}`;
-  return trip.start_date ? formatDate(trip.start_date) : formatDate(trip.end_date ?? '');
+  return `${formatDate(trip.start_date)} → ${formatDate(trip.end_date)}`;
 }
 
 function formatDate(date: string): string {
-  if (!date) return '';
   return d(new Date(`${date}T00:00:00`), 'short');
 }
 </script>

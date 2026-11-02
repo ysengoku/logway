@@ -3,7 +3,7 @@ import type { Database } from '@sqlite.org/sqlite-wasm';
 
 export interface Executor {
   query<T>(sql: string, bind?: SqlValue[]): T[];
-  exec(statements: Statement[]): void;
+  exec(statements: Statement[]): number;
 }
 
 class SqliteExecutor implements Executor {
@@ -21,12 +21,15 @@ class SqliteExecutor implements Executor {
     return rows.map((row) => ({ ...row }) as T);
   }
 
-  exec(statements: Statement[]) {
+  exec(statements: Statement[]): number {
+    let changes = 0;
     this.db.transaction(() => {
       for (const { sql, bind } of statements) {
         this.db.exec({ sql: sql, bind: bind });
+        changes += this.db.changes();
       }
     });
+    return changes;
   }
 }
 

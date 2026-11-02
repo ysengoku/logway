@@ -1,4 +1,4 @@
-import { tripsApi } from '@/repositories/client';
+import { tripRepository } from '@/repositories/client';
 import { useLoadingStore } from './loading';
 import type { Trip, TripInput } from '@/shared/types/trip';
 import { defineStore } from 'pinia';
@@ -42,21 +42,21 @@ export const useTripsStore = defineStore('trips', () => {
 
   const upcomingTrips = computed(() =>
     trips.value
-      .filter((t) => !t.end_date || t.end_date >= today.value)
-      .sort((a, b) => (a.start_date ?? '').localeCompare(b.start_date ?? '')),
+      .filter((t) => t.end_date >= today.value)
+      .sort((a, b) => a.start_date.localeCompare(b.start_date)),
   );
 
   const pastTrips = computed(() =>
     trips.value
-      .filter((t) => t.end_date && t.end_date < today.value)
-      .sort((a, b) => (b.start_date ?? '').localeCompare(a.start_date ?? '')),
+      .filter((t) => t.end_date < today.value)
+      .sort((a, b) => b.start_date.localeCompare(a.start_date)),
   );
 
   async function fetchAll() {
     loadingStore.start();
     error.value = null;
     try {
-      trips.value = await tripsApi.getAll();
+      trips.value = await tripRepository.getAll();
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to fetch trips';
     } finally {
@@ -67,7 +67,7 @@ export const useTripsStore = defineStore('trips', () => {
   async function createTrip(body: TripInput): Promise<Trip> {
     loadingStore.start();
     try {
-      const created = await tripsApi.create(body);
+      const created = await tripRepository.create(body);
       trips.value.push(created);
       return created;
     } finally {
@@ -78,7 +78,7 @@ export const useTripsStore = defineStore('trips', () => {
   async function updateTrip(id: string, body: Partial<TripInput>): Promise<Trip> {
     loadingStore.start();
     try {
-      const updated = await tripsApi.update(id, body);
+      const updated = await tripRepository.update(id, body);
       const index = trips.value.findIndex((t) => t.id === id);
       if (index !== -1) trips.value[index] = updated;
       return updated;
@@ -90,7 +90,7 @@ export const useTripsStore = defineStore('trips', () => {
   async function deleteTrip(id: string) {
     loadingStore.start();
     try {
-      await tripsApi.delete(id);
+      await tripRepository.delete(id);
       trips.value = trips.value.filter((t) => t.id !== id);
     } finally {
       loadingStore.stop();

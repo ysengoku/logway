@@ -34,7 +34,7 @@ Vercel Functions（app/api/、フレームワークなし）
     （データの読み書きにはサーバーを使わない）
 ```
 
-- 画面とストアは今どおり `tripsApi.getAll()` などを呼ぶ。`repositories/` の中身だけを SQLite 版に差し替えるので、画面側の変更は最小限で済む。
+- 画面とストアは今どおり `tripRepository.getAll()` などを呼ぶ。`repositories/` の中身だけを SQLite 版に差し替えるので、画面側の変更は最小限で済む。
 - サーバー側の関数は4つだけなので Hono は使わず、Vercel 標準の書き方（`export function GET(request: Request)` など）にする。
 
 ### ディレクトリ構成

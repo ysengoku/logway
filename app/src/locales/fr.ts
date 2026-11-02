@@ -105,6 +105,7 @@ export const form = {
     startDate: 'Date de debut',
     endDate: 'Date de fin',
     nameRequired: 'Le nom du voyage est obligatoire.',
+    dateRequired: 'Les dates de debut et de fin sont obligatoires.',
   },
   join: {
     inviteCodeRequired: "Le code d'invitation est obligatoire.",
