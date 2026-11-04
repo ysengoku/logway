@@ -3,6 +3,7 @@ import { TIMEZONES } from '@/utils/time';
 import { TRANSPORT_MODES } from '@/constants/events';
 import type { EventOfType, TransportEventInput, TransportMode } from '@/shared/types/event';
 import { reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   initial?: EventOfType<'transport'>;
@@ -12,6 +13,7 @@ const emit = defineEmits<{
   submit: [data: TransportEventInput];
 }>();
 
+const { t } = useI18n();
 const form = reactive({
   mode: (props.initial?.mode ?? 'train') as TransportMode,
   service_number: props.initial?.service_number ?? '',
@@ -36,7 +38,7 @@ function submit() {
     !form.arr_date ||
     !form.arr_time
   ) {
-    alert('Departure and arrival place, date and time are required.');
+    alert(t('form.event.errors.transportRequired'));
     return;
   }
 

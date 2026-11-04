@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { EventOfType, LinkEventInput } from '@/shared/types/event';
 
 const props = defineProps<{
@@ -11,6 +12,7 @@ const emit = defineEmits<{
   submit: [data: LinkEventInput];
 }>();
 
+const { t } = useI18n();
 const form = reactive({
   title: props.initial?.title ?? '',
   url: props.initial?.url ?? '',
@@ -20,7 +22,7 @@ const form = reactive({
 
 function submit() {
   if (!form.title || !form.url || !form.start_date) {
-    alert('Title, URL and date are required.');
+    alert(t('form.event.errors.linkRequired'));
     return;
   }
 

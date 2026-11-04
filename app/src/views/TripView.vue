@@ -60,8 +60,12 @@ function onModalSaved() {
 }
 
 async function onEditTrip(input: TripInput) {
-  await tripsStore.updateTrip(tripId.value, input);
-  showEditModal.value = false;
+  try {
+    await tripsStore.updateTrip(tripId.value, input);
+    showEditModal.value = false;
+  } catch (e) {
+    alert(e instanceof Error ? e.message : t('common.errorOccurred'));
+  }
 }
 
 async function deleteTrip() {

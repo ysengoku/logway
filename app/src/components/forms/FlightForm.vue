@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { EventOfType, FlightEventInput } from '@/shared/types/event';
 import { TIMEZONES } from '@/utils/time';
 
@@ -11,6 +12,7 @@ const emit = defineEmits<{
   submit: [data: FlightEventInput];
 }>();
 
+const { t } = useI18n();
 const form = reactive({
   service_number: props.initial?.service_number ?? '',
   booking_ref: props.initial?.booking_ref ?? '',
@@ -35,7 +37,7 @@ function submit() {
     !form.arr_date ||
     !form.arr_time
   ) {
-    alert('Flight number, departure and arrival place, date and time are required.');
+    alert(t('form.event.errors.flightRequired'));
     return;
   }
 

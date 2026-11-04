@@ -104,6 +104,7 @@ export const form = {
     endDate: 'End Date',
     nameRequired: 'Trip name is required.',
     dateRequired: 'Start and end dates are required.',
+    dateOrder: 'End date must not be before start date.',
   },
   join: {
     inviteCodeRequired: 'Invite code is required.',
@@ -113,6 +114,15 @@ export const form = {
     alreadyJoined: 'You have already joined this trip.',
   },
   event: {
+    errors: {
+      flightRequired: 'Flight number, departure and arrival place, date and time are required.',
+      transportRequired: 'Departure and arrival place, date and time are required.',
+      hotelRequired: 'Property name, check-in date and check-out date are required.',
+      checkoutAfterCheckin: 'Check-out date must be after check-in date.',
+      restaurantRequired: 'Restaurant name, reservation date and time are required.',
+      activityRequired: 'Name and date are required.',
+      linkRequired: 'Title, URL and date are required.',
+    },
     name: 'Name',
     reference: 'Booking Reference',
     from: 'From',

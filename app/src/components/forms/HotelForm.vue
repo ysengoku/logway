@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { EventOfType, HotelEventInput } from '@/shared/types/event';
 
 const props = defineProps<{
@@ -11,6 +12,7 @@ const emit = defineEmits<{
   submit: [data: HotelEventInput];
 }>();
 
+const { t } = useI18n();
 const form = reactive({
   name: props.initial?.name ?? '',
   booking_ref: props.initial?.booking_ref ?? '',
@@ -25,11 +27,11 @@ const form = reactive({
 
 function submit() {
   if (!form.name || !form.start_date || !form.end_date) {
-    alert('Property name, check-in date and check-out date are required.');
+    alert(t('form.event.errors.hotelRequired'));
     return;
   }
   if (form.end_date <= form.start_date) {
-    alert('Check-out date must be after check-in date.');
+    alert(t('form.event.errors.checkoutAfterCheckin'));
     return;
   }
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { EventOfType, RestaurantEventInput } from '@/shared/types/event';
 
 const props = defineProps<{
@@ -11,6 +12,7 @@ const emit = defineEmits<{
   submit: [data: RestaurantEventInput];
 }>();
 
+const { t } = useI18n();
 const form = reactive({
   name: props.initial?.name ?? '',
   address: props.initial?.address ?? '',
@@ -22,7 +24,7 @@ const form = reactive({
 
 function submit() {
   if (!form.name || !form.start_date || !form.start_time) {
-    alert('Restaurant name, reservation date and time are required.');
+    alert(t('form.event.errors.restaurantRequired'));
     return;
   }
 
