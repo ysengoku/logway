@@ -17,7 +17,16 @@ describe('migrate', () => {
     const tables = await db.query<{ name: string }>(
       "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name",
     );
-    expect(tables.map((t) => t.name)).toEqual(['events', 'meta', 'profile', 'trips']);
+    expect(tables.map((t) => t.name)).toEqual([
+      'events',
+      'hotel_events',
+      'link_events',
+      'meta',
+      'place_events',
+      'profile',
+      'transport_events',
+      'trips',
+    ]);
   });
 
   it('is safe to run more than once', async () => {

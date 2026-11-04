@@ -1,4 +1,4 @@
-import { tripRepository } from '@/repositories/client';
+import { tripRepository } from '@/repositories';
 import { useLoadingStore } from './loading';
 import type { Trip, TripInput } from '@/shared/types/trip';
 import { defineStore } from 'pinia';

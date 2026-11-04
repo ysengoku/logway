@@ -7,7 +7,7 @@ import { useEventsStore } from '@/stores/events';
 import { useLoadingStore } from '@/stores/loading';
 import { useTripsStore } from '@/stores/trips';
 import type { TripInput } from '@/shared/types/trip';
-import type { EventRow } from '@/shared/types/event';
+import type { TripEvent } from '@/shared/types/event';
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
@@ -22,7 +22,7 @@ const trip = computed(() => tripsStore.trips.find((t) => t.id === tripId.value))
 const selectedDate = ref<string | null>(null);
 const modalOpen = ref(false);
 const modalDate = ref<string | undefined>();
-const modalEvent = ref<EventRow | undefined>();
+const modalEvent = ref<TripEvent | undefined>();
 
 const loadingStore = useLoadingStore();
 const showEditModal = ref(false);
@@ -45,7 +45,7 @@ function onAddEvent(date: string) {
   modalOpen.value = true;
 }
 
-function onEditEvent(event: EventRow) {
+function onEditEvent(event: TripEvent) {
   modalDate.value = undefined;
   modalEvent.value = event;
   modalOpen.value = true;

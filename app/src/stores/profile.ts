@@ -4,7 +4,7 @@ import {
   ERROR_CODE_PROFILE_DISPLAY_NAME_INVALID,
   ERROR_CODE_PROFILE_ICON_INVALID,
 } from '@/shared/constants/errorCodes';
-import { profilesApi } from '../repositories/client';
+import { profilesApi } from '../repositories';
 import { useLoadingStore } from './loading';
 import type { Profile } from '@/shared/types/profile';
 import { defineStore } from 'pinia';

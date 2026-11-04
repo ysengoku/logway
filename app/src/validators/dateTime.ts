@@ -10,3 +10,18 @@ export function isValidDate(value: string): boolean {
   const date = new Date(`${value}T00:00:00Z`);
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
+
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+export function isValidTime(value: string): boolean {
+  return TIME_PATTERN.test(value);
+}
+
+export function isValidTimeZone(value: string): boolean {
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: value });
+    return true;
+  } catch {
+    return false;
+  }
+}

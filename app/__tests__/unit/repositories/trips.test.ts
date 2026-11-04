@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { createEventsApi } from '@/repositories/events';
+import { EventRepository } from '@/repositories/events';
 import { ApiError } from '@/repositories/errors';
 import { TripRepository } from '@/repositories/trips';
 import { createMemoryDb } from '../helpers/memoryDb';
@@ -120,13 +120,22 @@ describe('tripRepository (SQLite)', () => {
   });
 
   it('deletes the trip together with its events', async () => {
-    const eventsApi = createEventsApi(async () => db);
+    const eventRepository = new EventRepository(async () => db);
     const trip = await tripRepository.create(tripInput());
-    await eventsApi.create({ trip_id: trip.id, type: 'link', link_title: 'a', link_url: 'b' });
+    await eventRepository.create(trip.id, {
+      type: 'link',
+      title: 'a',
+      url: 'b',
+      start_date: '2026-11-01',
+      start_time: null,
+      end_date: '2026-11-01',
+      note: null,
+    });
 
     await tripRepository.delete(trip.id);
 
     expect(await tripRepository.getAll()).toEqual([]);
-    expect(await eventsApi.getAll()).toEqual([]);
+    expect(await eventRepository.getByTrip(trip.id)).toEqual([]);
+    expect(await db.query('SELECT event_id FROM link_events')).toEqual([]);
   });
 });

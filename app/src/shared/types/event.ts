@@ -1,130 +1,80 @@
-// Base
 export type EventType = 'flight' | 'transport' | 'hotel' | 'restaurant' | 'activity' | 'link';
 
 export type TransportMode = 'train' | 'bus' | 'ferry' | 'car' | 'other';
 
-export interface BaseEvent {
-  id: string;
-  type: EventType;
-  trip_id?: string;
-  created_at: string;
-  updated_at: string;
-  note?: string;
+// Field names match the columns of `events` and the type-specific detail tables.
+interface EventFields {
+  start_date: string;
+  start_time: string | null;
+  // Last day the event is shown on the calendar; differs from start_date only for hotels.
+  end_date: string;
+  note: string | null;
 }
 
-// Flight
-export interface FlightLeg {
-  place?: string;
-  tz_id?: string;
-  local_date?: string; // YYYY-MM-DD
-  local_time?: string; // HH:MM
-  utc?: string; // ISO8601
+interface TransportFields extends EventFields {
+  start_time: string;
+  service_number: string | null;
+  booking_ref: string | null;
+  dep_place: string;
+  dep_tz_id: string;
+  arr_date: string;
+  arr_time: string;
+  arr_place: string;
+  arr_tz_id: string;
 }
 
-export interface FlightEvent extends BaseEvent {
+interface PlaceFields extends EventFields {
+  name: string;
+  address: string | null;
+  url: string | null;
+}
+
+export interface FlightEventInput extends TransportFields {
   type: 'flight';
-  flight_number: string;
-  booking_ref?: string;
-  departure: FlightLeg;
-  arrival: FlightLeg;
+  mode: 'flight';
+  service_number: string;
 }
 
-// Transport
-export interface TransportEvent extends BaseEvent {
+export interface TransportEventInput extends TransportFields {
   type: 'transport';
-  transport_mode: TransportMode;
-  service_number?: string;
-  booking_ref?: string;
-  departure: FlightLeg;
-  arrival: FlightLeg;
+  mode: TransportMode;
 }
 
-// Hotel
-export interface HotelEvent extends BaseEvent {
+export interface HotelEventInput extends PlaceFields {
   type: 'hotel';
-  name: string;
-  booking_ref?: string;
-  address?: string;
-  url?: string;
-  check_in_date: string;
-  check_in_time?: string;
-  check_out_date?: string;
+  booking_ref: string | null;
+  check_out_time: string | null;
 }
 
-// Restaurant
-export interface RestaurantEvent extends BaseEvent {
+export interface RestaurantEventInput extends PlaceFields {
   type: 'restaurant';
-  name: string;
-  address?: string;
-  url?: string;
-  reservation_date: string;
-  reservation_time: string;
+  start_time: string;
 }
 
-// Activity
-export interface ActivityEvent extends BaseEvent {
+export interface ActivityEventInput extends PlaceFields {
   type: 'activity';
-  name: string;
-  address?: string;
-  url?: string;
-  schedule_date: string;
-  schedule_time?: string;
 }
 
-// Link
-export interface LinkEvent extends BaseEvent {
+export interface LinkEventInput extends EventFields {
   type: 'link';
-  link_title: string;
-  link_url: string;
-  related_date?: string;
+  title: string;
+  url: string;
 }
 
-// Union
-export type TripEvent =
-  FlightEvent | TransportEvent | HotelEvent | RestaurantEvent | ActivityEvent | LinkEvent;
+// What a form submits.
+export type EventInput =
+  | FlightEventInput
+  | TransportEventInput
+  | HotelEventInput
+  | RestaurantEventInput
+  | ActivityEventInput
+  | LinkEventInput;
 
-// DB row (flat, as stored in Supabase)
-export interface EventRow {
+export type TripEvent = EventInput & {
   id: string;
-  type: EventType;
-  trip_id?: string;
+  trip_id: string;
   created_at: string;
   updated_at: string;
-  note?: string;
+};
 
-  flight_number?: string;
-  service_number?: string;
-  transport_mode?: TransportMode;
-  booking_ref?: string;
-
-  dep_place?: string;
-  dep_tz_id?: string;
-  dep_local_date?: string;
-  dep_local_time?: string;
-  dep_utc?: string;
-
-  arr_place?: string;
-  arr_tz_id?: string;
-  arr_local_date?: string;
-  arr_local_time?: string;
-  arr_utc?: string;
-
-  name?: string;
-  address?: string;
-  url?: string;
-
-  check_in_date?: string;
-  check_in_time?: string;
-  check_out_date?: string;
-  check_out_time?: string;
-
-  reservation_date?: string;
-  reservation_time?: string;
-
-  schedule_date?: string;
-  schedule_time?: string;
-
-  link_title?: string;
-  link_url?: string;
-  related_date?: string;
-}
+export type EventOfType<T extends EventType> = Extract<TripEvent, { type: T }>;

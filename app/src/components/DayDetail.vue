@@ -3,7 +3,7 @@ import EventCard from '@/components/eventCards/EventCard.vue';
 import { EVENT_TYPE_OPTIONS } from '@/constants/events';
 import { getFaIcon } from '@/lib/faIcons';
 import { useEventsStore } from '@/stores/events';
-import type { EventRow, EventType } from '@/shared/types/event';
+import type { EventType, TripEvent } from '@/shared/types/event';
 import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
 
@@ -13,7 +13,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   addEvent: [date: string];
-  editEvent: [event: EventRow];
+  editEvent: [event: TripEvent];
 }>();
 
 const eventsStore = useEventsStore();

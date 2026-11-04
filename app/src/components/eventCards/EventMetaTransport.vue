@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { EventRow } from '@/shared/types/event';
+import type { EventOfType } from '@/shared/types/event';
 
 defineProps<{
-  event: EventRow;
+  event: EventOfType<'flight'> | EventOfType<'transport'>;
 }>();
 
 function formatTime(time: string | null | undefined): string | null {
@@ -17,8 +17,8 @@ function formatTime(time: string | null | undefined): string | null {
       {{ event.dep_place }} → {{ event.arr_place }}
     </div>
     <div class="day-detail__card-meta-transport-time">
-      {{ $t('form.event.arrival') }}: {{ event.arr_local_date }}
-      {{ formatTime(event.arr_local_time) }}
+      {{ $t('form.event.arrival') }}: {{ event.arr_date }}
+      {{ formatTime(event.arr_time) }}
     </div>
   </div>
 </template>

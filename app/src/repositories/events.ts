@@ -1,40 +1,224 @@
+import { ApiError } from './errors';
 import { getDb } from '@/db/client';
-import type { Db } from '@/db/types';
-import type { EventRow } from '@/shared/types/event';
+import { isValidDate, isValidTime, isValidTimeZone } from '@/validators';
+import { toUTC } from '@/utils/time';
+import type { Db, Statement, SqlValue } from '@/db/types';
+import type {
+  ActivityEventInput,
+  EventInput,
+  FlightEventInput,
+  HotelEventInput,
+  RestaurantEventInput,
+  TransportEventInput,
+  TripEvent,
+} from '@/shared/types/event';
 
-// Spec: tests/unit/api/events.test.ts
-export function createEventsApi(db: () => Promise<Db>) {
-  void db;
-  const notImplemented = (): never => {
-    throw new Error('Not implemented');
-  };
+export class EventRepository {
+  constructor(private readonly getDb: () => Promise<Db>) {}
 
-  return {
-    async getAll(): Promise<EventRow[]> {
-      return notImplemented();
-    },
-    async getByTrip(tripId: string): Promise<EventRow[]> {
-      void tripId;
-      return notImplemented();
-    },
-    async getById(id: string): Promise<EventRow> {
-      void id;
-      return notImplemented();
-    },
-    async create(body: Partial<EventRow>): Promise<EventRow> {
-      void body;
-      return notImplemented();
-    },
-    async update(id: string, body: Partial<EventRow>): Promise<EventRow> {
-      void id;
-      void body;
-      return notImplemented();
-    },
-    async delete(id: string): Promise<{ success: boolean }> {
-      void id;
-      return notImplemented();
-    },
-  };
+  async getByTrip(tripId: string): Promise<TripEvent[]> {
+    const db = await this.getDb();
+    return await db.query<TripEvent>(
+      'SELECT * FROM event_details WHERE trip_id = ? ORDER BY start_date, start_time IS NULL, start_time',
+      [tripId],
+    );
+  }
+
+  async getById(id: string): Promise<TripEvent> {
+    const db = await this.getDb();
+    const [event] = await db.query<TripEvent>('SELECT * FROM event_details WHERE id = ?', [id]);
+    if (!event) {
+      throw new ApiError('Not found.', 404);
+    }
+    return event;
+  }
+
+  async create(tripId: string, input: EventInput): Promise<TripEvent> {
+    if (!tripId) {
+      throw new ApiError('Trip ID is required', 400);
+    }
+    this.validateInput(input);
+
+    const db = await this.getDb();
+    const id = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const eventStatement = {
+      sql: 'INSERT INTO events (id, trip_id, type, start_date, start_time, end_date, note, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      bind: [
+        id,
+        tripId,
+        input.type,
+        input.start_date,
+        input.start_time,
+        input.end_date,
+        input.note,
+        now,
+        now,
+      ],
+    };
+
+    await db.exec([eventStatement, this.saveDetail(id, input)]);
+    return await this.getById(id);
+  }
+
+  async update(id: string, input: EventInput): Promise<TripEvent> {
+    const current = await this.getById(id);
+    if (current.type !== input.type) {
+      throw new ApiError('Event type cannot be changed', 400);
+    }
+    this.validateInput(input);
+
+    const db = await this.getDb();
+    const now = new Date().toISOString();
+    const eventStatement = {
+      sql: 'UPDATE events SET start_date = ?, start_time = ?, end_date = ?, note = ?, updated_at = ? WHERE id = ?',
+      bind: [input.start_date, input.start_time, input.end_date, input.note, now, id],
+    };
+    await db.exec([eventStatement, this.saveDetail(id, input)]);
+    return await this.getById(id);
+  }
+
+  async delete(id: string) {
+    const db = await this.getDb();
+    const statement: Statement = {
+      sql: 'DELETE FROM events WHERE id = ?',
+      bind: [id],
+    };
+    const changes = await db.exec([statement]);
+    if (!changes) {
+      throw new ApiError('Not found.', 404);
+    }
+  }
+
+  private validateInput(input: EventInput) {
+    if (
+      !isValidDate(input.start_date) ||
+      !isValidDate(input.end_date) ||
+      input.start_date > input.end_date
+    ) {
+      throw new ApiError('Invalid start and/or end date', 400);
+    }
+    switch (input.type) {
+      case 'flight':
+      case 'transport':
+        this.validateTransportInput(input);
+        break;
+      case 'hotel':
+        this.validateHotelInput(input);
+        break;
+      case 'restaurant':
+      case 'activity':
+        this.validatePlaceInput(input);
+        break;
+      case 'link':
+        if (!input.title || !input.url) {
+          throw new ApiError('Title and URL are required', 400);
+        }
+    }
+  }
+
+  private validateTransportInput(input: FlightEventInput | TransportEventInput) {
+    if (input.type === 'flight' && !input.service_number) {
+      throw new ApiError('Flight number is required', 400);
+    }
+    if (!input.dep_place || !input.arr_place) {
+      throw new ApiError('Departure and arrival place required', 400);
+    }
+
+    if (
+      !isValidDate(input.arr_date) ||
+      !isValidTime(input.start_time) ||
+      !isValidTime(input.arr_time) ||
+      !isValidTimeZone(input.dep_tz_id) ||
+      !isValidTimeZone(input.arr_tz_id)
+    ) {
+      throw new ApiError('Invalid departure and arrival date, time or time zone', 400);
+    }
+
+    const departure = toUTC(input.start_date, input.start_time, input.dep_tz_id);
+    const arrival = toUTC(input.arr_date, input.arr_time, input.arr_tz_id);
+    if (!departure || !arrival || arrival < departure) {
+      throw new ApiError('Arrival must not be earlier than departure', 400);
+    }
+  }
+
+  private validateHotelInput(input: HotelEventInput) {
+    if (!input.name) {
+      throw new ApiError('Name is required', 400);
+    }
+    if (input.start_date >= input.end_date) {
+      throw new ApiError('Check-out date must be after check-in date', 400);
+    }
+    if (
+      (input.start_time !== null && !isValidTime(input.start_time)) ||
+      (input.check_out_time !== null && !isValidTime(input.check_out_time))
+    ) {
+      throw new ApiError('Invalid check-in or checkout time', 400);
+    }
+  }
+
+  private validatePlaceInput(input: RestaurantEventInput | ActivityEventInput) {
+    if (!input.name) {
+      throw new ApiError('Name is required', 400);
+    }
+    if (input.type === 'restaurant' && !isValidTime(input.start_time)) {
+      throw new ApiError('Missing or invalid start time', 400);
+    }
+    if (input.type === 'activity' && input.start_time !== null && !isValidTime(input.start_time)) {
+      throw new ApiError('Invalid start time', 400);
+    }
+  }
+
+  private saveDetail(id: string, input: EventInput): Statement {
+    switch (input.type) {
+      case 'flight':
+      case 'transport':
+        return this.saveStatement('transport_events', {
+          event_id: id,
+          mode: input.mode,
+          service_number: input.service_number,
+          booking_ref: input.booking_ref,
+          dep_place: input.dep_place,
+          dep_tz_id: input.dep_tz_id,
+          arr_place: input.arr_place,
+          arr_date: input.arr_date,
+          arr_tz_id: input.arr_tz_id,
+          arr_time: input.arr_time,
+        });
+      case 'hotel':
+        return this.saveStatement('hotel_events', {
+          event_id: id,
+          name: input.name,
+          booking_ref: input.booking_ref,
+          address: input.address,
+          check_out_time: input.check_out_time,
+          url: input.url,
+        });
+      case 'restaurant':
+      case 'activity':
+        return this.saveStatement('place_events', {
+          event_id: id,
+          name: input.name,
+          address: input.address,
+          url: input.url,
+        });
+      case 'link':
+        return this.saveStatement('link_events', {
+          event_id: id,
+          title: input.title,
+          url: input.url,
+        });
+    }
+  }
+
+  private saveStatement(table: string, values: Record<string, SqlValue>): Statement {
+    const columns = Object.keys(values);
+    const placeholders = columns.map(() => '?').join(', ');
+    return {
+      sql: `INSERT OR REPLACE INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`,
+      bind: Object.values(values),
+    };
+  }
 }
 
-export const eventsApi = createEventsApi(getDb);
+export const eventRepository = new EventRepository(getDb);

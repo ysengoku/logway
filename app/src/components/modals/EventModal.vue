@@ -9,15 +9,15 @@ import HotelForm from '@/components/forms/HotelForm.vue';
 import LinkForm from '@/components/forms/LinkForm.vue';
 import RestaurantForm from '@/components/forms/RestaurantForm.vue';
 import TransportForm from '@/components/forms/TransportForm.vue';
-import type { EventRow, EventType } from '@/shared/types/event';
+import type { EventInput, EventType, TripEvent } from '@/shared/types/event';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   open: boolean;
   date?: string;
-  event?: EventRow;
-  tripId?: string;
+  event?: TripEvent;
+  tripId: string;
 }>();
 
 const emit = defineEmits<{
@@ -44,13 +44,13 @@ watch(
   },
 );
 
-async function onFormSubmit(data: Partial<EventRow>) {
+async function onFormSubmit(data: EventInput) {
   saving.value = true;
   try {
     if (isEditing.value && props.event) {
       await eventsStore.updateEvent(props.event.id, data);
     } else {
-      await eventsStore.createEvent({ ...data, trip_id: props.tripId });
+      await eventsStore.createEvent(props.tripId, data);
     }
     emit('saved');
   } catch (e) {
@@ -91,42 +91,42 @@ function onSaveClick() {
       <FlightForm
         v-if="selectedType === 'flight'"
         ref="formRef"
-        :initial="event"
+        :initial="event?.type === 'flight' ? event : undefined"
         :default-date="date"
         @submit="onFormSubmit"
       />
       <TransportForm
         v-else-if="selectedType === 'transport'"
         ref="formRef"
-        :initial="event"
+        :initial="event?.type === 'transport' ? event : undefined"
         :default-date="date"
         @submit="onFormSubmit"
       />
       <HotelForm
         v-else-if="selectedType === 'hotel'"
         ref="formRef"
-        :initial="event"
+        :initial="event?.type === 'hotel' ? event : undefined"
         :default-date="date"
         @submit="onFormSubmit"
       />
       <RestaurantForm
         v-else-if="selectedType === 'restaurant'"
         ref="formRef"
-        :initial="event"
+        :initial="event?.type === 'restaurant' ? event : undefined"
         :default-date="date"
         @submit="onFormSubmit"
       />
       <ActivityForm
         v-else-if="selectedType === 'activity'"
         ref="formRef"
-        :initial="event"
+        :initial="event?.type === 'activity' ? event : undefined"
         :default-date="date"
         @submit="onFormSubmit"
       />
       <LinkForm
         v-else-if="selectedType === 'link'"
         ref="formRef"
-        :initial="event"
+        :initial="event?.type === 'link' ? event : undefined"
         :default-date="date"
         @submit="onFormSubmit"
       />

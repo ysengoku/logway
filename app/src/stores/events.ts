@@ -1,12 +1,12 @@
-import { eventsApi } from '@/repositories/client';
+import { eventRepository } from '@/repositories';
 import { useLoadingStore } from './loading';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { EventRow } from '@/shared/types/event';
+import type { EventInput, TripEvent } from '@/shared/types/event';
 
 export const useEventsStore = defineStore('events', () => {
   // --- State -----------
-  const events = ref<EventRow[]>([]);
+  const events = ref<TripEvent[]>([]);
   const error = ref<string | null>(null);
   const loadingStore = useLoadingStore();
 
@@ -14,7 +14,7 @@ export const useEventsStore = defineStore('events', () => {
 
   // Group events by their primary date (for calendar display)
   const eventsByDate = computed(() => {
-    const map = new Map<string, EventRow[]>();
+    const map = new Map<string, TripEvent[]>();
 
     for (const event of events.value) {
       const dates = eventDates(event);
@@ -27,36 +27,19 @@ export const useEventsStore = defineStore('events', () => {
     return map;
   });
 
-  function eventDates(event: EventRow): string[] {
-    switch (event.type) {
-      case 'flight':
-      case 'transport':
-        return [event.dep_local_date].filter(Boolean) as string[];
-      case 'hotel': {
-        if (!event.check_in_date) return [];
-        if (!event.check_out_date) return [event.check_in_date];
-        const dates: string[] = [];
-        const current = new Date(event.check_in_date);
-        const end = new Date(event.check_out_date);
-        while (current <= end) {
-          dates.push(current.toISOString().slice(0, 10));
-          current.setDate(current.getDate() + 1);
-        }
-        return dates;
-      }
-      case 'restaurant':
-        return [event.reservation_date].filter(Boolean) as string[];
-      case 'activity':
-        return [event.schedule_date].filter(Boolean) as string[];
-      case 'link':
-        return [event.related_date].filter(Boolean) as string[];
-      default:
-        return [];
+  function eventDates(event: TripEvent): string[] {
+    const dates: string[] = [];
+    const current = new Date(`${event.start_date}T00:00:00Z`);
+    const end = new Date(`${event.end_date}T00:00:00Z`);
+    while (current <= end) {
+      dates.push(current.toISOString().slice(0, 10));
+      current.setUTCDate(current.getUTCDate() + 1);
     }
+    return dates;
   }
 
   // Get events for a specific date
-  function getByDate(date: string): EventRow[] {
+  function getByDate(date: string): TripEvent[] {
     return (eventsByDate.value.get(date) ?? []).sort((a, b) => {
       const ta = sortKey(a);
       const tb = sortKey(b);
@@ -64,43 +47,20 @@ export const useEventsStore = defineStore('events', () => {
     });
   }
 
-  function sortKey(event: EventRow): string {
-    switch (event.type) {
-      case 'flight':
-      case 'transport':
-        return event.dep_local_time ?? '99:99';
-      case 'hotel':
-        return event.check_in_time ?? '99:99';
-      case 'restaurant':
-        return event.reservation_time ?? '99:99';
-      case 'activity':
-        return event.schedule_time ?? '99:99';
-      default:
-        return '99:99';
-    }
+  function sortKey(event: TripEvent): string {
+    return event.start_time ?? '99:99';
   }
 
   // Set of dates that have events (for calendar highlighting)
   const datesWithEvents = computed(() => new Set(eventsByDate.value.keys()));
 
   // --- Actions ----------
-  async function fetchAll() {
-    loadingStore.start();
-    error.value = null;
-    try {
-      events.value = await eventsApi.getAll();
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to fetch events';
-    } finally {
-      loadingStore.stop();
-    }
-  }
 
   async function fetchByTrip(tripId: string) {
     loadingStore.start();
     error.value = null;
     try {
-      events.value = await eventsApi.getByTrip(tripId);
+      events.value = await eventRepository.getByTrip(tripId);
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to fetch events';
     } finally {
@@ -108,10 +68,10 @@ export const useEventsStore = defineStore('events', () => {
     }
   }
 
-  async function createEvent(body: Partial<EventRow>) {
+  async function createEvent(tripId: string, input: EventInput) {
     loadingStore.start();
     try {
-      const created = await eventsApi.create(body);
+      const created = await eventRepository.create(tripId, input);
       events.value.push(created);
       return created;
     } finally {
@@ -119,10 +79,10 @@ export const useEventsStore = defineStore('events', () => {
     }
   }
 
-  async function updateEvent(id: string, body: Partial<EventRow>) {
+  async function updateEvent(id: string, input: EventInput) {
     loadingStore.start();
     try {
-      const updated = await eventsApi.update(id, body);
+      const updated = await eventRepository.update(id, input);
       const index = events.value.findIndex((e) => e.id === id);
       if (index !== -1) events.value[index] = updated;
       return updated;
@@ -134,28 +94,10 @@ export const useEventsStore = defineStore('events', () => {
   async function deleteEvent(id: string) {
     loadingStore.start();
     try {
-      await eventsApi.delete(id);
+      await eventRepository.delete(id);
       events.value = events.value.filter((e) => e.id !== id);
     } finally {
       loadingStore.stop();
-    }
-  }
-
-  function primaryDate(event: EventRow): string | null {
-    switch (event.type) {
-      case 'flight':
-      case 'transport':
-        return event.dep_local_date ?? null;
-      case 'hotel':
-        return event.check_in_date ?? null;
-      case 'restaurant':
-        return event.reservation_date ?? null;
-      case 'activity':
-        return event.schedule_date ?? null;
-      case 'link':
-        return event.related_date ?? null;
-      default:
-        return null;
     }
   }
 
@@ -168,12 +110,9 @@ export const useEventsStore = defineStore('events', () => {
     datesWithEvents,
     getByDate,
     // actions
-    fetchAll,
     fetchByTrip,
     createEvent,
     updateEvent,
     deleteEvent,
-    // helpers
-    primaryDate,
   };
 });

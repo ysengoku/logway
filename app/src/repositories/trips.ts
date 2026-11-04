@@ -4,7 +4,6 @@ import { isValidDate } from '@/validators';
 import type { Db, Statement } from '@/db/types';
 import type { Trip, TripInput } from '@/shared/types/trip';
 
-type ValidationResult = { valid: boolean; message: string };
 const EDITABLE_COLUMNS = ['title', 'start_date', 'end_date'] as const;
 
 export class TripRepository {
