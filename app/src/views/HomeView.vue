@@ -13,7 +13,7 @@ const PREVIEW_COUNT = 3;
 const router = useRouter();
 const tripsStore = useTripsStore();
 const loadingStore = useLoadingStore();
-const { d } = useI18n({ useScope: 'global' });
+const { d, t } = useI18n({ useScope: 'global' });
 const showNewTripModal = ref(false);
 const showAllUpcoming = ref(false);
 const showAllPast = ref(false);
@@ -33,9 +33,13 @@ const visiblePast = computed(() =>
 );
 
 async function createTrip(input: TripInput) {
-  const trip = await tripsStore.createTrip(input);
-  showNewTripModal.value = false;
-  router.push({ name: 'trip', params: { id: trip.id } });
+  try {
+    const trip = await tripsStore.createTrip(input);
+    showNewTripModal.value = false;
+    router.push({ name: 'trip', params: { id: trip.id } });
+  } catch (e) {
+    alert(e instanceof Error ? e.message : t('common.errorOccurred'));
+  }
 }
 
 function goToTrip(trip: Trip) {

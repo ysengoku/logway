@@ -42,6 +42,10 @@ function submit() {
     alert(t('form.trip.dateRequired'));
     return;
   }
+  if (form.end_date < form.start_date) {
+    alert(t('form.trip.dateOrder'));
+    return;
+  }
   emit('submit', {
     title: form.title,
     start_date: form.start_date,

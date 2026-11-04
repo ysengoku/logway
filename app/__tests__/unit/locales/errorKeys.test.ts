@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { auth as enAuth, settings as enSettings, common as enCommon } from '@/locales/en';
-import { auth as frAuth, settings as frSettings, common as frCommon } from '@/locales/fr';
+import {
+  auth as enAuth,
+  settings as enSettings,
+  common as enCommon,
+  form as enForm,
+} from '@/locales/en';
+import {
+  auth as frAuth,
+  settings as frSettings,
+  common as frCommon,
+  form as frForm,
+} from '@/locales/fr';
 
 const requiredAuthErrorKeys = [
   'emailRequired',
@@ -29,6 +39,16 @@ const requiredSettingsErrorKeys = [
   'displayNameReserved',
 ] as const;
 
+const requiredEventFormErrorKeys = [
+  'flightRequired',
+  'transportRequired',
+  'hotelRequired',
+  'checkoutAfterCheckin',
+  'restaurantRequired',
+  'activityRequired',
+  'linkRequired',
+] as const;
+
 describe('locale error key coverage', () => {
   it('contains required auth error keys in EN and FR', () => {
     for (const key of requiredAuthErrorKeys) {
@@ -42,6 +62,15 @@ describe('locale error key coverage', () => {
       expect(enSettings.errors[key]).toBeTypeOf('string');
       expect(frSettings.errors[key]).toBeTypeOf('string');
     }
+  });
+
+  it('contains required form error keys in EN and FR', () => {
+    for (const key of requiredEventFormErrorKeys) {
+      expect(enForm.event.errors[key]).toBeTypeOf('string');
+      expect(frForm.event.errors[key]).toBeTypeOf('string');
+    }
+    expect(enForm.trip.dateOrder).toBeTypeOf('string');
+    expect(frForm.trip.dateOrder).toBeTypeOf('string');
   });
 
   it('contains common unknownError fallback in EN and FR', () => {

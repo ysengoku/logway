@@ -106,6 +106,7 @@ export const form = {
     endDate: 'Date de fin',
     nameRequired: 'Le nom du voyage est obligatoire.',
     dateRequired: 'Les dates de debut et de fin sont obligatoires.',
+    dateOrder: 'La date de fin ne doit pas etre anterieure a la date de debut.',
   },
   join: {
     inviteCodeRequired: "Le code d'invitation est obligatoire.",
@@ -115,6 +116,18 @@ export const form = {
     alreadyJoined: 'Vous avez deja rejoint ce voyage.',
   },
   event: {
+    errors: {
+      flightRequired:
+        "Le numero de vol ainsi que le lieu, la date et l'heure de depart et d'arrivee sont obligatoires.",
+      transportRequired: "Le lieu, la date et l'heure de depart et d'arrivee sont obligatoires.",
+      hotelRequired:
+        "Le nom de l'etablissement et les dates d'arrivee et de depart sont obligatoires.",
+      checkoutAfterCheckin: "La date de depart doit etre posterieure a la date d'arrivee.",
+      restaurantRequired:
+        "Le nom du restaurant, la date et l'heure de reservation sont obligatoires.",
+      activityRequired: 'Le nom et la date sont obligatoires.',
+      linkRequired: "Le titre, l'URL et la date sont obligatoires.",
+    },
     name: 'Nom',
     reference: 'Reference de reservation',
     from: 'De',

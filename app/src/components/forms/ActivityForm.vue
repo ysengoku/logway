@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { ActivityEventInput, EventOfType } from '@/shared/types/event';
 
 const props = defineProps<{
@@ -11,6 +12,7 @@ const emit = defineEmits<{
   submit: [data: ActivityEventInput];
 }>();
 
+const { t } = useI18n();
 const form = reactive({
   name: props.initial?.name ?? '',
   address: props.initial?.address ?? '',
@@ -22,7 +24,7 @@ const form = reactive({
 
 function submit() {
   if (!form.name || !form.start_date) {
-    alert('Name and date are required.');
+    alert(t('form.event.errors.activityRequired'));
     return;
   }
 
