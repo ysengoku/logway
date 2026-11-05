@@ -10,11 +10,13 @@ export function acquireTabLock(): Promise<boolean> {
       resolve(true);
       return;
     }
-    void navigator.locks.request(LOCK_NAME, { ifAvailable: true }, (lock) => {
-      resolve(lock !== null);
-      // Returning a pending promise keeps the lock held for the tab's lifetime.
-      return lock ? new Promise<never>(() => {}) : undefined;
-    });
+    navigator.locks
+      // Wait briefly, since the previous page may still hold the lock right after navigating.
+      .request(LOCK_NAME, { signal: AbortSignal.timeout(1500) }, () => {
+        resolve(true);
+        return new Promise<never>(() => {});
+      })
+      .catch(() => resolve(false));
   });
   return acquired;
 }

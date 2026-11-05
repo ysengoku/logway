@@ -47,6 +47,13 @@ describe('locale error key coverage', () => {
     expect(frForm.trip.dateOrder).toBeTypeOf('string');
   });
 
+  it('contains the database error screen in EN and FR', () => {
+    expect(Object.keys(frCommon.databaseError)).toEqual(Object.keys(enCommon.databaseError));
+    expect(Object.keys(frCommon.databaseError.causes)).toEqual(
+      Object.keys(enCommon.databaseError.causes),
+    );
+  });
+
   it('contains common unknownError fallback in EN and FR', () => {
     expect(enCommon.unknownError).toBeTypeOf('string');
     expect(frCommon.unknownError).toBeTypeOf('string');

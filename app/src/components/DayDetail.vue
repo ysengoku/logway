@@ -18,7 +18,7 @@ const emit = defineEmits<{
 
 const eventsStore = useEventsStore();
 const viewMode = ref<'timeline' | 'type'>('timeline');
-const { d } = useI18n();
+const { d, t } = useI18n();
 
 const events = computed(() => eventsStore.getByDate(props.date));
 
@@ -32,7 +32,11 @@ function getEventsByType(type: EventType) {
 
 async function deleteEvent(id: string) {
   if (!confirm('Delete this event?')) return;
-  await eventsStore.deleteEvent(id);
+  try {
+    await eventsStore.deleteEvent(id);
+  } catch {
+    alert(t('common.failedToDeleteEvent'));
+  }
 }
 </script>
 

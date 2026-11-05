@@ -73,9 +73,23 @@ export const common = {
   save: 'Save',
   saving: 'Saving...',
   failedToSaveEvent: 'Failed to save event.',
+  failedToDeleteEvent: 'Failed to delete event.',
+  failedToDeleteTrip: 'Failed to delete trip.',
   backToSignIn: 'Back to Sign In',
   unknownError: 'An error occurred. Please try again.',
   openInAnotherTab: 'LogWay is already open in another tab. Please use that tab.',
+  databaseError: {
+    title: 'LogWay could not start',
+    description: 'The local database could not be opened, so changes could not be saved.',
+    causesIntro: 'Check the following, then try again:',
+    causes: {
+      privateWindow: 'The browser is in a private window.',
+      blockedStorage: 'The browser settings block site data.',
+      outdatedBrowser: 'The browser version is too old.',
+      storageFull: 'The device storage is full.',
+    },
+    reload: 'Try again',
+  },
 };
 
 export const event = {
@@ -162,6 +176,7 @@ export const home = {
   past: 'Past Trips',
   noUpcoming: 'No upcoming trips. Plan your next adventure!',
   noPast: 'No past trips yet.',
+  loadFailed: 'Trips could not be loaded.',
   showLess: 'Show less',
   showAll: 'Show all ({count})',
 };
@@ -176,6 +191,8 @@ export const trip = {
   deleteConfirm: 'Delete "{title}"? All events will also be deleted.',
   editTrip: 'Edit Trip',
   deleteTrip: 'Delete Trip',
+  notFound: 'This trip could not be found.',
+  loadFailed: 'This trip could not be loaded.',
   members: {
     members: 'Members',
     removeConfirm: 'Remove this member?',

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { EVENT_TYPE_OPTIONS } from '@/constants/events';
 import { getFaIcon } from '@/lib/faIcons';
+import { ApiError } from '@/repositories';
 import { useEventsStore } from '@/stores/events';
 import ActivityForm from '@/components/forms/ActivityForm.vue';
 import AppModal from '@/components/AppModal.vue';
@@ -54,7 +55,8 @@ async function onFormSubmit(data: EventInput) {
     }
     emit('saved');
   } catch (e) {
-    alert(e instanceof Error ? e.message : t('common.failedToSaveEvent'));
+    // Other errors, such as SQLite failures, aren't meant for users.
+    alert(e instanceof ApiError ? e.message : t('common.failedToSaveEvent'));
   } finally {
     saving.value = false;
   }

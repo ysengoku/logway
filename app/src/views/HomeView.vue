@@ -58,7 +58,11 @@ function formatDate(date: string): string {
 <template>
   <div class="home">
     <main class="home__main">
-      <div v-show="!loadingStore.active">
+      <section v-if="tripsStore.error" v-show="!loadingStore.active" class="home__section">
+        <h1 class="page-title">{{ $t('home.myTrips') }}</h1>
+        <div class="home__state">{{ $t('home.loadFailed') }}</div>
+      </section>
+      <div v-else v-show="!loadingStore.active">
         <!-- Upcoming Trips -->
         <section class="home__section">
           <h1 class="page-title">{{ $t('home.myTrips') }}</h1>

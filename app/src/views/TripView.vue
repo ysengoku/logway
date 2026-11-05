@@ -19,6 +19,10 @@ const eventsStore = useEventsStore();
 
 const tripId = computed(() => route.params.id as string);
 const trip = computed(() => tripsStore.trips.find((t) => t.id === tripId.value));
+const loaded = ref(false);
+const loadFailed = computed(() => loaded.value && !!(tripsStore.error || eventsStore.error));
+// A failed load isn't the same as a missing trip.
+const isNotFound = computed(() => loaded.value && !loadFailed.value && !trip.value);
 const selectedDate = ref<string | null>(null);
 const modalOpen = ref(false);
 const modalDate = ref<string | undefined>();
@@ -33,6 +37,7 @@ onMounted(async () => {
   if (tripsStore.trips.length === 0) {
     await tripsStore.fetchAll();
   }
+  loaded.value = true;
 });
 
 function onSelectDate(date: string) {
@@ -70,13 +75,27 @@ async function onEditTrip(input: TripInput) {
 
 async function deleteTrip() {
   if (!confirm(t('trip.deleteConfirm', { title: trip.value?.title }))) return;
-  await tripsStore.deleteTrip(tripId.value);
-  router.push({ name: 'home' });
+  try {
+    await tripsStore.deleteTrip(tripId.value);
+    router.push({ name: 'home' });
+  } catch {
+    alert(t('common.failedToDeleteTrip'));
+  }
 }
 </script>
 
 <template>
-  <div v-show="!loadingStore.active" class="trip-view">
+  <div v-if="loadFailed || isNotFound" class="trip-view">
+    <header class="trip-view__header">
+      <button class="trip-view__back" @click="router.push({ name: 'home' })">
+        ← {{ $t('common.back') }}
+      </button>
+    </header>
+    <div class="trip-view__empty">
+      {{ loadFailed ? $t('trip.loadFailed') : $t('trip.notFound') }}
+    </div>
+  </div>
+  <div v-else v-show="!loadingStore.active" class="trip-view">
     <header class="trip-view__header">
       <button class="trip-view__back" @click="router.push({ name: 'home' })">
         ← {{ $t('common.back') }}
