@@ -4,10 +4,23 @@ import { ApiError } from '@/repositories/errors';
 import { TripRepository } from '@/repositories/trips';
 import { createMemoryDb } from '../helpers/memoryDb';
 import type { Db } from '@/db/types';
-import type { TripInput } from '@/shared/types/trip';
+import type { LinkEventInput, TransportEventInput } from '@/shared/types/event';
+import type { Trip, TripInput } from '@/shared/types/trip';
 
 function tripInput(overrides: Partial<TripInput> = {}): TripInput {
   return { title: 'Kyoto', start_date: '2026-11-01', end_date: '2026-11-03', ...overrides };
+}
+
+function linkOn(date: string): LinkEventInput {
+  return {
+    type: 'link',
+    title: 'Map',
+    url: 'https://example.com/map',
+    start_date: date,
+    start_time: null,
+    end_date: date,
+    note: null,
+  };
 }
 
 describe('tripRepository (SQLite)', () => {
@@ -109,6 +122,82 @@ describe('tripRepository (SQLite)', () => {
     expect(updated.start_date).toBe('2026-12-10');
     expect(updated.end_date).toBe('2026-12-12');
     expect(updated.title).toBe(trip.title);
+  });
+
+  describe('changing the dates of a trip with events', () => {
+    let eventRepository: EventRepository;
+    let trip: Trip;
+
+    beforeEach(async () => {
+      eventRepository = new EventRepository(async () => db);
+      trip = await tripRepository.create(tripInput({ end_date: '2026-11-05' }));
+    });
+
+    it.each([
+      ['a start date after the event', { start_date: '2026-11-03' }],
+      ['an end date before the event', { end_date: '2026-11-01' }],
+    ])('rejects %s and keeps the trip', async (_case, changes) => {
+      await eventRepository.create(trip.id, linkOn('2026-11-02'));
+
+      await expect(tripRepository.update(trip.id, changes)).rejects.toMatchObject({ status: 400 });
+      expect(await tripRepository.getById(trip.id)).toEqual(trip);
+    });
+
+    it('rejects an end date before a transport arrival', async () => {
+      const train: TransportEventInput = {
+        type: 'transport',
+        mode: 'train',
+        service_number: null,
+        booking_ref: null,
+        start_date: '2026-11-03',
+        start_time: '23:00',
+        end_date: '2026-11-03',
+        dep_place: 'Tokyo',
+        dep_tz_id: 'Asia/Tokyo',
+        arr_date: '2026-11-04',
+        arr_time: '06:00',
+        arr_place: 'Sapporo',
+        arr_tz_id: 'Asia/Tokyo',
+        note: null,
+      };
+      await eventRepository.create(trip.id, train);
+
+      await expect(
+        tripRepository.update(trip.id, { end_date: '2026-11-03' }),
+      ).rejects.toMatchObject({ status: 400 });
+      expect(await tripRepository.getById(trip.id)).toEqual(trip);
+    });
+
+    it('accepts shrinking the trip to the days of its events', async () => {
+      await eventRepository.create(trip.id, linkOn('2026-11-02'));
+
+      const updated = await tripRepository.update(trip.id, {
+        start_date: '2026-11-02',
+        end_date: '2026-11-02',
+      });
+
+      expect(updated).toMatchObject({ start_date: '2026-11-02', end_date: '2026-11-02' });
+    });
+
+    it('accepts widening the trip', async () => {
+      await eventRepository.create(trip.id, linkOn('2026-11-02'));
+
+      const updated = await tripRepository.update(trip.id, {
+        start_date: '2026-10-30',
+        end_date: '2026-11-10',
+      });
+
+      expect(updated).toMatchObject({ start_date: '2026-10-30', end_date: '2026-11-10' });
+    });
+
+    it('ignores events of other trips', async () => {
+      const other = await tripRepository.create(tripInput({ end_date: '2026-11-05' }));
+      await eventRepository.create(other.id, linkOn('2026-11-05'));
+
+      const updated = await tripRepository.update(trip.id, { end_date: '2026-11-01' });
+
+      expect(updated.end_date).toBe('2026-11-01');
+    });
   });
 
   it('throws 404 for an unknown trip', async () => {

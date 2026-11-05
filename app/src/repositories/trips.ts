@@ -45,8 +45,9 @@ export class TripRepository {
       end_date: body.end_date ?? currentData.end_date,
     };
     this.validateInput(newData);
-
     const db = await this.getDb();
+    await this.assertEventsWithinDates(db, id, newData.start_date, newData.end_date);
+
     const assignments: string[] = [];
     const values: string[] = [];
     for (const column of EDITABLE_COLUMNS) {
@@ -87,6 +88,21 @@ export class TripRepository {
     }
     if (body.start_date > body.end_date) {
       throw new ApiError('End date must not be before start date.', 400);
+    }
+  }
+
+  private async assertEventsWithinDates(
+    db: Db,
+    id: string,
+    start: string,
+    end: string,
+  ): Promise<void> {
+    const [outOfRange] = await db.query<{ count: number }>(
+      'SELECT COUNT(*) AS count FROM event_details WHERE trip_id = ? AND (start_date < ? OR end_date > ? OR arr_date > ?)',
+      [id, start, end, end],
+    );
+    if (outOfRange.count > 0) {
+      throw new ApiError(`${outOfRange.count} event(s) are outside the new dates`, 400);
     }
   }
 }
