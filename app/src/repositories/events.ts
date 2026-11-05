@@ -12,6 +12,7 @@ import type {
   TransportEventInput,
   TripEvent,
 } from '@/shared/types/event';
+import type { Trip } from '@/shared/types/trip';
 
 export class EventRepository {
   constructor(private readonly getDb: () => Promise<Db>) {}
@@ -37,9 +38,10 @@ export class EventRepository {
     if (!tripId) {
       throw new ApiError('Trip ID is required', 400);
     }
-    this.validateInput(input);
-
     const db = await this.getDb();
+    const trip = await this.getTripDates(db, tripId);
+    this.validateInput(input, trip);
+
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
     const eventStatement = {
@@ -66,9 +68,10 @@ export class EventRepository {
     if (current.type !== input.type) {
       throw new ApiError('Event type cannot be changed', 400);
     }
-    this.validateInput(input);
-
     const db = await this.getDb();
+    const trip = await this.getTripDates(db, current.trip_id);
+    this.validateInput(input, trip);
+
     const now = new Date().toISOString();
     const eventStatement = {
       sql: 'UPDATE events SET start_date = ?, start_time = ?, end_date = ?, note = ?, updated_at = ? WHERE id = ?',
@@ -90,7 +93,18 @@ export class EventRepository {
     }
   }
 
-  private validateInput(input: EventInput) {
+  private async getTripDates(db: Db, id: string): Promise<Pick<Trip, 'start_date' | 'end_date'>> {
+    const [trip] = await db.query<Pick<Trip, 'start_date' | 'end_date'>>(
+      'SELECT start_date, end_date FROM trips WHERE id = ?',
+      [id],
+    );
+    if (!trip) {
+      throw new ApiError('Trip not found', 404);
+    }
+    return trip;
+  }
+
+  private validateInput(input: EventInput, trip: Pick<Trip, 'start_date' | 'end_date'>) {
     if (
       !isValidDate(input.start_date) ||
       !isValidDate(input.end_date) ||
@@ -98,10 +112,13 @@ export class EventRepository {
     ) {
       throw new ApiError('Invalid start and/or end date', 400);
     }
+    if (input.start_date < trip.start_date || input.end_date > trip.end_date) {
+      throw new ApiError('Event dates must be within the trip', 400);
+    }
     switch (input.type) {
       case 'flight':
       case 'transport':
-        this.validateTransportInput(input);
+        this.validateTransportInput(input, trip.end_date);
         break;
       case 'hotel':
         this.validateHotelInput(input);
@@ -117,7 +134,7 @@ export class EventRepository {
     }
   }
 
-  private validateTransportInput(input: FlightEventInput | TransportEventInput) {
+  private validateTransportInput(input: FlightEventInput | TransportEventInput, tripEnd: string) {
     if (input.type === 'flight' && !input.service_number) {
       throw new ApiError('Flight number is required', 400);
     }
@@ -133,6 +150,9 @@ export class EventRepository {
       !isValidTimeZone(input.arr_tz_id)
     ) {
       throw new ApiError('Invalid departure and arrival date, time or time zone', 400);
+    }
+    if (input.arr_date > tripEnd) {
+      throw new ApiError('Event dates must be within the trip', 400);
     }
 
     const departure = toUTC(input.start_date, input.start_time, input.dep_tz_id);

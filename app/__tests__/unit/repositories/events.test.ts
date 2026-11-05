@@ -141,7 +141,18 @@ describe('eventRepository (SQLite)', () => {
     });
 
     it('rejects a trip that does not exist', async () => {
-      await expect(eventRepository.create('missing', link)).rejects.toThrow(/FOREIGN KEY/);
+      await expect(eventRepository.create('missing', link)).rejects.toMatchObject({ status: 404 });
+    });
+
+    it.each<[string, EventInput]>([
+      ['a link on the first day', { ...link, start_date: '2026-11-01', end_date: '2026-11-01' }],
+      ['a link on the last day', { ...link, start_date: '2026-11-09', end_date: '2026-11-09' }],
+      [
+        'a hotel for the whole trip',
+        { ...hotel, start_date: '2026-11-01', end_date: '2026-11-09' },
+      ],
+    ])('accepts %s of the trip', async (_case, input) => {
+      await expect(eventRepository.create(tripId, input)).resolves.toMatchObject(input);
     });
 
     it.each<[string, EventInput]>([
@@ -169,6 +180,15 @@ describe('eventRepository (SQLite)', () => {
       ['an activity without a name', { ...activity, name: '' }],
       ['a link without a title', { ...link, title: '' }],
       ['a link without a URL', { ...link, url: '' }],
+      [
+        'a start date before the trip',
+        { ...link, start_date: '2026-10-31', end_date: '2026-10-31' },
+      ],
+      ['an end date after the trip', { ...hotel, end_date: '2026-11-10' }],
+      [
+        'an arrival after the trip',
+        { ...flight, start_date: '2026-11-09', end_date: '2026-11-09', arr_date: '2026-11-10' },
+      ],
     ])('rejects %s', async (_case, input) => {
       await expect(eventRepository.create(tripId, input)).rejects.toMatchObject({ status: 400 });
       expect(await eventRepository.getByTrip(tripId)).toEqual([]);
@@ -254,6 +274,19 @@ describe('eventRepository (SQLite)', () => {
       await expect(eventRepository.update(event.id, restaurant)).rejects.toMatchObject({
         status: 400,
       });
+      expect(await eventRepository.getById(event.id)).toEqual(event);
+    });
+
+    it('rejects moving the event outside the trip and keeps the event', async () => {
+      const event = await eventRepository.create(tripId, link);
+
+      await expect(
+        eventRepository.update(event.id, {
+          ...link,
+          start_date: '2026-11-10',
+          end_date: '2026-11-10',
+        }),
+      ).rejects.toMatchObject({ status: 400 });
       expect(await eventRepository.getById(event.id)).toEqual(event);
     });
 
