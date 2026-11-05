@@ -34,30 +34,36 @@ export const TIMEZONES = [
   { id: 'Australia/Sydney', label: 'Sydney (AEST, +10/11)' },
 ];
 
+// Offset of a time zone from UTC, in milliseconds, at the given instant.
+function zoneOffsetAt(instant: number, tzId: string): number {
+  const p: Record<string, string> = {};
+  new Intl.DateTimeFormat('en-CA', {
+    timeZone: tzId,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  })
+    .formatToParts(new Date(instant))
+    .forEach(({ type, value }) => {
+      p[type] = value;
+    });
+  return (
+    new Date(`${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}Z`).getTime() - instant
+  );
+}
+
 export function toUTC(localDate: string, localTime: string, tzId: string): string | null {
   if (!localDate || !localTime || !tzId) return null;
   try {
     const naive = new Date(`${localDate}T${localTime}:00Z`).getTime();
-    const d = new Date(naive);
-    const p: Record<string, string> = {};
-    new Intl.DateTimeFormat('en-CA', {
-      timeZone: tzId,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    })
-      .formatToParts(d)
-      .forEach(({ type, value }) => {
-        p[type] = value;
-      });
-    const offset =
-      new Date(`${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}Z`).getTime() -
-      naive;
-    return new Date(naive - offset).toISOString();
+    // The offset at `naive` can be wrong near a DST change, so sample it again
+    // at the first guess.
+    const guess = naive - zoneOffsetAt(naive, tzId);
+    return new Date(naive - zoneOffsetAt(guess, tzId)).toISOString();
   } catch {
     return null;
   }

@@ -20,7 +20,11 @@ const eventsStore = useEventsStore();
 const tripId = computed(() => route.params.id as string);
 const trip = computed(() => tripsStore.trips.find((t) => t.id === tripId.value));
 const loaded = ref(false);
-const loadFailed = computed(() => loaded.value && !!(tripsStore.error || eventsStore.error));
+// A trips error only matters when this trip isn't already loaded; it may be left
+// over from an earlier refresh.
+const loadFailed = computed(
+  () => loaded.value && !!((tripsStore.error && !trip.value) || eventsStore.error),
+);
 // A failed load isn't the same as a missing trip.
 const isNotFound = computed(() => loaded.value && !loadFailed.value && !trip.value);
 const selectedDate = ref<string | null>(null);

@@ -16,7 +16,6 @@ import { acquireTabLock } from './db/tabLock';
 
 async function bootstrap() {
   const locale = resolveInitialLocale();
-  const ownsDatabase = await acquireTabLock();
 
   const i18n = createI18n({
     legacy: false,
@@ -26,18 +25,30 @@ async function bootstrap() {
     datetimeFormats,
   });
 
+  // Without a working database, changes couldn't be saved; don't start the app.
+  function showDatabaseError(error: unknown) {
+    console.error('Failed to open the database.', error);
+    createApp(DatabaseErrorView).use(i18n).mount('#app');
+  }
+
+  let ownsDatabase: boolean;
+  try {
+    ownsDatabase = await acquireTabLock();
+  } catch (e) {
+    showDatabaseError(e);
+    return;
+  }
+
   // Another tab already has the local database open; don't start the app here.
   if (!ownsDatabase) {
     createApp(TabInUseView).use(i18n).mount('#app');
     return;
   }
 
-  // Without a working database, changes couldn't be saved; don't start the app.
   try {
     await getDb();
   } catch (e) {
-    console.error('Failed to open the database.', e);
-    createApp(DatabaseErrorView).use(i18n).mount('#app');
+    showDatabaseError(e);
     return;
   }
 
