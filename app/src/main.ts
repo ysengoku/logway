@@ -13,7 +13,8 @@ import { DEFAULT_LOCALE, resolveInitialLocale } from './lib/locale';
 import { acquireTabLock } from './db/tabLock';
 
 async function bootstrap() {
-  const [locale, ownsDatabase] = await Promise.all([resolveInitialLocale(), acquireTabLock()]);
+  const locale = resolveInitialLocale();
+  const ownsDatabase = await acquireTabLock();
 
   const i18n = createI18n({
     legacy: false,

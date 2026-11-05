@@ -25,7 +25,7 @@ const currentLocaleLabel = computed(() => {
 
 function switchLocale(nextLocale: SupportedLocale) {
   locale.value = nextLocale;
-  void persistLocalePreference(nextLocale);
+  persistLocalePreference(nextLocale);
 }
 
 function updateLocaleMenuPosition() {

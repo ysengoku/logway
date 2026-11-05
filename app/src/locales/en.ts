@@ -7,7 +7,6 @@ export const auth = {
   emailAddress: 'Email Address',
   newEmail: 'New Email Address',
   changeEmail: 'Change',
-  displayName: 'Display Name *',
   password: 'Password',
   confirmPassword: 'Confirm Password',
   currentPassword: 'Current Password',
@@ -15,7 +14,6 @@ export const auth = {
   confirmNewPassword: 'Confirm New Password',
   dontHaveAccount: "Don't have an account yet?",
   placeholderEmail: "you{'@'}example.com",
-  placeholderName: 'Your name',
   placeholderPassword: 'password',
   placeholderRepeatPassword: 'repeat password',
   showPassword: 'Show password',
@@ -168,39 +166,10 @@ export const home = {
   showAll: 'Show all ({count})',
 };
 
-export const icons = {
-  cat: 'Cat',
-  dog: 'Dog',
-  dove: 'Dove',
-  fish: 'Fish',
-  frog: 'Frog',
-  shrimp: 'Shrimp',
-  'apple-whole': 'Apple',
-  seedling: 'Seedling',
-  'user-astronaut': 'Astronaut',
-  'user-secret': 'Mysterious Man',
-  'chess-knight': 'Chess Knight',
-  'face-grin-hearts': 'Grinning Hearts',
-  'face-grin-squint-tears': 'Lol',
-  'face-smile': 'Smiling Face',
-  'face-smile-wink': 'Winking Face',
-};
-
 export const settings = {
   settings: 'Settings',
   updateSuccess: 'Updated successfully.',
   emailChangePending: 'Check your inbox to confirm your new email address.',
-  errors: {
-    emptyDisplayName: 'Display name cannot be empty.',
-    displayNameLength: 'Display name must be between 2 and 16 characters.',
-    displayNameCharacters: 'Display name can only contain letters, numbers, spaces, _ and -.',
-    displayNameLeadingOrTrailingSpaces: 'Display name cannot start or end with spaces.',
-    displayNameConsecutiveSpaces: 'Display name cannot contain consecutive spaces.',
-    displayNameReserved: 'This display name is reserved and cannot be used.',
-    invalidIcon: 'Selected icon is invalid.',
-    invalidIconColor: 'Icon color must be a hex color.',
-    invalidIconBgColor: 'Icon background color must be a hex color.',
-  },
 };
 
 export const trip = {
@@ -246,7 +215,6 @@ export default {
   event,
   form,
   home,
-  icons,
   settings,
   trip,
 };

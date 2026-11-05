@@ -1,7 +1,5 @@
 import { useLoadingStore } from './loading';
-import { useProfileStore } from './profile';
 import { supabase } from '@/lib/supabase';
-import { validateDisplayName } from '@/validators';
 import type { User } from '@supabase/supabase-js';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
@@ -40,7 +38,6 @@ type AuthErrorState = {
   email: string | null;
   password: string | null;
   auth: string | null;
-  displayName?: string | null;
 };
 
 type EmailChangeResult = {
@@ -54,29 +51,18 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string | null>(null);
   const initialized = ref(false);
   const loadingStore = useLoadingStore();
-  const profileStore = useProfileStore();
 
   const authError = ref<{
     email: string | null;
     password: string | null;
     auth: string | null;
-    displayName?: string | null;
   }>({
     email: null,
     password: null,
     auth: null,
-    displayName: null,
   });
 
   const isAuthenticated = computed(() => !!user.value);
-
-  async function syncProfileForCurrentUser() {
-    if (user.value) {
-      await profileStore.fetchProfile();
-      return;
-    }
-    profileStore.clearProfile();
-  }
 
   async function init() {
     if (initialized.value) {
@@ -88,7 +74,6 @@ export const useAuthStore = defineStore('auth', () => {
         const { data } = await supabase.auth.getSession();
         user.value = data.session?.user ?? null;
         accessToken.value = data.session?.access_token ?? null;
-        await syncProfileForCurrentUser();
       })(),
       new Promise((resolve) => setTimeout(resolve, 3600)),
     ]);
@@ -96,7 +81,6 @@ export const useAuthStore = defineStore('auth', () => {
     supabase.auth.onAuthStateChange(async (event, session) => {
       user.value = session?.user ?? null;
       accessToken.value = session?.access_token ?? null;
-      await syncProfileForCurrentUser();
     });
 
     initialized.value = true;
@@ -106,24 +90,13 @@ export const useAuthStore = defineStore('auth', () => {
     return accessToken.value;
   }
 
-  async function signUp(email: string, password: string, displayName: string) {
+  async function signUp(email: string, password: string) {
     clearAuthError();
-    const displayNameErrorKey = validateDisplayName(displayName);
-    if (displayNameErrorKey) {
-      setAuthError(null, null, null, `settings.errors.${displayNameErrorKey}`);
-      return;
-    }
-
     loadingStore.start();
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: {
-            display_name: displayName,
-          },
-        },
       });
       if (error) {
         setAuthErrorByUpdateContext({ email, password }, error);
@@ -283,25 +256,23 @@ export const useAuthStore = defineStore('auth', () => {
     error: { message: string; code?: string | null },
   ) {
     const mapped = mapAuthErrorByUpdateContext(updates, error);
-    setAuthError(mapped.email, mapped.password, mapped.auth, null);
+    setAuthError(mapped.email, mapped.password, mapped.auth);
   }
 
   function setAuthError(
     emailMessage: string | null,
     passwordMessage: string | null,
     authMessage: string | null = null,
-    displayNameMessage: string | null = null,
   ) {
     authError.value = {
       email: emailMessage,
       password: passwordMessage,
       auth: authMessage,
-      displayName: displayNameMessage,
     };
   }
 
   function clearAuthError() {
-    authError.value = { email: null, password: null, auth: null, displayName: null };
+    authError.value = { email: null, password: null, auth: null };
   }
 
   return {

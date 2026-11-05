@@ -4,7 +4,7 @@ import FeedbackMessage from '@/components/FeedbackMessage.vue';
 import PasswordField from '@/components/forms/PasswordField.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
-import { validateDisplayName, validatePassword } from '@/validators';
+import { validatePassword } from '@/validators';
 import { computed, ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
@@ -20,14 +20,12 @@ const resetDone = ref(false);
 
 const form = reactive({
   email: '',
-  displayName: '',
   password: '',
   passwordConfirm: '',
 });
 
 const errors = ref({
   email: null as string | null,
-  displayName: null as string | null,
   password: null as string | null,
   general: null as string | null,
 });
@@ -73,24 +71,17 @@ function validateInput() {
     if (passwordErrorKey) {
       errors.value.password = `auth.errors.${passwordErrorKey}`;
     }
-
-    const displayNameErrorKey = validateDisplayName(form.displayName);
-    if (displayNameErrorKey) {
-      errors.value.displayName = `settings.errors.${displayNameErrorKey}`;
-    }
   }
 }
 
 function clearForm() {
   form.email = '';
-  form.displayName = '';
   form.password = '';
   form.passwordConfirm = '';
 }
 
 function clearErrors() {
   errors.value.email = null;
-  errors.value.displayName = null;
   errors.value.password = null;
   errors.value.general = null;
 }
@@ -121,16 +112,14 @@ async function submit() {
         router.push({ name: 'home' });
         break;
       case 'signup':
-        await authStore.signUp(form.email, form.password, form.displayName);
+        await authStore.signUp(form.email, form.password);
 
         if (
           authStore.authError?.email ||
           authStore.authError?.password ||
-          authStore.authError?.auth ||
-          authStore.authError?.displayName
+          authStore.authError?.auth
         ) {
           errors.value.email = authStore.authError.email;
-          errors.value.displayName = authStore.authError.displayName ?? null;
           errors.value.password = authStore.authError.password;
           errors.value.general = authStore.authError.auth;
           return;
@@ -190,18 +179,6 @@ async function submit() {
             @input="clearErrors"
           />
         </div>
-        <template v-if="mode === 'signup'">
-          <div class="form-row">
-            <label>{{ $t('auth.displayName') }}</label>
-            <input
-              v-model="form.displayName"
-              type="text"
-              :placeholder="$t('auth.placeholderName')"
-              :class="{ is_error: !!errors.displayName }"
-              @input="clearErrors"
-            />
-          </div>
-        </template>
         <template v-if="mode !== 'reset'">
           <PasswordField
             v-model="form.password"

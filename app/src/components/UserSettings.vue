@@ -4,7 +4,7 @@ import FeedbackMessage from './FeedbackMessage.vue';
 import PasswordField from './forms/PasswordField.vue';
 import { getFaIcon } from '@/lib/faIcons';
 import { useAuthStore } from '@/stores/auth';
-import type { UserForm } from '@/shared/types/profile';
+import type { UserForm } from '@/shared/types/user';
 import { ref } from 'vue';
 
 const props = defineProps<{
