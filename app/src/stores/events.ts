@@ -1,5 +1,6 @@
 import { eventRepository } from '@/repositories';
 import { useLoadingStore } from './loading';
+import { eventTimeOn } from '@/utils/time';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { EventInput, TripEvent } from '@/shared/types/event';
@@ -41,14 +42,15 @@ export const useEventsStore = defineStore('events', () => {
   // Get events for a specific date
   function getByDate(date: string): TripEvent[] {
     return (eventsByDate.value.get(date) ?? []).sort((a, b) => {
-      const ta = sortKey(a);
-      const tb = sortKey(b);
+      const ta = sortKey(a, date);
+      const tb = sortKey(b, date);
       return ta < tb ? -1 : ta > tb ? 1 : 0;
     });
   }
 
-  function sortKey(event: TripEvent): string {
-    return event.start_time ?? '99:99';
+  // Sort by the time shown on that day, such as arrival or check-out.
+  function sortKey(event: TripEvent, date: string): string {
+    return eventTimeOn(event, date) ?? '99:99';
   }
 
   // Set of dates that have events (for calendar highlighting)

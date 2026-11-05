@@ -145,7 +145,7 @@ erDiagram
 | `activity` | `place_events` | Time optional |
 | `link` | `link_events` | Title and URL required |
 
-`events.end_date` is the last day an event appears on the calendar. It equals `start_date` for every type except hotels. Arrival dates for flights and transport are stored in `transport_events.arr_date`.
+`events.end_date` is the last day an event appears on the calendar. For hotels it is the check-out date. For flights and transport it is the later of `start_date` and `transport_events.arr_date`, so overnight trips also appear on the arrival day. For other types it equals `start_date`.
 
 The `meta` table stores information about the database itself, such as `schema_version`. `db/migrate.ts` creates it.
 

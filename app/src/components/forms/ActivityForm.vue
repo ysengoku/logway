@@ -6,6 +6,8 @@ import type { ActivityEventInput, EventOfType } from '@/shared/types/event';
 const props = defineProps<{
   initial?: EventOfType<'activity'>;
   defaultDate?: string;
+  minDate?: string;
+  maxDate?: string;
 }>();
 
 const emit = defineEmits<{
@@ -59,7 +61,7 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.date') }} *</label>
-        <input v-model="form.start_date" type="date" />
+        <input v-model="form.start_date" type="date" :min="minDate" :max="maxDate" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.time') }} </label>

@@ -146,6 +146,8 @@ async function deleteTrip() {
       :date="modalDate"
       :event="modalEvent"
       :trip-id="tripId"
+      :trip-start-date="trip?.start_date"
+      :trip-end-date="trip?.end_date"
       @close="onModalClose"
       @saved="onModalSaved"
     />

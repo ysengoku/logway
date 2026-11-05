@@ -3,6 +3,7 @@ import type { EventOfType } from '@/shared/types/event';
 
 defineProps<{
   event: EventOfType<'flight'> | EventOfType<'transport'>;
+  date: string;
 }>();
 
 function formatTime(time: string | null | undefined): string | null {
@@ -16,7 +17,13 @@ function formatTime(time: string | null | undefined): string | null {
     <div class="day-detail__card-meta-transport-route">
       {{ event.dep_place }} → {{ event.arr_place }}
     </div>
-    <div class="day-detail__card-meta-transport-time">
+    <div
+      v-if="event.start_date !== date && event.arr_date === date"
+      class="day-detail__card-meta-transport-time"
+    >
+      {{ $t('form.event.arrival') }} {{ formatTime(event.arr_time) }}
+    </div>
+    <div v-else class="day-detail__card-meta-transport-time">
       {{ $t('form.event.arrival') }}: {{ event.arr_date }}
       {{ formatTime(event.arr_time) }}
     </div>

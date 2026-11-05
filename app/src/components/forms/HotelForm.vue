@@ -6,6 +6,8 @@ import type { EventOfType, HotelEventInput } from '@/shared/types/event';
 const props = defineProps<{
   initial?: EventOfType<'hotel'>;
   defaultDate?: string;
+  minDate?: string;
+  maxDate?: string;
 }>();
 
 const emit = defineEmits<{
@@ -72,7 +74,7 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.hotel.checkinDate') }} *</label>
-        <input v-model="form.start_date" type="date" />
+        <input v-model="form.start_date" type="date" :min="minDate" :max="maxDate" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.hotel.checkinTime') }}</label>
@@ -82,7 +84,7 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.hotel.checkoutDate') }} *</label>
-        <input v-model="form.end_date" type="date" />
+        <input v-model="form.end_date" type="date" :min="minDate" :max="maxDate" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.hotel.checkoutTime') }}</label>

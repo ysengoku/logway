@@ -4,6 +4,7 @@ import EventMetaTransport from '@/components/eventCards/EventMetaTransport.vue';
 import { EVENT_TYPE, EVENT_TYPE_OPTIONS, TRANSPORT_MODES } from '@/constants/events';
 import type { TripEvent } from '@/shared/types/event';
 import { getFaIcon } from '@/lib/faIcons';
+import { eventTimeOn, formatTime } from '@/utils/time';
 import { computed } from 'vue';
 import { faLink, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
@@ -42,10 +43,12 @@ function getEventTitle(event: TripEvent): string {
 }
 
 function getEventTime(event: TripEvent): string | null {
-  if (event.type === EVENT_TYPE.HOTEL && event.start_date !== props.date) {
-    return event.end_date === props.date ? (event.check_out_time?.slice(0, 5) ?? null) : null;
+  const isTransport = event.type === EVENT_TYPE.FLIGHT || event.type === EVENT_TYPE.TRANSPORT;
+  // On the arrival day, the card shows the arrival time instead.
+  if (isTransport && event.start_date !== props.date) {
+    return null;
   }
-  return event.start_time?.slice(0, 5) ?? null;
+  return formatTime(eventTimeOn(event, props.date));
 }
 
 // Not every event type has these fields.
@@ -72,6 +75,7 @@ const bookingRef = computed(() => ('booking_ref' in props.event ? props.event.bo
         <EventMetaTransport
           v-if="event.type === EVENT_TYPE.FLIGHT || event.type === EVENT_TYPE.TRANSPORT"
           :event="event"
+          :date="date"
         />
         <EventMetaHotel v-else-if="event.type === EVENT_TYPE.HOTEL" :event="event" :date="date" />
         <div v-if="address" class="day-detail__card-meta-address">

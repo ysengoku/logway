@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { computed, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { EventOfType, FlightEventInput } from '@/shared/types/event';
-import { TIMEZONES } from '@/utils/time';
+import { TIMEZONES, previousDay } from '@/utils/time';
 
 const props = defineProps<{
   initial?: EventOfType<'flight'>;
+  minDate?: string;
+  maxDate?: string;
 }>();
 
 const emit = defineEmits<{
@@ -13,6 +15,8 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+// Crossing the date line eastward can land the day before departure.
+const minArrivalDate = computed(() => (props.minDate ? previousDay(props.minDate) : undefined));
 const form = reactive({
   service_number: props.initial?.service_number ?? '',
   booking_ref: props.initial?.booking_ref ?? '',
@@ -48,7 +52,8 @@ function submit() {
     booking_ref: form.booking_ref || null,
     start_date: form.start_date,
     start_time: form.start_time,
-    end_date: form.start_date,
+    // Local arrival can be the day before departure when crossing the date line.
+    end_date: form.arr_date > form.start_date ? form.arr_date : form.start_date,
     dep_place: form.dep_place,
     dep_tz_id: form.dep_tz_id,
     arr_date: form.arr_date,
@@ -85,7 +90,7 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.date') }} *</label>
-        <input v-model="form.start_date" type="date" />
+        <input v-model="form.start_date" type="date" :min="minDate" :max="maxDate" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.departureTime') }} *</label>
@@ -109,7 +114,7 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.date') }} *</label>
-        <input v-model="form.arr_date" type="date" />
+        <input v-model="form.arr_date" type="date" :min="minArrivalDate" :max="maxDate" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.arrivalTime') }} *</label>

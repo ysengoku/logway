@@ -6,6 +6,8 @@ import type { EventOfType, LinkEventInput } from '@/shared/types/event';
 const props = defineProps<{
   initial?: EventOfType<'link'>;
   defaultDate?: string;
+  minDate?: string;
+  maxDate?: string;
 }>();
 
 const emit = defineEmits<{
@@ -52,7 +54,7 @@ defineExpose({ submit });
     </div>
     <div class="form-row">
       <label>{{ $t('form.event.link.relatedDate') }} *</label>
-      <input v-model="form.start_date" type="date" />
+      <input v-model="form.start_date" type="date" :min="minDate" :max="maxDate" />
     </div>
     <div class="form-row">
       <label>{{ $t('form.event.notes') }}</label>

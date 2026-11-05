@@ -19,6 +19,8 @@ const props = defineProps<{
   date?: string;
   event?: TripEvent;
   tripId: string;
+  tripStartDate?: string;
+  tripEndDate?: string;
 }>();
 
 const emit = defineEmits<{
@@ -95,6 +97,8 @@ function onSaveClick() {
         ref="formRef"
         :initial="event?.type === 'flight' ? event : undefined"
         :default-date="date"
+        :min-date="tripStartDate"
+        :max-date="tripEndDate"
         @submit="onFormSubmit"
       />
       <TransportForm
@@ -102,6 +106,8 @@ function onSaveClick() {
         ref="formRef"
         :initial="event?.type === 'transport' ? event : undefined"
         :default-date="date"
+        :min-date="tripStartDate"
+        :max-date="tripEndDate"
         @submit="onFormSubmit"
       />
       <HotelForm
@@ -109,6 +115,8 @@ function onSaveClick() {
         ref="formRef"
         :initial="event?.type === 'hotel' ? event : undefined"
         :default-date="date"
+        :min-date="tripStartDate"
+        :max-date="tripEndDate"
         @submit="onFormSubmit"
       />
       <RestaurantForm
@@ -116,6 +124,8 @@ function onSaveClick() {
         ref="formRef"
         :initial="event?.type === 'restaurant' ? event : undefined"
         :default-date="date"
+        :min-date="tripStartDate"
+        :max-date="tripEndDate"
         @submit="onFormSubmit"
       />
       <ActivityForm
@@ -123,6 +133,8 @@ function onSaveClick() {
         ref="formRef"
         :initial="event?.type === 'activity' ? event : undefined"
         :default-date="date"
+        :min-date="tripStartDate"
+        :max-date="tripEndDate"
         @submit="onFormSubmit"
       />
       <LinkForm
@@ -130,6 +142,8 @@ function onSaveClick() {
         ref="formRef"
         :initial="event?.type === 'link' ? event : undefined"
         :default-date="date"
+        :min-date="tripStartDate"
+        :max-date="tripEndDate"
         @submit="onFormSubmit"
       />
 

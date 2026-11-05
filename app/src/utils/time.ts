@@ -1,3 +1,5 @@
+import type { TripEvent } from '@/shared/types/event';
+
 export const TIMEZONES = [
   { id: 'Asia/Tokyo', label: 'Tokyo (JST, +9)' },
   { id: 'Asia/Seoul', label: 'Seoul (KST, +9)' },
@@ -63,4 +65,24 @@ export function toUTC(localDate: string, localTime: string, tzId: string): strin
 
 export function formatTime(time: string | null | undefined): string | null {
   return time ? time.slice(0, 5) : null;
+}
+
+// The time of an event on a calendar day: check-out or arrival on later days, otherwise its start.
+export function eventTimeOn(event: TripEvent, date: string): string | null {
+  if (date !== event.start_date) {
+    if (event.type === 'hotel') {
+      return date === event.end_date ? event.check_out_time : null;
+    }
+    if (event.type === 'flight' || event.type === 'transport') {
+      return date === event.arr_date ? event.arr_time : null;
+    }
+  }
+  return event.start_time;
+}
+
+// Returns the day before a YYYY-MM-DD date.
+export function previousDay(date: string): string {
+  const day = new Date(`${date}T00:00:00Z`);
+  day.setUTCDate(day.getUTCDate() - 1);
+  return day.toISOString().slice(0, 10);
 }
