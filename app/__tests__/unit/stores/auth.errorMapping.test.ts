@@ -85,15 +85,4 @@ describe('auth store error mapping', () => {
     expect(store.authError.password).toBe('auth.errors.validationFailed');
     expect(store.authError.auth).toBeNull();
   });
-
-  it('maps client-side signup display name validation to displayName field', async () => {
-    const store = useAuthStore();
-    await store.signUp('user@example.com', 'StrongPass123!', ' admin');
-
-    expect(authMock.signUp).not.toHaveBeenCalled();
-    expect(store.authError.displayName).toBe('settings.errors.displayNameLeadingOrTrailingSpaces');
-    expect(store.authError.email).toBeNull();
-    expect(store.authError.password).toBeNull();
-    expect(store.authError.auth).toBeNull();
-  });
 });

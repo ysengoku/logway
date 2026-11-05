@@ -7,7 +7,6 @@ export const auth = {
   emailAddress: 'Adresse e-mail',
   newEmail: 'Nouvelle adresse e-mail',
   changeEmail: 'Modifier',
-  displayName: "Nom d'affichage *",
   password: 'Mot de passe',
   confirmPassword: 'Confirmer le mot de passe',
   currentPassword: 'Mot de passe actuel',
@@ -16,7 +15,6 @@ export const auth = {
   passwordsDoNotMatch: 'Le mot de passe et sa confirmation ne correspondent pas.',
   dontHaveAccount: "Vous n'avez pas encore de compte ?",
   placeholderEmail: "vous{'@'}exemple.com",
-  placeholderName: 'Votre nom',
   placeholderPassword: 'mot de passe',
   placeholderRepeatPassword: 'repetez le mot de passe',
   showPassword: 'Afficher le mot de passe',
@@ -173,41 +171,10 @@ export const home = {
   showAll: 'Tout afficher ({count})',
 };
 
-export const icons = {
-  cat: 'Chat',
-  dog: 'Chien',
-  dove: 'Colombe',
-  fish: 'Poisson',
-  frog: 'Grenouille',
-  shrimp: 'Crevette',
-  'apple-whole': 'Pomme',
-  seedling: 'Pousse',
-  'user-astronaut': 'Astronaute',
-  'user-secret': 'Homme Mystérieux',
-  'chess-knight': "Chevalier d'échecs",
-  'face-grin-hearts': 'Sourire aux Cœurs',
-  'face-grin-squint-tears': 'Mort de Rire',
-  'face-smile': 'Sourire',
-  'face-smile-wink': "Sourire Clin d'œil",
-};
-
 export const settings = {
   settings: 'Paramètres',
   updateSuccess: 'Mis à jour avec succès.',
   emailChangePending: 'Verifiez votre boite mail pour confirmer votre nouvelle adresse e-mail.',
-  errors: {
-    emptyDisplayName: "Le nom d'affichage ne peut pas être vide.",
-    displayNameLength: "Le nom d'affichage doit contenir entre 2 et 16 caracteres.",
-    displayNameCharacters:
-      "Le nom d'affichage ne peut contenir que des lettres, chiffres, espaces, _ et -.",
-    displayNameLeadingOrTrailingSpaces:
-      "Le nom d'affichage ne peut pas commencer ou se terminer par un espace.",
-    displayNameConsecutiveSpaces: "Le nom d'affichage ne peut pas contenir d'espaces consecutifs.",
-    displayNameReserved: "Ce nom d'affichage est reserve et ne peut pas etre utilise.",
-    invalidIcon: "Le nom de l'icône est invalide.",
-    invalidIconColor: "La couleur de l'icône doit être un code hexadécimal.",
-    invalidIconBgColor: "La couleur de fond de l'icône doit être un code hexadécimal.",
-  },
 };
 
 export const trip = {
@@ -253,7 +220,6 @@ export default {
   event,
   form,
   home,
-  icons,
   settings,
   trip,
 };

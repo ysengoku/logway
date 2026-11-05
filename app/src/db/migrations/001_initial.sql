@@ -1,13 +1,3 @@
-CREATE TABLE profile (
-  id               INTEGER PRIMARY KEY CHECK (id = 1),
-  display_name     TEXT NOT NULL,
-  icon             TEXT NOT NULL,
-  icon_color       TEXT NOT NULL,
-  icon_bg_color    TEXT NOT NULL,
-  preferred_locale TEXT,
-  updated_at       TEXT NOT NULL
-);
-
 CREATE TABLE trips (
   id            TEXT PRIMARY KEY,
   title         TEXT NOT NULL,

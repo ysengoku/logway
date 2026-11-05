@@ -50,7 +50,6 @@ LogWay has no backend database. Data lives in a SQLite database inside the brows
 - Sync to a hidden app folder in the user's cloud storage; changes made on another device are never silently overwritten
 - Offline editing, uploaded once the connection is back
 - Read-only share links for travel companions (booking references are never shared; notes only when chosen)
-- Profile settings: display name, icon and icon colors
 - English and French
 
 ## Architecture
@@ -63,7 +62,7 @@ logway/
 │  ├─ src/
 │  │  ├─ db/               # SQLite in a Web Worker, migrations, tab lock
 │  │  ├─ sync/             # Cloud storage adapters (Google Drive)
-│  │  ├─ repositories/     # Data access for trips, events and profile
+│  │  ├─ repositories/     # Data access for trips and events
 │  │  ├─ stores/           # Pinia stores
 │  │  ├─ views/            # Route-level pages
 │  │  ├─ components/       # UI components

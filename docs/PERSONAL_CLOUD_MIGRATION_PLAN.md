@@ -114,15 +114,6 @@ CREATE TABLE events (
 );
 CREATE INDEX events_trip_id ON events(trip_id);
 
-CREATE TABLE profile (
-  id               INTEGER PRIMARY KEY CHECK (id = 1),  -- 1行だけ
-  display_name     TEXT NOT NULL,
-  icon             TEXT NOT NULL,
-  icon_color       TEXT NOT NULL,
-  icon_bg_color    TEXT NOT NULL,
-  preferred_locale TEXT,
-  updated_at       TEXT NOT NULL
-);
 ```
 
 - 削除するもの: `owner_id`, `invite_code`, `trip_members`, RLS, `find_trip_by_invite_code`, `handle_new_user`
@@ -205,7 +196,8 @@ CREATE TABLE profile (
 | `AuthView`（メール/パスワード） | 「Google でログイン」ボタンだけにする |
 | `ResetPasswordView`, `EmailChangeModal`, `PasswordField`, パスワード関連のバリデーター | 削除 |
 | `JoinTripModal`, `JoinTripForm`, `TripMembers`, `stores/members`, `api/members` | 削除（フェーズ1で実施済み） |
-| `SettingsView` | プロフィール（表示名・アイコン・言語）は残す。アカウント欄は Google のメールアドレス表示とログアウトにする |
+| プロフィール（`profile` テーブル、表示名、アイコン） | 削除済み。言語設定は `localStorage` に保存する |
+| `SettingsView` | パスワードとメールの変更を Google ログインへの移行時に削除する |
 | `server/`（Hono、Supabase のルート）、`api/hono.ts`、`shared/` のワークスペース | 削除（構成変更で実施済み。`shared/` は `src/shared/` に移動） |
 | `@supabase/supabase-js` | 削除（フロントのログインで使っているため、フェーズ2の後） |
 | `supabase/`（マイグレーション、設定） | `docs/archive/supabase/` に移動済み。データ移行の方針が決まったら扱いを決める |

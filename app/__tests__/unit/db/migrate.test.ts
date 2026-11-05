@@ -23,7 +23,6 @@ describe('migrate', () => {
       'link_events',
       'meta',
       'place_events',
-      'profile',
       'transport_events',
       'trips',
     ]);
