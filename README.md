@@ -36,9 +36,9 @@
 
 ## About
 
-LogWay is a web app for planning trips. Each trip collects its flights, trains and buses, hotels, restaurants, activities and useful links, and lays them out on a calendar.
+LogWay is a web app for managing travel itineraries. Each trip brings together flights, trains, buses, accommodation, restaurants, activities and useful links, all organized in a calendar view.
 
-LogWay has no backend database. Data lives in a SQLite database inside the browser and is synced to the user's own cloud storage (Google Drive only at the moment), so it stays in an account the user controls.
+LogWay has no backend database. Instead, it stores data in a SQLite database directly in the browser and syncs it with the user's own cloud storage (currently Google Drive). This keeps users in control of their data, which remains in their own cloud account.
 
 ## Features
 
@@ -48,9 +48,7 @@ LogWay has no backend database. Data lives in a SQLite database inside the brows
 - Local date, time and time zone for both departure and arrival of flights and transport
 - Calendar view of each trip with a per-day list of events
 - Sync to a hidden app folder in the user's cloud storage; changes made on another device are never silently overwritten
-- Offline editing, uploaded once the connection is back
 - Read-only share links for travel companions (booking references are never shared; notes only when chosen)
-- Profile settings: display name, icon and icon colors
 - English and French
 
 ## Architecture
@@ -63,7 +61,7 @@ logway/
 │  ├─ src/
 │  │  ├─ db/               # SQLite in a Web Worker, migrations, tab lock
 │  │  ├─ sync/             # Cloud storage adapters (Google Drive)
-│  │  ├─ repositories/     # Data access for trips, events and profile
+│  │  ├─ repositories/     # Data access for trips and events
 │  │  ├─ stores/           # Pinia stores
 │  │  ├─ views/            # Route-level pages
 │  │  ├─ components/       # UI components
@@ -204,7 +202,7 @@ pnpm exec vitest run __tests__/unit/db/migrate.test.ts   # single file
 ## Notes
 
 - Only one browser tab can open LogWay at a time. The local database (OPFS, `opfs-sahpool` VFS) supports a single connection, so later tabs show a message instead of the app.
-- Where OPFS is unavailable (e.g. Firefox private windows), the database runs in memory and still syncs to cloud storage.
+- LogWay requires an internet connection and browser storage (OPFS). If either is unavailable, the app shows an error screen instead of letting users make changes that can't be saved.
 - Share links are public to anyone holding the URL; turning sharing off deletes the snapshot.
 
 ## Resources

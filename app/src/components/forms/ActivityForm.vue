@@ -1,39 +1,44 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
-import type { EventRow } from '@/shared/types/event';
+import { useI18n } from 'vue-i18n';
+import type { ActivityEventInput, EventOfType } from '@/shared/types/event';
 
 const props = defineProps<{
-  initial?: Partial<EventRow>;
+  initial?: EventOfType<'activity'>;
   defaultDate?: string;
+  minDate?: string;
+  maxDate?: string;
 }>();
 
 const emit = defineEmits<{
-  submit: [data: Partial<EventRow>];
+  submit: [data: ActivityEventInput];
 }>();
 
+const { t } = useI18n();
 const form = reactive({
-  name:            props.initial?.name ?? '',
-  address:         props.initial?.address ?? '',
-  schedule_date:   props.initial?.schedule_date ?? props.defaultDate ?? '',
-  schedule_time:   props.initial?.schedule_time ?? '',
-  url:             props.initial?.url ?? '',
-  note:            props.initial?.note ?? '',
+  name: props.initial?.name ?? '',
+  address: props.initial?.address ?? '',
+  start_date: props.initial?.start_date ?? props.defaultDate ?? '',
+  start_time: props.initial?.start_time ?? '',
+  url: props.initial?.url ?? '',
+  note: props.initial?.note ?? '',
 });
 
 function submit() {
-  if (!form.name || !form.schedule_date) {
-    alert('Name and date are required.');
+  if (!form.name || !form.start_date) {
+    alert(t('form.event.errors.activityRequired'));
     return;
   }
 
   emit('submit', {
-    type:            'activity',
-    name:            form.name,
-    address:         form.address || undefined,
-    schedule_date:   form.schedule_date,
-    schedule_time:   form.schedule_time || undefined,
-    url:             form.url || undefined,
-    note:            form.note || undefined,
+    type: 'activity',
+    name: form.name,
+    address: form.address || null,
+    start_date: form.start_date,
+    start_time: form.start_time || null,
+    end_date: form.start_date,
+    url: form.url || null,
+    note: form.note || null,
   });
 }
 
@@ -56,11 +61,11 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.date') }} *</label>
-        <input v-model="form.schedule_date" type="date" />
+        <input v-model="form.start_date" type="date" :min="minDate" :max="maxDate" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.time') }} </label>
-        <input v-model="form.schedule_time" type="time" />
+        <input v-model="form.start_time" type="time" />
       </div>
     </div>
 

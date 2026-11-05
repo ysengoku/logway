@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { useProfileStore } from '@/stores/profile';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 
-const profileStore = useProfileStore();
 const authStore = useAuthStore();
 const router = useRouter();
 
@@ -13,12 +11,6 @@ const accountTriggerRef = ref<HTMLElement | null>(null);
 const accountMenuRef = ref<HTMLElement | null>(null);
 const accountMenuTop = ref(0);
 const accountMenuRight = ref(0);
-
-const iconName = computed(() => {
-  return profileStore.profile ? `fa-solid fa-${profileStore.profile.icon}` : 'fa-solid fa-user';
-});
-const iconColor = computed(() => profileStore.profile?.icon_color ?? '#EEECE9');
-const iconBgColor = computed(() => profileStore.profile?.icon_bg_color ?? '#1B3A5C');
 
 function updateAccountMenuPosition() {
   if (!accountTriggerRef.value) return;
@@ -45,7 +37,7 @@ async function onSignOut() {
   await router.push({ name: 'auth' });
 }
 
-async function goToProfileSettings() {
+async function goToSettings() {
   closeAccountMenu();
   await router.push({ name: 'settings' });
 }
@@ -88,14 +80,8 @@ onBeforeUnmount(() => {
     aria-haspopup="menu"
     aria-label="Open account menu"
     @click="toggleAccountMenu"
-    :style="{
-      color: iconColor,
-      backgroundColor: iconBgColor,
-    }"
   >
-    <FaIcon
-      :icon="iconName"
-    />
+    <FaIcon icon="fa-solid fa-user" />
   </button>
 
   <Teleport to="body">
@@ -109,9 +95,9 @@ onBeforeUnmount(() => {
         right: `${accountMenuRight}px`,
       }"
     >
-      <span class="app-header__account-menu__user">{{ profileStore.profile?.display_name }}</span>
-      <button class="app-header__account-menu__item" role="menuitem" @click="goToProfileSettings">
-        Profile settings
+      <span class="app-header__account-menu__user">{{ authStore.user?.email }}</span>
+      <button class="app-header__account-menu__item" role="menuitem" @click="goToSettings">
+        {{ $t('settings.settings') }}
       </button>
       <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut">
         {{ $t('auth.signOut') }}

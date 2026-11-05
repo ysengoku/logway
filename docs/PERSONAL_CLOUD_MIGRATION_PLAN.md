@@ -34,7 +34,7 @@ Vercel Functions（app/api/、フレームワークなし）
     （データの読み書きにはサーバーを使わない）
 ```
 
-- 画面とストアは今どおり `tripsApi.getAll()` などを呼ぶ。`repositories/` の中身だけを SQLite 版に差し替えるので、画面側の変更は最小限で済む。
+- 画面とストアは今どおり `tripRepository.getAll()` などを呼ぶ。`repositories/` の中身だけを SQLite 版に差し替えるので、画面側の変更は最小限で済む。
 - サーバー側の関数は4つだけなので Hono は使わず、Vercel 標準の書き方（`export function GET(request: Request)` など）にする。
 
 ### ディレクトリ構成
@@ -114,15 +114,6 @@ CREATE TABLE events (
 );
 CREATE INDEX events_trip_id ON events(trip_id);
 
-CREATE TABLE profile (
-  id               INTEGER PRIMARY KEY CHECK (id = 1),  -- 1行だけ
-  display_name     TEXT NOT NULL,
-  icon             TEXT NOT NULL,
-  icon_color       TEXT NOT NULL,
-  icon_bg_color    TEXT NOT NULL,
-  preferred_locale TEXT,
-  updated_at       TEXT NOT NULL
-);
 ```
 
 - 削除するもの: `owner_id`, `invite_code`, `trip_members`, RLS, `find_trip_by_invite_code`, `handle_new_user`
@@ -164,14 +155,14 @@ CREATE TABLE profile (
 
 ### オフライン
 
-- オフライン中もローカルで編集できる（`dirty` のまま）
-- オンラインに戻ったら、上の「変更したとき」の3番から再開する
+- オフラインでは使えない。Drive の最新データを確認できないので、閲覧もできないようにする
+- 編集は、Drive へのアップロードが成功して初めて保存済みとする。失敗したらエラーを表示する
+- `navigator.onLine` は画面の切り替えだけに使う。通信できるかの最終的な判断は、Drive への通信の成否で行う
 
 ### OPFS が使えない環境
 
-- Firefox のプライベートウィンドウや、サイトデータをブロックしている設定などでは OPFS が使えない。その場合は、メモリ上の SQLite で動かす
-- 同期は同じように動く（起動時に毎回 Drive からダウンロードし、変更はアップロードする）ので、データは Drive に保存される
-- ユーザーには何も表示しない。端末に保存していることはユーザーが意識しない部分なので、表示しても混乱させるだけになる
+- メモリ上の SQLite には切り替えない。操作できるのに保存されない状態を避けるため
+- アプリを起動せず、考えられる原因を挙げたエラー画面を表示する（プライベートウィンドウ、サイトデータのブロック、古いブラウザ、ストレージの不足など）
 
 ### 複数タブ
 
@@ -205,7 +196,8 @@ CREATE TABLE profile (
 | `AuthView`（メール/パスワード） | 「Google でログイン」ボタンだけにする |
 | `ResetPasswordView`, `EmailChangeModal`, `PasswordField`, パスワード関連のバリデーター | 削除 |
 | `JoinTripModal`, `JoinTripForm`, `TripMembers`, `stores/members`, `api/members` | 削除（フェーズ1で実施済み） |
-| `SettingsView` | プロフィール（表示名・アイコン・言語）は残す。アカウント欄は Google のメールアドレス表示とログアウトにする |
+| プロフィール（`profile` テーブル、表示名、アイコン） | 削除済み。言語設定は `localStorage` に保存する |
+| `SettingsView` | パスワードとメールの変更を Google ログインへの移行時に削除する |
 | `server/`（Hono、Supabase のルート）、`api/hono.ts`、`shared/` のワークスペース | 削除（構成変更で実施済み。`shared/` は `src/shared/` に移動） |
 | `@supabase/supabase-js` | 削除（フロントのログインで使っているため、フェーズ2の後） |
 | `supabase/`（マイグレーション、設定） | `docs/archive/supabase/` に移動済み。データ移行の方針が決まったら扱いを決める |
@@ -234,6 +226,7 @@ CREATE TABLE profile (
 
 - [ ] オフライン・タイムアウト時に、ユーザーにわかるメッセージを出す。通信が戻れば再読み込みせずに続けられる
 - [ ] 回線を絞った状態（DevTools の throttling）で、起動と同期を確認する
+- [ ] エラーメッセージをすべて翻訳する（リポジトリの `ApiError` のメッセージ、ストアの既定メッセージなど）。SQLite などの内部エラーをそのまま表示しない（`TripView.onEditTrip`、`HomeView.createTrip` を含む）
 - [ ] Vercel のログを確認できるようにし、問題があれば直前のデプロイに戻す手順（Instant Rollback）を確認しておく
 - [ ] Google の OAuth 同意画面を「本番」にする（「テスト」のままだとリフレッシュトークンが7日で失効する）
 - [ ] プライバシーポリシーのページを用意する（セクション9）

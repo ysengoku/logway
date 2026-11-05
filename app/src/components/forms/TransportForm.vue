@@ -1,54 +1,67 @@
 <script setup lang="ts">
-import { TIMEZONES, toUTC } from '@/utils/time';
+import { TIMEZONES, previousDay } from '@/utils/time';
 import { TRANSPORT_MODES } from '@/constants/events';
-import type { EventRow, TransportMode } from '@/shared/types/event';
-import { reactive } from 'vue';
+import type { EventOfType, TransportEventInput, TransportMode } from '@/shared/types/event';
+import { computed, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
-  initial?: Partial<EventRow>;
+  initial?: EventOfType<'transport'>;
+  minDate?: string;
+  maxDate?: string;
 }>();
 
 const emit = defineEmits<{
-  submit: [data: Partial<EventRow>];
+  submit: [data: TransportEventInput];
 }>();
 
+const { t } = useI18n();
+// Crossing the date line eastward can land the day before departure.
+const minArrivalDate = computed(() => (props.minDate ? previousDay(props.minDate) : undefined));
 const form = reactive({
-  transport_mode: (props.initial?.transport_mode ?? 'train') as TransportMode,
+  mode: (props.initial?.mode ?? 'train') as TransportMode,
   service_number: props.initial?.service_number ?? '',
-  booking_ref:    props.initial?.booking_ref ?? '',
-  dep_place:      props.initial?.dep_place ?? '',
-  dep_tz_id:      props.initial?.dep_tz_id ?? 'Asia/Tokyo',
-  dep_local_date: props.initial?.dep_local_date ?? '',
-  dep_local_time: props.initial?.dep_local_time ?? '',
-  arr_place:      props.initial?.arr_place ?? '',
-  arr_tz_id:      props.initial?.arr_tz_id ?? 'Asia/Tokyo',
-  arr_local_date: props.initial?.arr_local_date ?? '',
-  arr_local_time: props.initial?.arr_local_time ?? '',
-  note:           props.initial?.note ?? '',
+  booking_ref: props.initial?.booking_ref ?? '',
+  start_date: props.initial?.start_date ?? '',
+  start_time: props.initial?.start_time ?? '',
+  dep_place: props.initial?.dep_place ?? '',
+  dep_tz_id: props.initial?.dep_tz_id ?? 'Asia/Tokyo',
+  arr_date: props.initial?.arr_date ?? '',
+  arr_time: props.initial?.arr_time ?? '',
+  arr_place: props.initial?.arr_place ?? '',
+  arr_tz_id: props.initial?.arr_tz_id ?? 'Asia/Tokyo',
+  note: props.initial?.note ?? '',
 });
 
 function submit() {
-  if (!form.dep_local_date) {
-    alert('Departure date is required.');
+  if (
+    !form.dep_place ||
+    !form.start_date ||
+    !form.start_time ||
+    !form.arr_place ||
+    !form.arr_date ||
+    !form.arr_time
+  ) {
+    alert(t('form.event.errors.transportRequired'));
     return;
   }
 
   emit('submit', {
-    type:           'transport',
-    transport_mode: form.transport_mode,
-    service_number: form.service_number || undefined,
-    booking_ref:    form.booking_ref || undefined,
-    dep_place:      form.dep_place || undefined,
-    dep_tz_id:      form.dep_tz_id,
-    dep_local_date: form.dep_local_date,
-    dep_local_time: form.dep_local_time || undefined,
-    dep_utc:        toUTC(form.dep_local_date, form.dep_local_time, form.dep_tz_id) ?? undefined,
-    arr_place:      form.arr_place || undefined,
-    arr_tz_id:      form.arr_tz_id,
-    arr_local_date: form.arr_local_date || undefined,
-    arr_local_time: form.arr_local_time || undefined,
-    arr_utc:        toUTC(form.arr_local_date, form.arr_local_time, form.arr_tz_id) ?? undefined,
-    note:           form.note || undefined,
+    type: 'transport',
+    mode: form.mode,
+    service_number: form.service_number || null,
+    booking_ref: form.booking_ref || null,
+    start_date: form.start_date,
+    start_time: form.start_time,
+    // Local arrival can be the day before departure when crossing the date line.
+    end_date: form.arr_date > form.start_date ? form.arr_date : form.start_date,
+    dep_place: form.dep_place,
+    dep_tz_id: form.dep_tz_id,
+    arr_date: form.arr_date,
+    arr_time: form.arr_time,
+    arr_place: form.arr_place,
+    arr_tz_id: form.arr_tz_id,
+    note: form.note || null,
   });
 }
 
@@ -60,7 +73,7 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>Mode</label>
-        <select v-model="form.transport_mode">
+        <select v-model="form.mode">
           <option v-for="m in TRANSPORT_MODES" :key="m.value" :value="m.value">
             {{ m.label }}
           </option>
@@ -87,11 +100,11 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.date') }} *</label>
-        <input v-model="form.dep_local_date" type="date" />
+        <input v-model="form.start_date" type="date" :min="minDate" :max="maxDate" />
       </div>
       <div class="form-row">
-        <label>{{ $t('form.event.departureTime') }}</label>
-        <input v-model="form.dep_local_time" type="time" />
+        <label>{{ $t('form.event.departureTime') }} *</label>
+        <input v-model="form.start_time" type="time" />
       </div>
     </div>
     <div class="form-row">
@@ -111,11 +124,11 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.date') }} *</label>
-        <input v-model="form.arr_local_date" type="date" />
+        <input v-model="form.arr_date" type="date" :min="minArrivalDate" :max="maxDate" />
       </div>
       <div class="form-row">
-        <label>{{ $t('form.event.arrivalTime') }}</label>
-        <input v-model="form.arr_local_time" type="time" />
+        <label>{{ $t('form.event.arrivalTime') }} *</label>
+        <input v-model="form.arr_time" type="time" />
       </div>
     </div>
     <div class="form-row">

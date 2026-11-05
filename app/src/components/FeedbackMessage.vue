@@ -10,7 +10,7 @@ const iconName = {
   info: 'circle-info',
   success: 'check-circle',
   error: 'circle-xmark',
-}
+};
 </script>
 
 <template>

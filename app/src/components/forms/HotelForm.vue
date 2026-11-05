@@ -1,45 +1,53 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
-import type { EventRow } from '@/shared/types/event';
+import { useI18n } from 'vue-i18n';
+import type { EventOfType, HotelEventInput } from '@/shared/types/event';
 
 const props = defineProps<{
-  initial?: Partial<EventRow>;
+  initial?: EventOfType<'hotel'>;
   defaultDate?: string;
+  minDate?: string;
+  maxDate?: string;
 }>();
 
 const emit = defineEmits<{
-  submit: [data: Partial<EventRow>];
+  submit: [data: HotelEventInput];
 }>();
 
+const { t } = useI18n();
 const form = reactive({
-  name:             props.initial?.name ?? '',
-  booking_ref:      props.initial?.booking_ref ?? '',
-  address:          props.initial?.address ?? '',
-  check_in_date:    props.initial?.check_in_date ?? props.defaultDate ?? '',
-  check_in_time:    props.initial?.check_in_time ?? '',
-  check_out_date:   props.initial?.check_out_date ?? '',
-  check_out_time:   props.initial?.check_out_time ?? '',
-  url:              props.initial?.url ?? '',
-  note:             props.initial?.note ?? '',
+  name: props.initial?.name ?? '',
+  booking_ref: props.initial?.booking_ref ?? '',
+  address: props.initial?.address ?? '',
+  start_date: props.initial?.start_date ?? props.defaultDate ?? '',
+  start_time: props.initial?.start_time ?? '',
+  end_date: props.initial?.end_date ?? '',
+  check_out_time: props.initial?.check_out_time ?? '',
+  url: props.initial?.url ?? '',
+  note: props.initial?.note ?? '',
 });
 
 function submit() {
-  if (!form.name || !form.check_in_date) {
-    alert('Property name and check-in date are required.');
+  if (!form.name || !form.start_date || !form.end_date) {
+    alert(t('form.event.errors.hotelRequired'));
+    return;
+  }
+  if (form.end_date <= form.start_date) {
+    alert(t('form.event.errors.checkoutAfterCheckin'));
     return;
   }
 
   emit('submit', {
-    type:             'hotel',
-    name:             form.name,
-    booking_ref:      form.booking_ref || undefined,
-    address:          form.address || undefined,
-    check_in_date:    form.check_in_date,
-    check_in_time:    form.check_in_time || undefined,
-    check_out_date:   form.check_out_date || undefined,
-    check_out_time:   form.check_out_time || undefined,
-    url:              form.url || undefined,
-    note:             form.note || undefined,
+    type: 'hotel',
+    name: form.name,
+    booking_ref: form.booking_ref || null,
+    address: form.address || null,
+    start_date: form.start_date,
+    start_time: form.start_time || null,
+    end_date: form.end_date,
+    check_out_time: form.check_out_time || null,
+    url: form.url || null,
+    note: form.note || null,
   });
 }
 
@@ -66,17 +74,17 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.hotel.checkinDate') }} *</label>
-        <input v-model="form.check_in_date" type="date" />
+        <input v-model="form.start_date" type="date" :min="minDate" :max="maxDate" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.hotel.checkinTime') }}</label>
-        <input v-model="form.check_in_time" type="time" />
+        <input v-model="form.start_time" type="time" />
       </div>
     </div>
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.hotel.checkoutDate') }} *</label>
-        <input v-model="form.check_out_date" type="date" />
+        <input v-model="form.end_date" type="date" :min="minDate" :max="maxDate" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.hotel.checkoutTime') }}</label>

@@ -14,7 +14,7 @@ export async function createMemoryDb({ migrated = true } = {}): Promise<Db> {
       return executor.query<T>(sql, bind);
     },
     async exec(statements) {
-      executor.exec(statements);
+      return executor.exec(statements);
     },
   };
   if (migrated) await migrate(db);

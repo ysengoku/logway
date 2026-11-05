@@ -3,7 +3,7 @@ import EventCard from '@/components/eventCards/EventCard.vue';
 import { EVENT_TYPE_OPTIONS } from '@/constants/events';
 import { getFaIcon } from '@/lib/faIcons';
 import { useEventsStore } from '@/stores/events';
-import type { EventRow, EventType } from '@/shared/types/event';
+import type { EventType, TripEvent } from '@/shared/types/event';
 import { useI18n } from 'vue-i18n';
 import { computed, ref } from 'vue';
 
@@ -13,12 +13,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   addEvent: [date: string];
-  editEvent: [event: EventRow];
+  editEvent: [event: TripEvent];
 }>();
 
 const eventsStore = useEventsStore();
 const viewMode = ref<'timeline' | 'type'>('timeline');
-const { d } = useI18n();
+const { d, t } = useI18n();
 
 const events = computed(() => eventsStore.getByDate(props.date));
 
@@ -32,7 +32,11 @@ function getEventsByType(type: EventType) {
 
 async function deleteEvent(id: string) {
   if (!confirm('Delete this event?')) return;
-  await eventsStore.deleteEvent(id);
+  try {
+    await eventsStore.deleteEvent(id);
+  } catch {
+    alert(t('common.failedToDeleteEvent'));
+  }
 }
 </script>
 
@@ -83,10 +87,7 @@ async function deleteEvent(id: string) {
 
       <!-- By type view -->
       <div v-else class="day-detail__groups">
-        <template
-          v-for="group in EVENT_TYPE_OPTIONS"
-          :key="group.type"
-        >
+        <template v-for="group in EVENT_TYPE_OPTIONS" :key="group.type">
           <template v-if="getEventsByType(group.type).length">
             <div class="day-detail__group-label">
               <FaIcon :icon="getFaIcon(group.icon)" class="day-detail__group-faicon" />

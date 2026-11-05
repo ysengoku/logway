@@ -13,7 +13,7 @@ const PREVIEW_COUNT = 3;
 const router = useRouter();
 const tripsStore = useTripsStore();
 const loadingStore = useLoadingStore();
-const { d } = useI18n({ useScope: 'global' });
+const { d, t } = useI18n({ useScope: 'global' });
 const showNewTripModal = ref(false);
 const showAllUpcoming = ref(false);
 const showAllPast = ref(false);
@@ -29,15 +29,17 @@ const visibleUpcoming = computed(() =>
 );
 
 const visiblePast = computed(() =>
-  showAllPast.value
-    ? tripsStore.pastTrips
-    : tripsStore.pastTrips.slice(0, PREVIEW_COUNT),
+  showAllPast.value ? tripsStore.pastTrips : tripsStore.pastTrips.slice(0, PREVIEW_COUNT),
 );
 
 async function createTrip(input: TripInput) {
-  const trip = await tripsStore.createTrip(input);
-  showNewTripModal.value = false;
-  router.push({ name: 'trip', params: { id: trip.id } });
+  try {
+    const trip = await tripsStore.createTrip(input);
+    showNewTripModal.value = false;
+    router.push({ name: 'trip', params: { id: trip.id } });
+  } catch (e) {
+    alert(e instanceof Error ? e.message : t('common.errorOccurred'));
+  }
 }
 
 function goToTrip(trip: Trip) {
@@ -45,13 +47,10 @@ function goToTrip(trip: Trip) {
 }
 
 function formatDates(trip: Trip): string {
-  if (!trip.start_date && !trip.end_date) return '';
-  if (trip.start_date && trip.end_date) return `${formatDate(trip.start_date)} → ${formatDate(trip.end_date)}`;
-  return trip.start_date ? formatDate(trip.start_date) : formatDate(trip.end_date ?? '');
+  return `${formatDate(trip.start_date)} → ${formatDate(trip.end_date)}`;
 }
 
 function formatDate(date: string): string {
-  if (!date) return '';
   return d(new Date(`${date}T00:00:00`), 'short');
 }
 </script>
@@ -59,7 +58,11 @@ function formatDate(date: string): string {
 <template>
   <div class="home">
     <main class="home__main">
-      <div v-show="!loadingStore.active">
+      <section v-if="tripsStore.error" v-show="!loadingStore.active" class="home__section">
+        <h1 class="page-title">{{ $t('home.myTrips') }}</h1>
+        <div class="home__state">{{ $t('home.loadFailed') }}</div>
+      </section>
+      <div v-else v-show="!loadingStore.active">
         <!-- Upcoming Trips -->
         <section class="home__section">
           <h1 class="page-title">{{ $t('home.myTrips') }}</h1>
@@ -91,7 +94,11 @@ function formatDate(date: string): string {
               class="home__show-more"
               @click="showAllUpcoming = !showAllUpcoming"
             >
-              {{ showAllUpcoming ? $t('home.showLess') : $t('home.showAll', { count: tripsStore.upcomingTrips.length }) }}
+              {{
+                showAllUpcoming
+                  ? $t('home.showLess')
+                  : $t('home.showAll', { count: tripsStore.upcomingTrips.length })
+              }}
             </button>
           </template>
         </section>
@@ -121,7 +128,11 @@ function formatDate(date: string): string {
               class="home__show-more"
               @click="showAllPast = !showAllPast"
             >
-              {{ showAllPast ? $t('home.showLess') : $t('home.showAll', { count: tripsStore.pastTrips.length }) }}
+              {{
+                showAllPast
+                  ? $t('home.showLess')
+                  : $t('home.showAll', { count: tripsStore.pastTrips.length })
+              }}
             </button>
           </template>
         </section>

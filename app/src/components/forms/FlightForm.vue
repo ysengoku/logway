@@ -1,51 +1,66 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
-import type { EventRow } from '@/shared/types/event';
-import { TIMEZONES, toUTC } from '@/utils/time';
+import { computed, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { EventOfType, FlightEventInput } from '@/shared/types/event';
+import { TIMEZONES, previousDay } from '@/utils/time';
 
 const props = defineProps<{
-  initial?: Partial<EventRow>;
+  initial?: EventOfType<'flight'>;
+  minDate?: string;
+  maxDate?: string;
 }>();
 
 const emit = defineEmits<{
-  submit: [data: Partial<EventRow>];
+  submit: [data: FlightEventInput];
 }>();
 
+const { t } = useI18n();
+// Crossing the date line eastward can land the day before departure.
+const minArrivalDate = computed(() => (props.minDate ? previousDay(props.minDate) : undefined));
 const form = reactive({
-  flight_number: props.initial?.flight_number ?? '',
-  booking_ref:   props.initial?.booking_ref ?? '',
-  dep_place:     props.initial?.dep_place ?? '',
-  dep_tz_id:     props.initial?.dep_tz_id ?? 'Asia/Tokyo',
-  dep_local_date: props.initial?.dep_local_date ?? '',
-  dep_local_time: props.initial?.dep_local_time ?? '',
-  arr_place:     props.initial?.arr_place ?? '',
-  arr_tz_id:     props.initial?.arr_tz_id ?? 'Asia/Tokyo',
-  arr_local_date: props.initial?.arr_local_date ?? '',
-  arr_local_time: props.initial?.arr_local_time ?? '',
-  note:          props.initial?.note ?? '',
+  service_number: props.initial?.service_number ?? '',
+  booking_ref: props.initial?.booking_ref ?? '',
+  start_date: props.initial?.start_date ?? '',
+  start_time: props.initial?.start_time ?? '',
+  dep_place: props.initial?.dep_place ?? '',
+  dep_tz_id: props.initial?.dep_tz_id ?? 'Asia/Tokyo',
+  arr_date: props.initial?.arr_date ?? '',
+  arr_time: props.initial?.arr_time ?? '',
+  arr_place: props.initial?.arr_place ?? '',
+  arr_tz_id: props.initial?.arr_tz_id ?? 'Asia/Tokyo',
+  note: props.initial?.note ?? '',
 });
 
 function submit() {
-  if (!form.flight_number || !form.dep_local_date || !form.dep_local_time || !form.arr_local_date || !form.arr_local_time) {
-    alert('Flight number, departure date/time and arrival date/time are required.');
+  if (
+    !form.service_number ||
+    !form.dep_place ||
+    !form.start_date ||
+    !form.start_time ||
+    !form.arr_place ||
+    !form.arr_date ||
+    !form.arr_time
+  ) {
+    alert(t('form.event.errors.flightRequired'));
     return;
   }
 
   emit('submit', {
     type: 'flight',
-    flight_number:  form.flight_number,
-    booking_ref:    form.booking_ref || undefined,
-    dep_place:      form.dep_place || undefined,
-    dep_tz_id:      form.dep_tz_id,
-    dep_local_date: form.dep_local_date,
-    dep_local_time: form.dep_local_time,
-    dep_utc:        toUTC(form.dep_local_date, form.dep_local_time, form.dep_tz_id) ?? undefined,
-    arr_place:      form.arr_place || undefined,
-    arr_tz_id:      form.arr_tz_id,
-    arr_local_date: form.arr_local_date,
-    arr_local_time: form.arr_local_time,
-    arr_utc:        toUTC(form.arr_local_date, form.arr_local_time, form.arr_tz_id) ?? undefined,
-    note:           form.note || undefined,
+    mode: 'flight',
+    service_number: form.service_number,
+    booking_ref: form.booking_ref || null,
+    start_date: form.start_date,
+    start_time: form.start_time,
+    // Local arrival can be the day before departure when crossing the date line.
+    end_date: form.arr_date > form.start_date ? form.arr_date : form.start_date,
+    dep_place: form.dep_place,
+    dep_tz_id: form.dep_tz_id,
+    arr_date: form.arr_date,
+    arr_time: form.arr_time,
+    arr_place: form.arr_place,
+    arr_tz_id: form.arr_tz_id,
+    note: form.note || null,
   });
 }
 
@@ -57,7 +72,7 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.flight.number') }} *</label>
-        <input v-model="form.flight_number" type="text" placeholder="e.g. JL045" />
+        <input v-model="form.service_number" type="text" placeholder="e.g. JL045" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.reference') }}</label>
@@ -75,11 +90,11 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.date') }} *</label>
-        <input v-model="form.dep_local_date" type="date" />
+        <input v-model="form.start_date" type="date" :min="minDate" :max="maxDate" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.departureTime') }} *</label>
-        <input v-model="form.dep_local_time" type="time" />
+        <input v-model="form.start_time" type="time" />
       </div>
     </div>
     <div class="form-row">
@@ -93,17 +108,17 @@ defineExpose({ submit });
     <div class="form-sub">{{ $t('form.event.arrival') }}</div>
 
     <div class="form-row">
-      <label>{{ $t('form.event.to') }}</label>
+      <label>{{ $t('form.event.to') }} *</label>
       <input v-model="form.arr_place" type="text" placeholder="e.g. Paris (CDG)" />
     </div>
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.date') }} *</label>
-        <input v-model="form.arr_local_date" type="date" />
+        <input v-model="form.arr_date" type="date" :min="minArrivalDate" :max="maxDate" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.arrivalTime') }} *</label>
-        <input v-model="form.arr_local_time" type="time" />
+        <input v-model="form.arr_time" type="time" />
       </div>
     </div>
     <div class="form-row">

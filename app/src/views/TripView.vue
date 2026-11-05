@@ -7,10 +7,10 @@ import { useEventsStore } from '@/stores/events';
 import { useLoadingStore } from '@/stores/loading';
 import { useTripsStore } from '@/stores/trips';
 import type { TripInput } from '@/shared/types/trip';
-import type { EventRow } from '@/shared/types/event';
+import type { TripEvent } from '@/shared/types/event';
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
@@ -19,20 +19,29 @@ const eventsStore = useEventsStore();
 
 const tripId = computed(() => route.params.id as string);
 const trip = computed(() => tripsStore.trips.find((t) => t.id === tripId.value));
+const loaded = ref(false);
+// A trips error only matters when this trip isn't already loaded; it may be left
+// over from an earlier refresh.
+const loadFailed = computed(
+  () => loaded.value && !!((tripsStore.error && !trip.value) || eventsStore.error),
+);
+// A failed load isn't the same as a missing trip.
+const isNotFound = computed(() => loaded.value && !loadFailed.value && !trip.value);
 const selectedDate = ref<string | null>(null);
 const modalOpen = ref(false);
 const modalDate = ref<string | undefined>();
-const modalEvent = ref<EventRow | undefined>();
+const modalEvent = ref<TripEvent | undefined>();
 
 const loadingStore = useLoadingStore();
 const showEditModal = ref(false);
 const { t } = useI18n();
 
 onMounted(async () => {
-    await eventsStore.fetchByTrip(tripId.value);
-    if (tripsStore.trips.length === 0) {
-      await tripsStore.fetchAll();
-    }
+  await eventsStore.fetchByTrip(tripId.value);
+  if (tripsStore.trips.length === 0) {
+    await tripsStore.fetchAll();
+  }
+  loaded.value = true;
 });
 
 function onSelectDate(date: string) {
@@ -45,7 +54,7 @@ function onAddEvent(date: string) {
   modalOpen.value = true;
 }
 
-function onEditEvent(event: EventRow) {
+function onEditEvent(event: TripEvent) {
   modalDate.value = undefined;
   modalEvent.value = event;
   modalOpen.value = true;
@@ -60,19 +69,37 @@ function onModalSaved() {
 }
 
 async function onEditTrip(input: TripInput) {
-  await tripsStore.updateTrip(tripId.value, input);
-  showEditModal.value = false;
+  try {
+    await tripsStore.updateTrip(tripId.value, input);
+    showEditModal.value = false;
+  } catch (e) {
+    alert(e instanceof Error ? e.message : t('common.errorOccurred'));
+  }
 }
 
 async function deleteTrip() {
   if (!confirm(t('trip.deleteConfirm', { title: trip.value?.title }))) return;
-  await tripsStore.deleteTrip(tripId.value);
-  router.push({ name: 'home' });
+  try {
+    await tripsStore.deleteTrip(tripId.value);
+    router.push({ name: 'home' });
+  } catch {
+    alert(t('common.failedToDeleteTrip'));
+  }
 }
 </script>
 
 <template>
-  <div v-show="!loadingStore.active" class="trip-view">
+  <div v-if="loadFailed || isNotFound" class="trip-view">
+    <header class="trip-view__header">
+      <button class="trip-view__back" @click="router.push({ name: 'home' })">
+        ← {{ $t('common.back') }}
+      </button>
+    </header>
+    <div class="trip-view__empty">
+      {{ loadFailed ? $t('trip.loadFailed') : $t('trip.notFound') }}
+    </div>
+  </div>
+  <div v-else v-show="!loadingStore.active" class="trip-view">
     <header class="trip-view__header">
       <button class="trip-view__back" @click="router.push({ name: 'home' })">
         ← {{ $t('common.back') }}
@@ -96,12 +123,7 @@ async function deleteTrip() {
         <div v-if="!selectedDate" class="trip-view__empty">
           {{ $t('calendar.selectDate') }}
         </div>
-        <DayDetail
-          v-else
-          :date="selectedDate"
-          @add-event="onAddEvent"
-          @edit-event="onEditEvent"
-        />
+        <DayDetail v-else :date="selectedDate" @add-event="onAddEvent" @edit-event="onEditEvent" />
       </main>
     </div>
 
@@ -128,6 +150,8 @@ async function deleteTrip() {
       :date="modalDate"
       :event="modalEvent"
       :trip-id="tripId"
+      :trip-start-date="trip?.start_date"
+      :trip-end-date="trip?.end_date"
       @close="onModalClose"
       @saved="onModalSaved"
     />

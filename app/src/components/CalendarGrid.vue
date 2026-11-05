@@ -45,7 +45,7 @@ onMounted(async () => {
   if (tripId) {
     if (tripsStore.trips.length === 0) await tripsStore.fetchAll();
     const trip = tripsStore.trips.find((t) => t.id === tripId);
-    if (trip?.start_date) initFromDateString(trip.start_date);
+    if (trip) initFromDateString(trip.start_date);
   }
 });
 
@@ -103,35 +103,37 @@ const calendarDays = computed(() => {
     isSelected: boolean;
     isInTrip: boolean;
     isOutOfTrip: boolean;
-    eventTypes: string[];
+    hasEvents: boolean;
   }> = [];
 
   for (let i = 0; i < firstDow; i++) {
-    days.push({ date: null, day: null, isToday: false, isSelected: false, isInTrip: false, isOutOfTrip: false, eventTypes: [] });
+    days.push({
+      date: null,
+      day: null,
+      isToday: false,
+      isSelected: false,
+      isInTrip: false,
+      isOutOfTrip: false,
+      hasEvents: false,
+    });
   }
 
   for (let d = 1; d <= lastDay; d++) {
     const date = dateStr(year, month + 1, d);
-    const events = eventsStore.getByDate(date);
-    const types = [...new Set(events.map((e) => e.type))].slice(0, 4);
 
     const isInTrip =
-      (!props.startDate || date >= props.startDate) &&
-      (!props.endDate || date <= props.endDate);
+      (!props.startDate || date >= props.startDate) && (!props.endDate || date <= props.endDate);
 
     const isOutOfTrip = !!(props.startDate || props.endDate) && !isInTrip;
 
     days.push({
       date,
       day: d,
-      isToday:
-        d === today.getDate() &&
-        month === today.getMonth() &&
-        year === today.getFullYear(),
+      isToday: d === today.getDate() && month === today.getMonth() && year === today.getFullYear(),
       isSelected: date === props.selectedDate,
       isInTrip,
       isOutOfTrip,
-      eventTypes: types,
+      hasEvents: eventsStore.getByDate(date).length > 0,
     });
   }
 
@@ -166,21 +168,13 @@ const calendarDays = computed(() => {
           'calendar-grid__cell--empty': !cell.date,
           'calendar-grid__cell--today': cell.isToday,
           'calendar-grid__cell--selected': cell.isSelected,
-          'calendar-grid__cell--has-events': cell.eventTypes.length > 0,
+          'calendar-grid__cell--has-events': cell.hasEvents,
           'calendar-grid__cell--in-trip': cell.isInTrip,
           'calendar-grid__cell--out-of-trip': cell.isOutOfTrip,
         }"
         @click="cell.date && !cell.isOutOfTrip && emit('selectDate', cell.date)"
       >
         <span v-if="cell.day" class="calendar-grid__day-num">{{ cell.day }}</span>
-        <div v-if="cell.eventTypes.length" class="calendar-grid__dots">
-          <span
-            v-for="type in cell.eventTypes"
-            :key="type"
-            class="calendar-grid__dot"
-            :class="`calendar-grid__dot--${type}`"
-          />
-        </div>
       </div>
     </div>
   </div>

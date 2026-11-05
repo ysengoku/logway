@@ -6,36 +6,59 @@ import './lib/faIcons';
 
 import App from './App.vue';
 import router from './router';
+import DatabaseErrorView from './views/DatabaseErrorView.vue';
 import TabInUseView from './views/TabInUseView.vue';
 import './assets/styles/main.scss';
 import messages, { datetimeFormats } from './locales';
 import { DEFAULT_LOCALE, resolveInitialLocale } from './lib/locale';
+import { getDb } from './db/client';
 import { acquireTabLock } from './db/tabLock';
 
 async function bootstrap() {
-	const [locale, ownsDatabase] = await Promise.all([resolveInitialLocale(), acquireTabLock()]);
+  const locale = resolveInitialLocale();
 
-	const i18n = createI18n({
-		legacy: false,
-		locale,
-		fallbackLocale: DEFAULT_LOCALE,
-		messages,
-		datetimeFormats,
-	});
+  const i18n = createI18n({
+    legacy: false,
+    locale,
+    fallbackLocale: DEFAULT_LOCALE,
+    messages,
+    datetimeFormats,
+  });
 
-	// Another tab already has the local database open; don't start the app here.
-	if (!ownsDatabase) {
-		createApp(TabInUseView).use(i18n).mount('#app');
-		return;
-	}
+  // Without a working database, changes couldn't be saved; don't start the app.
+  function showDatabaseError(error: unknown) {
+    console.error('Failed to open the database.', error);
+    createApp(DatabaseErrorView).use(i18n).mount('#app');
+  }
 
-	const app = createApp(App);
-	app.use(createPinia());
-	app.use(router);
-	app.use(i18n);
-	app.component('FaIcon', FontAwesomeIcon);
+  let ownsDatabase: boolean;
+  try {
+    ownsDatabase = await acquireTabLock();
+  } catch (e) {
+    showDatabaseError(e);
+    return;
+  }
 
-	app.mount('#app');
+  // Another tab already has the local database open; don't start the app here.
+  if (!ownsDatabase) {
+    createApp(TabInUseView).use(i18n).mount('#app');
+    return;
+  }
+
+  try {
+    await getDb();
+  } catch (e) {
+    showDatabaseError(e);
+    return;
+  }
+
+  const app = createApp(App);
+  app.use(createPinia());
+  app.use(router);
+  app.use(i18n);
+  app.component('FaIcon', FontAwesomeIcon);
+
+  app.mount('#app');
 }
 
 void bootstrap();

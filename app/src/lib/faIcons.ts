@@ -1,5 +1,4 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { PROFILE_ICON_NAMES } from '@/shared/types/profileIcon';
 import {
   faBed,
   faBus,
@@ -26,22 +25,6 @@ import {
   faUmbrellaBeach,
   faUser,
   faUtensils,
-  // For user profile
-  faCat,
-  faDog,
-  faDove,
-  faFish,
-  faFrog,
-  faShrimp,
-  faAppleWhole,
-  faSeedling,
-  faUserAstronaut,
-  faUserSecret,
-  faChessKnight,
-  faFaceGrinHearts,
-  faFaceGrinSquintTears,
-  faFaceSmile,
-  faFaceSmileWink,
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -70,25 +53,7 @@ library.add(
   faUmbrellaBeach,
   faUser,
   faUtensils,
-  // For user profile
-  faCat,
-  faDog,
-  faDove,
-  faFish,
-  faFrog,
-  faShrimp,
-  faAppleWhole,
-  faSeedling,
-  faUserAstronaut,
-  faUserSecret,
-  faChessKnight,
-  faFaceGrinHearts,
-  faFaceGrinSquintTears,
-  faFaceSmile,
-  faFaceSmileWink,
 );
-
-export const PROFILE_ICON_OPTIONS = PROFILE_ICON_NAMES;
 
 export function getFaIcon(iconName: string): string {
   return iconName.startsWith('fa-') ? `fa-solid ${iconName}` : `fa-solid fa-${iconName}`;

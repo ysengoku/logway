@@ -1,39 +1,44 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
-import type { EventRow } from '@/shared/types/event';
+import { useI18n } from 'vue-i18n';
+import type { EventOfType, RestaurantEventInput } from '@/shared/types/event';
 
 const props = defineProps<{
-  initial?: Partial<EventRow>;
+  initial?: EventOfType<'restaurant'>;
   defaultDate?: string;
+  minDate?: string;
+  maxDate?: string;
 }>();
 
 const emit = defineEmits<{
-  submit: [data: Partial<EventRow>];
+  submit: [data: RestaurantEventInput];
 }>();
 
+const { t } = useI18n();
 const form = reactive({
-  name:             props.initial?.name ?? '',
-  address:          props.initial?.address ?? '',
-  reservation_date: props.initial?.reservation_date ?? props.defaultDate ?? '',
-  reservation_time: props.initial?.reservation_time ?? '',
-  url:              props.initial?.url ?? '',
-  note:             props.initial?.note ?? '',
+  name: props.initial?.name ?? '',
+  address: props.initial?.address ?? '',
+  start_date: props.initial?.start_date ?? props.defaultDate ?? '',
+  start_time: props.initial?.start_time ?? '',
+  url: props.initial?.url ?? '',
+  note: props.initial?.note ?? '',
 });
 
 function submit() {
-  if (!form.name || !form.reservation_date || !form.reservation_time) {
-    alert('Restaurant name, reservation date and time are required.');
+  if (!form.name || !form.start_date || !form.start_time) {
+    alert(t('form.event.errors.restaurantRequired'));
     return;
   }
 
   emit('submit', {
-    type:             'restaurant',
-    name:             form.name,
-    address:          form.address || undefined,
-    reservation_date: form.reservation_date,
-    reservation_time: form.reservation_time,
-    url:              form.url || undefined,
-    note:             form.note || undefined,
+    type: 'restaurant',
+    name: form.name,
+    address: form.address || null,
+    start_date: form.start_date,
+    start_time: form.start_time,
+    end_date: form.start_date,
+    url: form.url || null,
+    note: form.note || null,
   });
 }
 
@@ -56,11 +61,11 @@ defineExpose({ submit });
     <div class="form-row-2">
       <div class="form-row">
         <label>{{ $t('form.event.date') }} *</label>
-        <input v-model="form.reservation_date" type="date" />
+        <input v-model="form.start_date" type="date" :min="minDate" :max="maxDate" />
       </div>
       <div class="form-row">
         <label>{{ $t('form.event.time') }} *</label>
-        <input v-model="form.reservation_time" type="time" />
+        <input v-model="form.start_time" type="time" />
       </div>
     </div>
 

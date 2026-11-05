@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-withDefaults(defineProps<{
-  open: boolean;
-  title: string;
-  overlayClass?: string;
-  modalClass?: string;
-  titleClass?: string;
-}>(), {
-  overlayClass: 'app-modal__overlay',
-  modalClass: 'app-modal',
-  titleClass: 'app-modal__title',
-});
+withDefaults(
+  defineProps<{
+    open: boolean;
+    title: string;
+    overlayClass?: string;
+    modalClass?: string;
+    titleClass?: string;
+  }>(),
+  {
+    overlayClass: 'app-modal__overlay',
+    modalClass: 'app-modal',
+    titleClass: 'app-modal__title',
+  },
+);
 
 const emit = defineEmits<{
   close: [];

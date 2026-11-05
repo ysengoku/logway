@@ -36,24 +36,31 @@
   }
 
   .loader::before {
-    content: "Loadi";
+    content: 'Loadi';
     animation: l27 2s infinite;
     color: $accent2;
   }
 
   .loader::after {
-    content: "ng...";
+    content: 'ng...';
     animation: l27 2s infinite 1s;
     color: $accent2;
   }
 
   @keyframes l27 {
-    50%, 100% { transform: rotate(1turn); }
+    50%,
+    100% {
+      transform: rotate(1turn);
+    }
   }
 }
 
 .app-boot-loader {
-  @include loader-container($bg, 9999, linear-gradient(135deg, $header-gradient-start 0%, $accent 100%));
+  @include loader-container(
+    $bg,
+    9999,
+    linear-gradient(135deg, $header-gradient-start 0%, $accent 100%)
+  );
 
   .loader {
     @include loader-content(32px, rgba($bg, 0.5));
@@ -71,7 +78,7 @@
     margin: 0 auto;
     display: block;
     background: none;
-    transform: translate3d(0,0,0);
+    transform: translate3d(0, 0, 0);
   }
 
   .motion {
@@ -86,24 +93,42 @@
   }
 
   .white {
-    color: #EEECE9;
+    color: #eeece9;
   }
 
   .red {
-    color: #E55A4D;
+    color: #e55a4d;
   }
 
   @keyframes draw {
-    0%   { stroke-dashoffset: 2000; fill-opacity: 0; }
-    100% { stroke-dashoffset: 0; fill-opacity: 0.7; }
+    0% {
+      stroke-dashoffset: 2000;
+      fill-opacity: 0;
+    }
+    100% {
+      stroke-dashoffset: 0;
+      fill-opacity: 0.7;
+    }
   }
 
-  .logway-6 { animation-delay: 0s; }
-  .logway-5 { animation-delay: 0.4s; }
-  .logway-4 { animation-delay: 0.8s; }
-  .logway-3 { animation-delay: 1.2s; }
-  .logway-2 { animation-delay: 1.9s; }
-  .logway-1 { animation-delay: 2.2s; }
+  .logway-6 {
+    animation-delay: 0s;
+  }
+  .logway-5 {
+    animation-delay: 0.4s;
+  }
+  .logway-4 {
+    animation-delay: 0.8s;
+  }
+  .logway-3 {
+    animation-delay: 1.2s;
+  }
+  .logway-2 {
+    animation-delay: 1.9s;
+  }
+  .logway-1 {
+    animation-delay: 2.2s;
+  }
 }
 
 .app-boot-loader.fade-boot-loader-leave-active {

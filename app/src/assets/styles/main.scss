@@ -5,6 +5,7 @@
 @use 'components/app-loader';
 @use 'components/auth-view';
 @use 'components/calendar-grid';
+@use 'components/database-error';
 @use 'components/day-detail';
 @use 'components/event-modal';
 @use 'components/form';

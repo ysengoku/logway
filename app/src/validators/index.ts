@@ -1,4 +1,4 @@
-import { validateDisplayName } from './displayName';
+import { isValidDate, isValidTime, isValidTimeZone } from './dateTime';
 import { validatePassword } from './password';
 
-export { validateDisplayName, validatePassword };
+export { isValidDate, isValidTime, isValidTimeZone, validatePassword };

@@ -7,7 +7,6 @@ export const auth = {
   emailAddress: 'Email Address',
   newEmail: 'New Email Address',
   changeEmail: 'Change',
-  displayName: 'Display Name *',
   password: 'Password',
   confirmPassword: 'Confirm Password',
   currentPassword: 'Current Password',
@@ -15,7 +14,6 @@ export const auth = {
   confirmNewPassword: 'Confirm New Password',
   dontHaveAccount: "Don't have an account yet?",
   placeholderEmail: "you{'@'}example.com",
-  placeholderName: 'Your name',
   placeholderPassword: 'password',
   placeholderRepeatPassword: 'repeat password',
   showPassword: 'Show password',
@@ -75,9 +73,23 @@ export const common = {
   save: 'Save',
   saving: 'Saving...',
   failedToSaveEvent: 'Failed to save event.',
+  failedToDeleteEvent: 'Failed to delete event.',
+  failedToDeleteTrip: 'Failed to delete trip.',
   backToSignIn: 'Back to Sign In',
   unknownError: 'An error occurred. Please try again.',
   openInAnotherTab: 'LogWay is already open in another tab. Please use that tab.',
+  databaseError: {
+    title: 'LogWay could not start',
+    description: 'The local database could not be opened, so changes could not be saved.',
+    causesIntro: 'Check the following, then try again:',
+    causes: {
+      privateWindow: 'The browser is in a private window.',
+      blockedStorage: 'The browser settings block site data.',
+      outdatedBrowser: 'The browser version is too old.',
+      storageFull: 'The device storage is full.',
+    },
+    reload: 'Try again',
+  },
 };
 
 export const event = {
@@ -103,6 +115,8 @@ export const form = {
     startDate: 'Start Date',
     endDate: 'End Date',
     nameRequired: 'Trip name is required.',
+    dateRequired: 'Start and end dates are required.',
+    dateOrder: 'End date must not be before start date.',
   },
   join: {
     inviteCodeRequired: 'Invite code is required.',
@@ -112,6 +126,15 @@ export const form = {
     alreadyJoined: 'You have already joined this trip.',
   },
   event: {
+    errors: {
+      flightRequired: 'Flight number, departure and arrival place, date and time are required.',
+      transportRequired: 'Departure and arrival place, date and time are required.',
+      hotelRequired: 'Property name, check-in date and check-out date are required.',
+      checkoutAfterCheckin: 'Check-out date must be after check-in date.',
+      restaurantRequired: 'Restaurant name, reservation date and time are required.',
+      activityRequired: 'Name and date are required.',
+      linkRequired: 'Title, URL and date are required.',
+    },
     name: 'Name',
     reference: 'Booking Reference',
     from: 'From',
@@ -153,49 +176,23 @@ export const home = {
   past: 'Past Trips',
   noUpcoming: 'No upcoming trips. Plan your next adventure!',
   noPast: 'No past trips yet.',
+  loadFailed: 'Trips could not be loaded.',
   showLess: 'Show less',
   showAll: 'Show all ({count})',
-};
-
-export const icons = {
-  cat: 'Cat',
-  dog: 'Dog',
-  dove: 'Dove',
-  fish: 'Fish',
-  frog: 'Frog',
-  shrimp: 'Shrimp',
-  'apple-whole': 'Apple',
-  seedling: 'Seedling',
-  'user-astronaut': 'Astronaut',
-  'user-secret': 'Mysterious Man',
-  'chess-knight': 'Chess Knight',
-  'face-grin-hearts': 'Grinning Hearts',
-  'face-grin-squint-tears': 'Lol',
-  'face-smile': 'Smiling Face',
-  'face-smile-wink': 'Winking Face',
 };
 
 export const settings = {
   settings: 'Settings',
   updateSuccess: 'Updated successfully.',
   emailChangePending: 'Check your inbox to confirm your new email address.',
-  errors: {
-    emptyDisplayName: 'Display name cannot be empty.',
-    displayNameLength: 'Display name must be between 2 and 16 characters.',
-    displayNameCharacters: 'Display name can only contain letters, numbers, spaces, _ and -.',
-    displayNameLeadingOrTrailingSpaces: 'Display name cannot start or end with spaces.',
-    displayNameConsecutiveSpaces: 'Display name cannot contain consecutive spaces.',
-    displayNameReserved: 'This display name is reserved and cannot be used.',
-    invalidIcon: 'Selected icon is invalid.',
-    invalidIconColor: 'Icon color must be a hex color.',
-    invalidIconBgColor: 'Icon background color must be a hex color.',
-  },
 };
 
 export const trip = {
   deleteConfirm: 'Delete "{title}"? All events will also be deleted.',
   editTrip: 'Edit Trip',
   deleteTrip: 'Delete Trip',
+  notFound: 'This trip could not be found.',
+  loadFailed: 'This trip could not be loaded.',
   members: {
     members: 'Members',
     removeConfirm: 'Remove this member?',
@@ -235,7 +232,6 @@ export default {
   event,
   form,
   home,
-  icons,
   settings,
   trip,
 };
