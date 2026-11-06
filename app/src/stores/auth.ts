@@ -40,12 +40,6 @@ type AuthErrorState = {
   auth: string | null;
 };
 
-type EmailChangeResult = {
-  status: 'pending' | 'error';
-  emailError?: string;
-  authError?: string;
-};
-
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null);
   const accessToken = ref<string | null>(null);
@@ -181,31 +175,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function requestEmailChange(newEmail: string): Promise<EmailChangeResult> {
-    const normalizedEmail = newEmail.trim();
-
-    loadingStore.start();
-    try {
-      const { data, error } = await supabase.auth.updateUser({ email: normalizedEmail });
-      if (error) {
-        const mapped = mapAuthErrorByUpdateContext({ email: normalizedEmail }, error);
-        return {
-          status: 'error',
-          emailError: mapped.email ?? undefined,
-          authError: mapped.auth ?? undefined,
-        };
-      }
-
-      if (data?.user) {
-        user.value = data.user;
-      }
-
-      return { status: 'pending' };
-    } finally {
-      loadingStore.stop();
-    }
-  }
-
   function mapAuthErrorByUpdateContext(
     updates: { email?: string; password?: string },
     error: { message: string; code?: string | null },
@@ -286,7 +255,6 @@ export const useAuthStore = defineStore('auth', () => {
     signIn,
     signOut,
     resetPassword,
-    requestEmailChange,
     updatePassword,
     updateUserCredentials,
     setAuthError,

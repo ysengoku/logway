@@ -37,11 +37,6 @@ async function onSignOut() {
   await router.push({ name: 'auth' });
 }
 
-async function goToSettings() {
-  closeAccountMenu();
-  await router.push({ name: 'settings' });
-}
-
 function onDocumentClick(event: MouseEvent) {
   if (!accountMenuOpen.value) return;
   const target = event.target as Node | null;
@@ -96,9 +91,6 @@ onBeforeUnmount(() => {
       }"
     >
       <span class="app-header__account-menu__user">{{ authStore.user?.email }}</span>
-      <button class="app-header__account-menu__item" role="menuitem" @click="goToSettings">
-        {{ $t('settings.settings') }}
-      </button>
       <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut">
         {{ $t('auth.signOut') }}
       </button>

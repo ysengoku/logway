@@ -4,22 +4,15 @@ export const auth = {
   signOut: 'Sign Out',
   resetPassword: 'Reset Password',
   email: 'Email',
-  emailAddress: 'Email Address',
-  newEmail: 'New Email Address',
-  changeEmail: 'Change',
   password: 'Password',
   confirmPassword: 'Confirm Password',
   currentPassword: 'Current Password',
-  newPassword: 'New Password',
-  confirmNewPassword: 'Confirm New Password',
   dontHaveAccount: "Don't have an account yet?",
   placeholderEmail: "you{'@'}example.com",
   placeholderPassword: 'password',
   placeholderRepeatPassword: 'repeat password',
   showPassword: 'Show password',
   hidePassword: 'Hide password',
-  showNewPassword: 'Show new password',
-  hideNewPassword: 'Hide new password',
   showPasswordConfirmation: 'Show password confirmation',
   hidePasswordConfirmation: 'Hide password confirmation',
   emailConfirmationInstructions: 'Check your email to confirm your account, then sign in.',
@@ -30,7 +23,6 @@ export const auth = {
   errors: {
     emailRequired: 'Email is required.',
     invalidEmail: 'Please enter a valid email address.',
-    sameEmail: 'Please enter a different email address.',
     emailExists: 'This email address is already in use.',
     emailNotConfirmed: 'Please confirm your current email address first.',
     emailProviderDisabled: 'Email sign-in is currently unavailable.',
@@ -60,14 +52,12 @@ export const day = {
 
 export const common = {
   cancel: 'Cancel',
-  close: 'Close',
   loading: 'Loading...',
   back: 'Back',
   edit: 'Edit',
   add: 'Add',
   deleteThisTrip: 'Delete this trip',
   newTrip: '+ New Trip',
-  joinTrip: 'Join Trip',
   errorOccurred: 'An error occurred.',
   saveChanges: 'Save changes',
   save: 'Save',
@@ -121,13 +111,6 @@ export const form = {
     nameRequired: 'Trip name is required.',
     dateRequired: 'Start and end dates are required.',
     dateOrder: 'End date must not be before start date.',
-  },
-  join: {
-    inviteCodeRequired: 'Invite code is required.',
-    inviteCodeLabel: 'Invite Code *',
-    inviteCodePlaceholder: 'e.g. A1B2C3D4',
-    join: 'Join',
-    alreadyJoined: 'You have already joined this trip.',
   },
   event: {
     errors: {
@@ -185,26 +168,12 @@ export const home = {
   showAll: 'Show all ({count})',
 };
 
-export const settings = {
-  settings: 'Settings',
-  updateSuccess: 'Updated successfully.',
-  emailChangePending: 'Check your inbox to confirm your new email address.',
-};
-
 export const trip = {
   deleteConfirm: 'Delete "{title}"? All events will also be deleted.',
   editTrip: 'Edit Trip',
   deleteTrip: 'Delete Trip',
   notFound: 'This trip could not be found.',
   loadFailed: 'This trip could not be loaded.',
-  members: {
-    members: 'Members',
-    removeConfirm: 'Remove this member?',
-    inviteCopied: 'Invite code copied to clipboard!',
-    inviteCopyFailed: 'Failed to copy invite code.',
-    inviteShareLabel: 'Share this code to invite friends:',
-    copyInviteTitle: 'Copy invite code',
-  },
 };
 
 export const datetimeFormats = {
@@ -236,6 +205,5 @@ export default {
   event,
   form,
   home,
-  settings,
   trip,
 };
