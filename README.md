@@ -1,5 +1,9 @@
 # logway
 
+> [!WARNING]
+> **LogWay v2 is under active development.**
+> `v2` is a major rewrite with changes to both the app and the tech stack, and is the default branch until it is released. Features described below may be incomplete or still changing. The previous version (v1) is on [`main`](https://github.com/ysengoku/logway/tree/main).
+
 <!-- <img src="" width="100%" /> -->
 
 <div align="center">
@@ -26,9 +30,9 @@
   - [Workflow](#workflow)
   - [Linting & Formatting](#linting--formatting)
   - [Testing](#testing)
+- [Versioning](#versioning)
 - [Notes](#notes)
 - [Resources](#resources)
-- [AI Usage](#ai-usage)
 - [Authors](#authors)
 - [License](#license)
 
@@ -42,16 +46,57 @@ LogWay has no backend database. Instead, it stores data in a SQLite database dir
 
 ## Features
 
-- Sign-in with Google
+- Sign-in with Google ![Not implemented](https://img.shields.io/badge/not_implemented-lightgrey)
 - Trips: create, edit and delete; the home page splits them into upcoming and past trips
 - Events: flight, transport (train, bus, ferry, car, other), hotel, restaurant, activity and link
 - Local date, time and time zone for both departure and arrival of flights and transport
 - Calendar view of each trip with a per-day list of events
-- Sync to a hidden app folder in the user's cloud storage; changes made on another device are never silently overwritten
-- Read-only share links for travel companions (booking references are never shared; notes only when chosen)
-- English and French
+- Sync to a hidden app folder in the user's cloud storage; changes made on another device are never silently overwritten ![Not implemented](https://img.shields.io/badge/not_implemented-lightgrey)
+- Read-only share links for travel companions (booking references are never shared; notes only when chosen) ![Not implemented](https://img.shields.io/badge/not_implemented-lightgrey)
+- Interface available in English and French, switchable from the header
 
 ## Architecture
+
+```mermaid
+flowchart LR
+  subgraph Browser["User's browser"]
+    UI["Vue views<br/>Pinia stores"]
+    Repo["Repositories"]
+    Lock["Tab lock<br/>(Web Locks)"]
+    subgraph Worker["Web Worker"]
+      SQLite["SQLite WASM"]
+    end
+    OPFS[("OPFS<br/>local working copy")]
+    Sync["Sync module<br/>(StorageAdapter)"]
+
+    UI --> Repo --> SQLite --> OPFS
+    Lock -. one tab only .-> SQLite
+    Sync <--> OPFS
+  end
+
+  subgraph Vercel["Vercel Functions"]
+    Auth["/api/auth/*<br/>login · callback · token · logout"]
+  end
+
+  subgraph Google["Google"]
+    OAuth["Google OAuth"]
+    subgraph Drive["User's Google Drive"]
+      AppData[("appDataFolder<br/>logway.sqlite")]
+      Snapshot[("Share snapshot<br/>(JSON, link-only read)")]
+    end
+  end
+
+  Companion["Companion's browser<br/>/share/:fileId"]
+
+  UI -- sign in --> Auth
+  Auth <--> OAuth
+  Auth -- short-lived access token --> Sync
+  Sync <-- download / upload .db --> AppData
+  Sync -- create / update / delete --> Snapshot
+  Companion -- read-only, API key --> Snapshot
+```
+
+The server stores no trip data. Vercel Functions only handle Google OAuth and keep the refresh token in an encrypted httpOnly cookie. The browser calls the Drive API directly with a short-lived access token.
 
 ## Project Structure
 
@@ -60,20 +105,24 @@ logway/
 ├─ app/                    # Vercel root directory
 │  ├─ src/
 │  │  ├─ db/               # SQLite in a Web Worker, migrations, tab lock
-│  │  ├─ sync/             # Cloud storage adapters (Google Drive)
 │  │  ├─ repositories/     # Data access for trips and events
 │  │  ├─ stores/           # Pinia stores
 │  │  ├─ views/            # Route-level pages
-│  │  ├─ components/       # UI components
-│  │  ├─ shared/           # Types and constants
+│  │  ├─ components/       # UI components (forms, modals, event cards, header)
+│  │  ├─ shared/types/     # Shared TypeScript types
+│  │  ├─ constants/        # Event types, languages, regex
+│  │  ├─ lib/              # Font Awesome icons, initial locale
 │  │  ├─ locales/          # en, fr
-│  │  └─ ...               # router, validators, utils, assets
-│  ├─ api/auth/            # Vercel Functions for OAuth (login, callback, token, logout)
+│  │  ├─ router/
+│  │  ├─ validators/
+│  │  ├─ utils/
+│  │  └─ assets/styles/
 │  ├─ __tests__/unit/      # Vitest unit tests
 │  ├─ public/
-│  └─ package.json, vite.config.ts, vercel.json, tsconfig*.json
-├─ docs/                   # Plans, decision records, archive
-└─ .github/workflows/      # CI and manual preview deploy
+│  └─ package.json, vite.config.ts, vercel.json, tsconfig*.json, .env.example
+├─ docs/                   # Migration plan, database notes, archived Supabase migrations
+├─ .github/workflows/      # CI and manual preview deploy
+└─ .coderabbit.yaml        # CodeRabbit review settings
 ```
 
 ## Tech Stack
@@ -175,10 +224,10 @@ pnpm build        # type-check and production build
 
 ### Workflow
 
-- `main` is deployed to production by Vercel.
+- `v2` is the default branch during the rewrite. Work happens on feature branches and is merged into `v2` through pull requests, which CodeRabbit reviews automatically.
+- `main` holds v1 and is deployed to production by Vercel. `v2` will be merged into `main` once it is ready for release.
 - Preview deployments are started manually from GitHub Actions (*Run workflow*), for any branch.
-- Work happens on feature branches and is merged through pull requests.
-- CI (lint, type check, unit tests, build) runs on pushes to `main`.
+- CI (lint, type check, unit tests, build) runs on pushes to `main` and `dev`, and can also be started manually.
 
 ### Linting & Formatting
 
@@ -199,6 +248,23 @@ pnpm test:unit
 pnpm exec vitest run __tests__/unit/db/migrate.test.ts   # single file
 ```
 
+## Versioning
+
+![Latest Release](https://img.shields.io/github/v/release/ysengoku/logway?style=flat)
+
+#### v2.0.0 ![In development](https://img.shields.io/badge/In_development-lightgrey)
+
+- Trip data stored in SQLite in the browser and synced to the user's own Google Drive, with no backend database
+- Single Vue app deployed on Vercel, with Vercel Functions for Google OAuth
+- Collaborative editing from v1 is removed; trips are shared with travel companions through read-only links only
+
+#### v1.0.0
+
+- Vue frontend deployed on Vercel
+- Hono API server deployed on Render
+- Supabase for the database and authentication
+- Collaborative trips: other users join with an invite code and edit the trip together
+
 ## Notes
 
 - Only one browser tab can open LogWay at a time. The local database (OPFS, `opfs-sahpool` VFS) supports a single connection, so later tabs show a message instead of the app.
@@ -213,10 +279,10 @@ pnpm exec vitest run __tests__/unit/db/migrate.test.ts   # single file
 - [Google Drive API: Store application-specific data](https://developers.google.com/workspace/drive/api/guides/appdata)
 - [Vercel Functions](https://vercel.com/docs/functions)
 
-## AI Usage
-
 ## Authors
 
 - [ysengoku](https://github.com/ysengoku)
 
 ## License
+
+This project is licensed under the [MIT License](LICENSE).
