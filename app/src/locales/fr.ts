@@ -4,14 +4,9 @@ export const auth = {
   signOut: 'Se déconnecter',
   resetPassword: 'Réinitialiser le mot de passe',
   email: 'Email',
-  emailAddress: 'Adresse e-mail',
-  newEmail: 'Nouvelle adresse e-mail',
-  changeEmail: 'Modifier',
   password: 'mot de passe',
   confirmPassword: 'Confirmer le mot de passe',
   currentPassword: 'mot de passe actuel',
-  newPassword: 'Nouveau mot de passe',
-  confirmNewPassword: 'Confirmer le nouveau mot de passe',
   passwordsDoNotMatch: 'Le mot de passe et sa confirmation ne correspondent pas.',
   dontHaveAccount: "Vous n'avez pas encore de compte ?",
   placeholderEmail: "vous{'@'}exemple.com",
@@ -19,8 +14,6 @@ export const auth = {
   placeholderRepeatPassword: 'répétez le mot de passe',
   showPassword: 'Afficher le mot de passe',
   hidePassword: 'Masquer le mot de passe',
-  showNewPassword: 'Afficher le nouveau mot de passe',
-  hideNewPassword: 'Masquer le nouveau mot de passe',
   showPasswordConfirmation: 'Afficher la confirmation du mot de passe',
   hidePasswordConfirmation: 'Masquer la confirmation du mot de passe',
   emailConfirmationInstructions:
@@ -32,7 +25,6 @@ export const auth = {
   errors: {
     emailRequired: "L'adresse e-mail est requise.",
     invalidEmail: 'Veuillez saisir une adresse e-mail valide.',
-    sameEmail: 'Veuillez saisir une adresse e-mail différente.',
     emailExists: 'Cette adresse e-mail est déjà utilisée.',
     emailNotConfirmed: "Veuillez d'abord confirmer votre adresse e-mail actuelle.",
     emailProviderDisabled: 'La connexion par e-mail est actuellement indisponible.',
@@ -56,14 +48,12 @@ export const calendar = {
 
 export const common = {
   cancel: 'Annuler',
-  close: 'Fermer',
   loading: 'Chargement...',
   back: 'Retour',
   edit: 'Modifier',
   add: 'Ajouter',
   deleteThisTrip: 'Supprimer ce voyage',
   newTrip: '+ Nouveau voyage',
-  joinTrip: 'Rejoindre un voyage',
   errorOccurred: "Une erreur s'est produite.",
   saveChanges: 'Enregistrer les modifications',
   save: 'Enregistrer',
@@ -120,13 +110,6 @@ export const form = {
     nameRequired: 'Le nom du voyage est obligatoire.',
     dateRequired: 'Les dates de début et de fin sont obligatoires.',
     dateOrder: 'La date de fin ne doit pas être antérieure à la date de début.',
-  },
-  join: {
-    inviteCodeRequired: "Le code d'invitation est obligatoire.",
-    inviteCodeLabel: "Code d'invitation *",
-    inviteCodePlaceholder: 'ex. A1B2C3D4',
-    join: 'Rejoindre',
-    alreadyJoined: 'Vous avez déjà rejoint ce voyage.',
   },
   event: {
     errors: {
@@ -187,26 +170,12 @@ export const home = {
   showAll: 'Tout afficher ({count})',
 };
 
-export const settings = {
-  settings: 'Paramètres',
-  updateSuccess: 'Mis à jour avec succès.',
-  emailChangePending: 'Vérifiez votre boîte mail pour confirmer votre nouvelle adresse e-mail.',
-};
-
 export const trip = {
   deleteConfirm: 'Supprimer "{title}" ? Tous les événements seront aussi supprimés.',
   editTrip: 'Modifier le voyage',
   deleteTrip: 'Supprimer le voyage',
   notFound: 'Ce voyage est introuvable.',
   loadFailed: 'Impossible de charger ce voyage.',
-  members: {
-    members: 'Membres',
-    removeConfirm: 'Supprimer ce membre ?',
-    inviteCopied: "Code d'invitation copié dans le presse-papiers !",
-    inviteCopyFailed: "Impossible de copier le code d'invitation.",
-    inviteShareLabel: 'Partagez ce code pour inviter des amis :',
-    copyInviteTitle: "Copier le code d'invitation",
-  },
 };
 
 export const datetimeFormats = {
@@ -238,6 +207,5 @@ export default {
   event,
   form,
   home,
-  settings,
   trip,
 };
