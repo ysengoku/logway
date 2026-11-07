@@ -3,8 +3,9 @@
   "framework": null,
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm run build",
+  "devCommand": "pnpm exec vite --port $PORT",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/((?!api/|@|.*\\.).*)", "destination": "/index.html" }
   ]
 }
