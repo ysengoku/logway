@@ -103,6 +103,9 @@ The server stores no trip data. Vercel Functions only handle Google OAuth and ke
 ```
 logway/
 ├─ app/                    # Vercel root directory
+│  ├─ api/                 # Vercel functions
+│  │  ├─ auth/
+│  │  └─ _lib/
 │  ├─ src/
 │  │  ├─ db/               # SQLite in a Web Worker, migrations, tab lock
 │  │  ├─ repositories/     # Data access for trips and events
@@ -207,7 +210,7 @@ pnpm install
 Copy the example environment file and fill in the values (each variable is described in the file):
 
 ```sh
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 On Vercel, set the same variables in the project settings.
