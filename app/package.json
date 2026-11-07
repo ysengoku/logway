@@ -16,7 +16,7 @@
     "lint:oxlint:ci": "oxlint .",
     "lint:eslint": "eslint . --fix --cache",
     "lint:eslint:ci": "eslint . --max-warnings=0",
-    "format": "prettier --write --experimental-cli src/"
+    "format": "prettier --write --experimental-cli src/ api/"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
