@@ -11,3 +11,5 @@ export const oauthRedirectUrl = `${requireEnv('APP_URL')}/api/auth/callback`;
 
 export const googleClientId = requireEnv('GOOGLE_CLIENT_ID');
 export const googleClientSecret = requireEnv('GOOGLE_CLIENT_SECRET');
+
+export const sessionSecret = requireEnv('SESSION_SECRET');
