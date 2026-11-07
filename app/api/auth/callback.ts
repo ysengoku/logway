@@ -1,5 +1,6 @@
 import { loginUrl, oauthRedirectUrl } from '../_lib/config.js';
 import { parseCookie, serializeCookie } from '../_lib/cookies.js';
+import { encrypt } from '../_lib/encrypt.js';
 import { GOOGLE_DRIVE_SCOPES, requestGoogleToken } from '../_lib/google.js';
 import type { AuthError } from '../_lib/authErrors.js';
 
@@ -28,7 +29,8 @@ export default {
 
     const headers = new Headers();
     headers.set('Location', '/');
-    headers.append('Set-Cookie', serializeCookie('refresh_token', data.refresh_token));
+    const encriptedToken = await encrypt(data.refresh_token);
+    headers.append('Set-Cookie', serializeCookie('refresh_token', encriptedToken));
     headers.append('Set-Cookie', serializeCookie('id_token', data.id_token));
     clearOAuthCookies(headers);
     return new Response(null, { status: 302, headers });
