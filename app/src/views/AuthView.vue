@@ -1,9 +1,10 @@
 <script setup lang="ts">
 // import { useAuthStore } from '@/stores/auth';
-import { useLoadingStore } from '@/stores/loading';
+// import { useLoadingStore } from '@/stores/loading';
+import { API_PATH } from '@/api/paths';
 
 // const authStore = useAuthStore();
-const loadingStore = useLoadingStore();
+// const loadingStore = useLoadingStore();
 </script>
 
 <template>
@@ -20,7 +21,7 @@ const loadingStore = useLoadingStore();
         ドライブ上の特定のファイルのみの参照、編集、作成、削除。
       </p>
 
-      <a class="auth-view__submit" :disabled="loadingStore.active" href="/api/auth/login">
+      <a class="auth-view__submit" :href="API_PATH.AUTH_LOGIN">
         {{ $t('auth.signIn') }}
       </a>
     </div>
