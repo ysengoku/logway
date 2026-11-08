@@ -5,7 +5,7 @@ const algorithm = 'AES-GCM';
 const IV_LENGTH = 12;
 
 const keyBytes = Uint8Array.fromBase64(sessionSecret);
-if (keyBytes.length != 32) {
+if (keyBytes.length !== 32) {
   throw new Error('SESSION_SECRET must be 32 bytes');
 }
 const cryptoKey = crypto.subtle.importKey('raw', keyBytes, algorithm, false, [

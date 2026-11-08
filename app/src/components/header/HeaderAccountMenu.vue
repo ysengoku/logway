@@ -33,8 +33,13 @@ function closeAccountMenu() {
 
 async function onSignOut() {
   closeAccountMenu();
-  await authStore.signOut();
-  await router.push({ name: 'auth' });
+  const success = await authStore.signOut();
+  if (success) {
+    await router.push({ name: 'auth' });
+    return;
+  }
+  // TODO: Show error
+  console.error('Logout failed');
 }
 
 function onDocumentClick(event: MouseEvent) {
@@ -67,7 +72,6 @@ onBeforeUnmount(() => {
 
 <template>
   <button
-    v-if="authStore.isAuthenticated"
     ref="accountTriggerRef"
     class="app-header__account-btn"
     type="button"
@@ -76,7 +80,14 @@ onBeforeUnmount(() => {
     aria-label="Open account menu"
     @click="toggleAccountMenu"
   >
-    <FaIcon icon="fa-solid fa-user" />
+    <img
+      v-if="authStore.session?.profile"
+      class="app-header__account-avatar"
+      :src="authStore.session.profile.picture"
+      alt=""
+      referrerpolicy="no-referrer"
+    />
+    <FaIcon v-else icon="fa-solid fa-user" />
   </button>
 
   <Teleport to="body">
@@ -90,7 +101,7 @@ onBeforeUnmount(() => {
         right: `${accountMenuRight}px`,
       }"
     >
-      <span class="app-header__account-menu__user">{{ authStore.user?.email }}</span>
+      <span class="app-header__account-menu__user">{{ authStore.session?.profile?.username }}</span>
       <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut">
         {{ $t('auth.signOut') }}
       </button>

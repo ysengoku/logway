@@ -1,7 +1,7 @@
 # 個人クラウド移行計画（Supabase → SQLite + Google Drive）
 
 作成日: 2026-10-31
-状態: 方針合意済み・実装前
+状態: フェーズ2（Google ログイン）実装中
 
 ## 1. 目的と決定事項
 
@@ -56,14 +56,57 @@ logway/
 ### 流れ
 
 1. `/api/auth/login` → Google の同意画面へリダイレクトする（PKCE + state を使う）
-2. `/api/auth/callback` → 認可コードをトークンと交換する。リフレッシュトークンは**暗号化して httpOnly Cookie** に保存する（サーバー側にセッション DB は持たない）
-3. `/api/auth/token` → Cookie のリフレッシュトークンから、短命のアクセストークンを発行してブラウザに返す
+2. `/api/auth/callback` → 認可コードをトークンと交換する。リフレッシュトークンは**暗号化して httpOnly Cookie** に保存する（サーバー側にセッション DB は持たない）。id_token は保存しない
+3. `POST /api/auth/token` → Cookie のリフレッシュトークンから、短命のアクセストークンを発行してブラウザに返す
 4. ブラウザはそのアクセストークンで **Drive API を直接**呼ぶ
-5. `/api/auth/logout` → Cookie を削除し、トークンを失効させる
+5. `POST /api/auth/logout` → Cookie を削除し、トークンを失効させる
+
+### 実装メモ
+
+**Cookie**
+
+- 属性は `HttpOnly; Secure; SameSite=Lax; Path=/api/auth; Max-Age=30日`（`_lib/cookies.ts`）
+- セッションの Cookie は `refresh_token` だけ。読み書きと削除は `_lib/session.ts` にまとめる
+
+**リフレッシュトークンの暗号化**（`_lib/encrypt.ts`）
+
+- AES-256-GCM（Web Crypto）。GCM の認証タグで改ざんも検出できるので、別の署名は付けない
+- 鍵は `SESSION_SECRET` を base64 デコードした 32 バイトをそのまま使う。読み込み時に長さを確認し、32 バイトでなければ起動時にエラーにする
+- IV は暗号化のたびに 12 バイトのランダム値を作る。Cookie の値は `base64url(iv).base64url(暗号文)`
+- 復号に失敗したら（改ざん、鍵の変更など）`null` を返し、ログインしていない状態として扱う。鍵を変えると全員がログアウトされる
+
+**`prompt=consent` が必要な理由**
+
+- Google は同意済みのユーザーにはリフレッシュトークンを返さない。リフレッシュトークンを Cookie にしか持たないので、Cookie が切れたり別のブラウザでログインしたりしたときに取り直せるよう、毎回同意画面を出す
+
+**`/api/auth/token`**
+
+- POST だけを受け付ける（副作用があり、先読みなどで呼ばれないようにするため）。`Cache-Control: no-store`
+- 返す値は `{ token, expiresIn, profile }`（型は `src/shared/types/auth.ts` の `Session`。API とクライアントで共有する）
+- `profile`（名前と画像）は、リフレッシュ時に Google が返す id_token から取り出す。Google から直接受け取った値なので署名は検証しない。表示にだけ使い、権限の判断には使わない。取り出せなければ `null`
+- 失敗はすべて 401（Cookie がない、復号できない、Google に拒否された）
+
+**`/api/auth/logout`**
+
+- Cookie は常に削除し、常に 200 を返す
+- Google での失効（revoke）はできればやっておくもの。Cookie がない、または revoke に失敗しても、ログアウトは止めない
+
+**クライアント**
+
+- サーバーの呼び出しは `src/api/auth.ts`、パスは `src/api/paths.ts` にまとめる
+- アクセストークンは Pinia ストアのメモリにだけ持ち、永続化しない。再読み込みしたら `/api/auth/token` で取り直す
+- `isAuthenticated` は `session !== null`。`session` に値が入るのは、サーバーがリフレッシュトークンを有効と判断したときだけ
+- ログアウトに失敗したら（ネットワークエラー、5xx）、Cookie が消えていない可能性があるので、ログイン状態を残して通知する
+- 画面遷移はストアではなくコンポーネントで行う（router がストアを import しているため、逆向きにすると循環参照になる）
+
+**未実装**
+
+- アクセストークンの期限前の更新。401 のときだけ `session` を消し、ネットワークエラーでは残す。同時に複数の更新が走らないよう、取得中の Promise を共有する
+- ログアウト失敗の通知
 
 ### スコープ
 
-- `openid email profile`：ログイン、表示用のメールアドレス
+- `openid`, `https://www.googleapis.com/auth/userinfo.profile`：ログイン、表示用の名前と画像（メールアドレスは取得しない）
 - `https://www.googleapis.com/auth/drive.appdata`：隠しフォルダの .db
 - `https://www.googleapis.com/auth/drive.file`：閲覧リンク用のスナップショット（アプリが作ったファイルだけ）
 
@@ -80,7 +123,7 @@ logway/
 | 変数 | 用途 |
 |---|---|
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth |
-| `SESSION_SECRET` | Cookie の暗号化キー |
+| `SESSION_SECRET` | Cookie の暗号化キー。32 バイトのランダム値を base64 にしたもの（`openssl rand -base64 32`）。環境ごとに別の値にする |
 | `APP_URL` | リダイレクト URI の組み立て |
 | `VITE_GOOGLE_API_KEY` | 閲覧ページで公開スナップショットを読むためのキー（HTTP リファラーで制限する） |
 
@@ -194,7 +237,7 @@ CREATE INDEX events_trip_id ON events(trip_id);
 | 対象 | 対応 |
 |---|---|
 | `AuthView`（メール/パスワード） | 「Google でログイン」ボタンだけにする |
-| `ResetPasswordView`, `EmailChangeModal`, `PasswordField`, パスワード関連のバリデーター | 削除 |
+| `ResetPasswordView`, `EmailChangeModal`, `PasswordField`, パスワード関連のバリデーター | 削除（`ResetPasswordView` と、Supabase 版ストアのテストは削除済み。`PasswordField` と `validators/password.ts` は残っている） |
 | `JoinTripModal`, `JoinTripForm`, `TripMembers`, `stores/members`, `api/members` | 削除（フェーズ1で実施済み） |
 | プロフィール（`profile` テーブル、表示名、アイコン） | 削除済み。言語設定は `localStorage` に保存する |
 | `SettingsView` | パスワードとメールの変更を Google ログインへの移行時に削除する |
