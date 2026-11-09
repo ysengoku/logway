@@ -6,6 +6,8 @@ function requireEnv(key: string): string {
   return value;
 }
 
+export const appUrlOrigin = new URL(requireEnv('APP_URL')).origin;
+
 export const loginUrl = `${requireEnv('APP_URL')}/auth`;
 export const oauthRedirectUrl = `${requireEnv('APP_URL')}/api/auth/callback`;
 

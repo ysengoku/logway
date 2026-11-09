@@ -1,3 +1,4 @@
+import { appUrlOrigin } from '../_lib/config.js';
 import { readRefreshToken } from '../_lib/session.js';
 import { requestGoogleToken } from '../_lib/google.js';
 import { fromBase64Url } from '../_lib/base64.js';
@@ -10,6 +11,9 @@ interface RefreshedTokens {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  if (request.headers.get('origin') !== appUrlOrigin) {
+    return new Response(null, { status: 403 });
+  }
   const data = await getAccessToken(request);
   if (!data) {
     return new Response(null, { status: 401 });
