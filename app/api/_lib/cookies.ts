@@ -1,6 +1,10 @@
-const THIRTY_DAYS = 60 * 60 * 24 * 30;
+export const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days in seconds
 
-export function serializeCookie(key: string, value: string, maxAge: number = THIRTY_DAYS): string {
+export function serializeCookie(
+  key: string,
+  value: string,
+  maxAge: number = SESSION_MAX_AGE,
+): string {
   return `${key}=${encodeURIComponent(value)}; HttpOnly; Secure; SameSite=Lax; Path=/api/auth; Max-Age=${maxAge}`;
 }
 

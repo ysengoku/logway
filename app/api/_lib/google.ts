@@ -15,7 +15,7 @@ export const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/userinfo.profile',
 ];
 
-export interface GoogleTokenResponse {
+export interface GoogleTokenPayload {
   access_token: string;
   expires_in: number;
   refresh_token?: string;
@@ -25,21 +25,35 @@ export interface GoogleTokenResponse {
   refresh_token_expires_in?: number;
 }
 
+type GoogleTokenResponse =
+  { success: true; payload: GoogleTokenPayload } | { success: false; error: string };
+
 export async function requestGoogleToken(
   params: Record<string, string>,
-): Promise<GoogleTokenResponse | null> {
-  const response = await fetch(GOOGLE_TOKEN_URL, {
-    method: 'POST',
-    body: new URLSearchParams({
-      ...params,
-      client_id: googleClientId,
-      client_secret: googleClientSecret,
-    }),
-  });
-  if (!response.ok) {
-    return null;
+): Promise<GoogleTokenResponse> {
+  let response: Response;
+  try {
+    response = await fetch(GOOGLE_TOKEN_URL, {
+      method: 'POST',
+      body: new URLSearchParams({
+        ...params,
+        client_id: googleClientId,
+        client_secret: googleClientSecret,
+      }),
+    });
+  } catch {
+    return { success: false, error: 'network_error' };
   }
-  return (await response.json()) as GoogleTokenResponse;
+
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as { error?: unknown } | null;
+    return { success: false, error: typeof body?.error === 'string' ? body.error : 'unknown' };
+  }
+  const payload = (await response.json().catch(() => null)) as GoogleTokenPayload | null;
+  if (!payload) {
+    return { success: false, error: 'invalid_response' };
+  }
+  return { success: true, payload };
 }
 
 export async function revokeGoogleToken(refreshToken: string): Promise<boolean> {
