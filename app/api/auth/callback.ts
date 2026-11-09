@@ -14,28 +14,28 @@ export default {
       return redirectWithError(callback.error);
     }
 
-    const data = await requestGoogleToken({
+    const response = await requestGoogleToken({
       code: callback.code,
       code_verifier: callback.codeVerifier,
       grant_type: 'authorization_code',
       redirect_uri: oauthRedirectUrl,
     });
-    if (!data || !data.refresh_token) {
+    if (!response.success || !response.payload.refresh_token) {
       return redirectWithError('token_exchange_failed');
     }
-    if (!ensureScope(data.scope)) {
+    if (!ensureScope(response.payload.scope)) {
       return redirectWithError('missing_scope');
     }
 
     const headers = new Headers();
     headers.set('Location', '/');
-    await appendRefreshTokenCookie(headers, data.refresh_token);
+    await appendRefreshTokenCookie(headers, response.payload.refresh_token);
     clearOAuthCookies(headers);
     return new Response(null, { status: 302, headers });
   },
 };
 
-// Checks that Google sent a code and that the state matches the one stored at login.
+/** Checks that Google sent a code and that the state matches the one stored at login. */
 function validateCallback(request: Request): CallbackResult {
   const params = new URL(request.url).searchParams;
 
@@ -63,7 +63,7 @@ function redirectWithError(error: AuthError): Response {
   return new Response(null, { status: 302, headers });
 }
 
-// The state and code verifier are only needed for one sign-in attempt.
+/** The state and code verifier are only needed for one sign-in attempt. */
 function clearOAuthCookies(headers: Headers): void {
   headers.append('Set-Cookie', serializeCookie('oauth_state', '', 0));
   headers.append('Set-Cookie', serializeCookie('oauth_code_verifier', '', 0));
