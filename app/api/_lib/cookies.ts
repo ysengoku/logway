@@ -20,7 +20,11 @@ export function parseCookie(cookie: string): Record<string, string> {
   for (const el of elements) {
     const index = el.indexOf('=');
     if (index < 0) continue;
-    parsed[el.slice(0, index)] = decodeURIComponent(el.slice(index + 1));
+    try {
+      parsed[el.slice(0, index)] = decodeURIComponent(el.slice(index + 1));
+    } catch {
+      continue;
+    }
   }
   return parsed;
 }
