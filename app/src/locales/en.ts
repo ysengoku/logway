@@ -42,13 +42,13 @@ export const auth = {
 };
 
 export const calendar = {
-  selectDate: 'Select a date to view events.',
+  selectDate: 'Select a date to view items.',
 };
 
 export const day = {
   timeline: 'Timeline',
   byType: 'By Type',
-  noEvents: 'No events on this day yet.',
+  noEvents: 'No items on this day yet.',
 };
 
 export const common = {
@@ -63,8 +63,8 @@ export const common = {
   saveChanges: 'Save changes',
   save: 'Save',
   saving: 'Saving...',
-  failedToSaveEvent: 'Failed to save event.',
-  failedToDeleteEvent: 'Failed to delete event.',
+  failedToSaveEvent: 'Failed to save item.',
+  failedToDeleteEvent: 'Failed to delete item.',
   failedToDeleteTrip: 'Failed to delete trip.',
   backToSignIn: 'Back to Sign In',
   unknownError: 'An error occurred. Please try again.',
@@ -87,12 +87,40 @@ export const common = {
   },
 };
 
+export const errors = {
+  notFound: 'Not found.',
+  trip: {
+    titleRequired: 'Title is required.',
+    invalidDate: 'Invalid date.',
+    dateOrder: 'End date must not be before start date.',
+    eventsOutsideDates: '{count} item(s) are outside the new dates.',
+  },
+  event: {
+    tripIdRequired: 'Trip ID is required.',
+    tripNotFound: 'Trip not found.',
+    typeChanged: 'Type cannot be changed.',
+    invalidDates: 'Invalid start and/or end date.',
+    outsideTrip: 'Dates must be within the trip.',
+    titleAndUrlRequired: 'Title and URL are required.',
+    flightNumberRequired: 'Flight number is required.',
+    placesRequired: 'Departure and arrival places are required.',
+    invalidTransportDateTime: 'Invalid departure or arrival date, time or time zone.',
+    arrivalBeforeDeparture: 'Arrival must not be earlier than departure.',
+    nameRequired: 'Name is required.',
+    checkoutAfterCheckin: 'Check-out date must be after check-in date.',
+    invalidHotelTime: 'Invalid check-in or check-out time.',
+    startTimeRequired: 'Missing or invalid start time.',
+    invalidStartTime: 'Invalid start time.',
+  },
+};
+
 export const event = {
   checkIn: 'CHECK IN',
   checkOut: 'CHECK OUT',
   ref: 'Ref: {ref}',
-  event: 'Event',
-  addEvent: 'Add Event',
+  event: 'Item',
+  addEvent: 'Add Item',
+  deleteConfirm: 'Delete this item?',
   type: {
     flight: 'Flight',
     transport: 'Transport',
@@ -170,7 +198,7 @@ export const home = {
 };
 
 export const trip = {
-  deleteConfirm: 'Delete "{title}"? All events will also be deleted.',
+  deleteConfirm: 'Delete "{title}"? All items will also be deleted.',
   editTrip: 'Edit Trip',
   deleteTrip: 'Delete Trip',
   notFound: 'This trip could not be found.',
@@ -203,6 +231,7 @@ export default {
   calendar,
   common,
   day,
+  errors,
   event,
   form,
   home,
