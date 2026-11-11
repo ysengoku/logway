@@ -2,7 +2,7 @@
 
 > [!WARNING]
 > **LogWay v2 is under active development.**
-> `v2` is a major rewrite with changes to both the app and the tech stack, and is the default branch until it is released. Features described below may be incomplete or still changing. The previous version (v1) is on [`main`](https://github.com/ysengoku/logway/tree/main).
+> v2 is a major rewrite with changes to both the app and the tech stack. Features described below may be incomplete or still changing. Until v2 is released, the production site shows only a maintenance page. The previous version (v1) is kept at the [`v1.0.0`](https://github.com/ysengoku/logway/tree/v1.0.0) tag.
 
 <!-- <img src="" width="100%" /> -->
 
@@ -224,10 +224,10 @@ pnpm build        # type-check and production build
 
 ### Workflow
 
-- `v2` is the default branch during the rewrite. Work happens on feature branches and is merged into `v2` through pull requests, which CodeRabbit reviews automatically.
-- `main` holds v1 and is deployed to production by Vercel. `v2` will be merged into `main` once it is ready for release.
+- Work happens on feature branches and is merged into `v2` through pull requests, which CodeRabbit reviews automatically.
+- `main` is the default branch and is deployed to production by Vercel. Until v2 is released, production runs in maintenance mode, and `v2` will be merged into `main` again for the release.
 - Preview deployments are started manually from GitHub Actions (*Run workflow*), for any branch.
-- CI (lint, type check, unit tests, build) runs on pushes to `main` and `dev`, and can also be started manually.
+- CI (lint, type check, unit tests, build) runs on pushes to `main` and `v2`, and can also be started manually.
 
 ### Linting & Formatting
 
@@ -270,6 +270,7 @@ pnpm exec vitest run __tests__/unit/db/migrate.test.ts   # single file
 - Only one browser tab can open LogWay at a time. The local database (OPFS, `opfs-sahpool` VFS) supports a single connection, so later tabs show a message instead of the app.
 - LogWay requires an internet connection and browser storage (OPFS). If either is unavailable, the app shows an error screen instead of letting users make changes that can't be saved.
 - Share links are public to anyone holding the URL; turning sharing off deletes the snapshot.
+- Setting `VITE_MAINTENANCE_MODE=true` replaces the whole app with a maintenance page, without opening the local database. The variable is read at build time, so redeploy after changing it.
 
 ## Resources
 
