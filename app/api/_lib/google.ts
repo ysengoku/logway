@@ -15,6 +15,8 @@ export const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/userinfo.profile',
 ];
 
+const GOOGLE_REQUEST_TIMEOUT_MS = 20_000;
+
 export interface GoogleTokenPayload {
   access_token: string;
   expires_in: number;
@@ -40,6 +42,7 @@ export async function requestGoogleToken(
         client_id: googleClientId,
         client_secret: googleClientSecret,
       }),
+      signal: AbortSignal.timeout(GOOGLE_REQUEST_TIMEOUT_MS),
     });
   } catch {
     return { success: false, error: 'network_error' };
@@ -63,6 +66,7 @@ export async function revokeGoogleToken(refreshToken: string): Promise<boolean> 
       body: new URLSearchParams({
         token: refreshToken,
       }),
+      signal: AbortSignal.timeout(GOOGLE_REQUEST_TIMEOUT_MS),
     });
     return response.ok;
   } catch {
