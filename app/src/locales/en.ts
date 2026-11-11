@@ -90,6 +90,10 @@ export const common = {
     },
     reload: 'Try again',
   },
+  maintenance: {
+    rebuilding: 'LogWay is packing its bags for a new journey.',
+    availableSoon: 'Back soon, ready for your next trips.',
+  },
 };
 
 export const event = {

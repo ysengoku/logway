@@ -4,9 +4,8 @@ import { createI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import './lib/faIcons';
 
-import App from './App.vue';
-import router from './router';
 import DatabaseErrorView from './views/DatabaseErrorView.vue';
+import MaintenanceView from './views/MaintenanceView.vue';
 import TabInUseView from './views/TabInUseView.vue';
 import './assets/styles/main.scss';
 import messages, { datetimeFormats } from './locales';
@@ -24,6 +23,12 @@ async function bootstrap() {
     messages,
     datetimeFormats,
   });
+
+  // During maintenance, show only the maintenance page; don't open the database.
+  if (import.meta.env.VITE_MAINTENANCE_MODE === 'true') {
+    createApp(MaintenanceView).use(i18n).mount('#app');
+    return;
+  }
 
   // Without a working database, changes couldn't be saved; don't start the app.
   function showDatabaseError(error: unknown) {
@@ -51,6 +56,12 @@ async function bootstrap() {
     showDatabaseError(e);
     return;
   }
+
+  // Load these only here: the router pulls in the auth store, which the maintenance page must not evaluate.
+  const [{ default: App }, { default: router }] = await Promise.all([
+    import('./App.vue'),
+    import('./router'),
+  ]);
 
   const app = createApp(App);
   app.use(createPinia());
