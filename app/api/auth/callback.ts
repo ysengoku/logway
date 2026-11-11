@@ -1,6 +1,11 @@
 import { appendRefreshTokenCookie } from '../_lib/session.js';
 import { loginUrl, oauthRedirectUrl } from '../_lib/config.js';
-import { parseCookie, serializeCookie } from '../_lib/cookies.js';
+import {
+  parseCookie,
+  serializeCookie,
+  OAUTH_STATE_COOKIE,
+  OAUTH_CODE_VERIFIER_COOKIE,
+} from '../_lib/cookies.js';
 import { GOOGLE_DRIVE_SCOPES, requestGoogleToken } from '../_lib/google.js';
 import type { AuthError } from '../_lib/authErrors.js';
 
@@ -49,11 +54,16 @@ function validateCallback(request: Request): CallbackResult {
   const state = params.get('state');
   const code = params.get('code');
   const cookies = parseCookie(request.headers.get('cookie') ?? '');
-  if (!state || !code || cookies.oauth_state !== state || !cookies.oauth_code_verifier) {
+  if (
+    !state ||
+    !code ||
+    cookies[OAUTH_STATE_COOKIE] !== state ||
+    !cookies[OAUTH_CODE_VERIFIER_COOKIE]
+  ) {
     return { ok: false, error: 'invalid_state' };
   }
 
-  return { ok: true, code, codeVerifier: cookies.oauth_code_verifier };
+  return { ok: true, code, codeVerifier: cookies[OAUTH_CODE_VERIFIER_COOKIE] };
 }
 
 function redirectWithError(error: AuthError): Response {
@@ -65,8 +75,8 @@ function redirectWithError(error: AuthError): Response {
 
 /** The state and code verifier are only needed for one sign-in attempt. */
 function clearOAuthCookies(headers: Headers): void {
-  headers.append('Set-Cookie', serializeCookie('oauth_state', '', 0));
-  headers.append('Set-Cookie', serializeCookie('oauth_code_verifier', '', 0));
+  headers.append('Set-Cookie', serializeCookie(OAUTH_STATE_COOKIE, '', 0));
+  headers.append('Set-Cookie', serializeCookie(OAUTH_CODE_VERIFIER_COOKIE, '', 0));
 }
 
 function ensureScope(scopeResponse: string): boolean {

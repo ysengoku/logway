@@ -1,5 +1,9 @@
 import { oauthRedirectUrl, googleClientId } from '../_lib/config.js';
-import { serializeCookie } from '../_lib/cookies.js';
+import {
+  serializeCookie,
+  OAUTH_STATE_COOKIE,
+  OAUTH_CODE_VERIFIER_COOKIE,
+} from '../_lib/cookies.js';
 import { GOOGLE_OAUTH_BASE_URL, GOOGLE_SCOPES } from '../_lib/google.js';
 import { randomBase64Url, createCodeChallenge } from '../_lib/pkce.js';
 
@@ -12,8 +16,8 @@ export default {
     const authUrl = buildAuthUrl(state, codeChallenge);
     const headers = new Headers();
     headers.set('Location', authUrl);
-    headers.append('Set-Cookie', serializeCookie('oauth_state', state, 600));
-    headers.append('Set-Cookie', serializeCookie('oauth_code_verifier', codeVerifier, 600));
+    headers.append('Set-Cookie', serializeCookie(OAUTH_STATE_COOKIE, state, 600));
+    headers.append('Set-Cookie', serializeCookie(OAUTH_CODE_VERIFIER_COOKIE, codeVerifier, 600));
 
     return new Response(null, { status: 302, headers });
   },

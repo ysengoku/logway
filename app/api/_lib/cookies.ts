@@ -1,5 +1,8 @@
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days in seconds
 
+export const OAUTH_STATE_COOKIE = '__Secure-oauth_state';
+export const OAUTH_CODE_VERIFIER_COOKIE = '__Secure-oauth_code_verifier';
+
 export function serializeCookie(
   key: string,
   value: string,
