@@ -1,7 +1,7 @@
 # 個人クラウド移行計画（Supabase → SQLite + Google Drive）
 
 作成日: 2026-10-31
-状態: 方針合意済み・実装前
+状態: フェーズ2（Google ログイン）実装中
 
 ## 1. 目的と決定事項
 
@@ -56,14 +56,62 @@ logway/
 ### 流れ
 
 1. `/api/auth/login` → Google の同意画面へリダイレクトする（PKCE + state を使う）
-2. `/api/auth/callback` → 認可コードをトークンと交換する。リフレッシュトークンは**暗号化して httpOnly Cookie** に保存する（サーバー側にセッション DB は持たない）
-3. `/api/auth/token` → Cookie のリフレッシュトークンから、短命のアクセストークンを発行してブラウザに返す
+2. `/api/auth/callback` → 認可コードをトークンと交換する。リフレッシュトークンは**暗号化して httpOnly Cookie** に保存する（サーバー側にセッション DB は持たない）。id_token は保存しない
+3. `POST /api/auth/token` → Cookie のリフレッシュトークンから、短命のアクセストークンを発行してブラウザに返す
 4. ブラウザはそのアクセストークンで **Drive API を直接**呼ぶ
-5. `/api/auth/logout` → Cookie を削除し、トークンを失効させる
+5. `POST /api/auth/logout` → Cookie を削除し、トークンを失効させる
+
+### 実装メモ
+
+**Cookie**
+
+- 属性は `HttpOnly; Secure; SameSite=Lax; Path=/api/auth; Max-Age=7日`（`_lib/cookies.ts`）
+- セッションの Cookie は `refresh_token` だけ。読み書きと削除は `_lib/session.ts` にまとめる
+
+**リフレッシュトークンの暗号化**（`_lib/encrypt.ts`）
+
+- AES-256-GCM（Web Crypto）。GCM の認証タグで改ざんも検出できるので、別の署名は付けない
+- 鍵は `SESSION_SECRET` を base64 デコードした 32 バイトをそのまま使う。読み込み時に長さを確認し、32 バイトでなければ起動時にエラーにする
+- IV は暗号化のたびに 12 バイトのランダム値を作る。Cookie の値は `base64url(iv).base64url(暗号文)`
+- 暗号化する中身は、リフレッシュトークンと有効期限の JSON（`{ token, expiresAt }`、`expiresAt` はミリ秒）。期限はログイン時から 7日で、更新しても延長しない（盗まれた Cookie を使える期間に上限をつけるため）
+- 復号に失敗したら（改ざん、鍵の変更など）、または中身の形が違えば `null` を返し、ログインしていない状態として扱う。鍵を変えると全員がログアウトされる
+- 期限切れなら Google でリフレッシュトークンを失効（revoke）させてから `null` を返す
+
+**`prompt=consent` が必要な理由**
+
+- Google は同意済みのユーザーにはリフレッシュトークンを返さない。リフレッシュトークンを Cookie にしか持たないので、Cookie が切れたり別のブラウザでログインしたりしたときに取り直せるよう、毎回同意画面を出す
+
+**`/api/auth/token`**
+
+- POST だけを受け付ける（副作用があり、先読みなどで呼ばれないようにするため）。`Cache-Control: no-store`
+- `Origin` が `APP_URL` のオリジンと一致しなければ 403 を返す（CSRF 対策。`SameSite=Lax` に重ねる）
+- 返す値は `{ token, expiresIn, profile }`（型は `src/shared/types/auth.ts` の `Session`。API とクライアントで共有する）
+- `profile`（名前と画像）は、リフレッシュ時に Google が返す id_token から取り出す。Google から直接受け取った値なので署名は検証しない。表示にだけ使い、権限の判断には使わない。取り出せなければ `null`
+- Cookie が使えない（ない、復号できない、期限切れ）か、Google に拒否された（`invalid_grant`）ときは 401 を返し、Cookie を削除する
+- Google の一時的な失敗（5xx など）では 503 を返し、Cookie は残す（再読み込みで元に戻れるように）
+
+**`/api/auth/logout`**
+
+- `Origin` が `APP_URL` のオリジンと一致しなければ 403 を返し、Cookie は削除しない（他のサイトから勝手にログアウトさせられないようにするため）
+- 同じオリジンからのリクエストなら、Cookie は常に削除し、常に 200 を返す
+- Google での失効（revoke）はできればやっておくもの。Cookie がない、または revoke に失敗しても、ログアウトは止めない
+
+**クライアント**
+
+- サーバーの呼び出しは `src/api/auth.ts`、パスは `src/api/paths.ts` にまとめる
+- アクセストークンは Pinia ストアのメモリにだけ持ち、永続化しない。再読み込みしたら `/api/auth/token` で取り直す
+- `isAuthenticated` は `session !== null`。`session` に値が入るのは、サーバーがリフレッシュトークンを有効と判断したときだけ
+- ログアウトに失敗したら（ネットワークエラー、5xx）、Cookie が消えていない可能性があるので、ログイン状態を残して通知する
+- 画面遷移はストアではなくコンポーネントで行う（router がストアを import しているため、逆向きにすると循環参照になる）
+
+**未実装**
+
+- アクセストークンの期限前の更新。401 のときだけ `session` を消し、ネットワークエラーでは残す。同時に複数の更新が走らないよう、取得中の Promise を共有する
+- ログアウト失敗の通知
 
 ### スコープ
 
-- `openid email profile`：ログイン、表示用のメールアドレス
+- `openid`, `https://www.googleapis.com/auth/userinfo.profile`：ログイン、表示用の名前と画像（メールアドレスは取得しない）
 - `https://www.googleapis.com/auth/drive.appdata`：隠しフォルダの .db
 - `https://www.googleapis.com/auth/drive.file`：閲覧リンク用のスナップショット（アプリが作ったファイルだけ）
 
@@ -80,7 +128,7 @@ logway/
 | 変数 | 用途 |
 |---|---|
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth |
-| `SESSION_SECRET` | Cookie の暗号化キー |
+| `SESSION_SECRET` | Cookie の暗号化キー。32 バイトのランダム値を base64 にしたもの（`openssl rand -base64 32`）。環境ごとに別の値にする |
 | `APP_URL` | リダイレクト URI の組み立て |
 | `VITE_GOOGLE_API_KEY` | 閲覧ページで公開スナップショットを読むためのキー（HTTP リファラーで制限する） |
 
@@ -149,14 +197,24 @@ CREATE INDEX events_trip_id ON events(trip_id);
 1. ローカルの SQLite に書き込み、`dirty = true` にする
 2. 2〜3秒の間に変更がなければ、まとめてアップロードする
 3. **アップロード直前に Drive の `version` を確認する**。`lastSyncedVersion` と同じならアップロードし、新しい `version` を記録する
-4. 違っていたら（別の端末で更新されていたら）、**上書きしない**。最新版を読み込み直し、「別の端末で更新されていたため、最新の状態を読み込みました。直前の変更は保存されていません」と表示する
+4. 違っていたら（別の端末で更新されていたら）、**自動では上書きしない**。どちらを残すかをユーザーに選んでもらう
+   - **クラウドを残す**：Drive の版をダウンロードしてローカルを置き換える。ローカルの未同期の変更は消える
+   - **ローカルで上書きする**：ローカルの版をアップロードする。別の端末での変更は消える（Drive のリビジョン履歴からしばらくは復元できる）
+   - 選ぶ材料として、Drive のファイルの `modifiedTime`（クラウド側がいつ更新されたか）を表示する。どちらを選んでも反対側の変更が丸ごと消えることを明記する
+   - 行単位のマージはしない（ファイル全体で同期しているため）。必要になれば後のバージョンで検討する
 
 > Drive API には条件付き更新（If-Match）がないため、確認とアップロードの間にわずかな隙がある。1人利用ではまず起きないので許容する。
 
-### オフライン
+### オフライン・通信の失敗
 
-- オフラインでは使えない。Drive の最新データを確認できないので、閲覧もできないようにする
-- 編集は、Drive へのアップロードが成功して初めて保存済みとする。失敗したらエラーを表示する
+オフライン、または認証や Drive への通信に失敗したとき（`/api/auth/token` の 503 を含む）の扱い。
+
+| 場面 | 失敗したとき |
+|---|---|
+| 起動時・タブに戻ったとき | 画面を止めて、再試行ボタンを出す。Drive の最新データを確認できないので、閲覧もできないようにする |
+| 保存したとき | 使い続けられるようにして、「未同期」の表示と再試行ボタンを出す |
+
+- 編集は、Drive へのアップロードが成功して初めて保存済みとする
 - `navigator.onLine` は画面の切り替えだけに使う。通信できるかの最終的な判断は、Drive への通信の成否で行う
 
 ### OPFS が使えない環境
@@ -194,7 +252,7 @@ CREATE INDEX events_trip_id ON events(trip_id);
 | 対象 | 対応 |
 |---|---|
 | `AuthView`（メール/パスワード） | 「Google でログイン」ボタンだけにする |
-| `ResetPasswordView`, `EmailChangeModal`, `PasswordField`, パスワード関連のバリデーター | 削除 |
+| `ResetPasswordView`, `EmailChangeModal`, `PasswordField`, パスワード関連のバリデーター | 削除（`ResetPasswordView` と、Supabase 版ストアのテストは削除済み。`PasswordField` と `validators/password.ts` は残っている） |
 | `JoinTripModal`, `JoinTripForm`, `TripMembers`, `stores/members`, `api/members` | 削除（フェーズ1で実施済み） |
 | プロフィール（`profile` テーブル、表示名、アイコン） | 削除済み。言語設定は `localStorage` に保存する |
 | `SettingsView` | パスワードとメールの変更を Google ログインへの移行時に削除する |
@@ -248,6 +306,8 @@ CREATE INDEX events_trip_id ON events(trip_id);
 1. **今の Supabase のデータを移すか**：移すなら、Supabase から書き出して SQLite に取り込む一回きりのスクリプトをフェーズ4の前に作る
 2. **データの全削除機能**：設定画面に「Drive 上のデータを含めてすべて削除」を置くか
 3. **Google のスコープ区分と審査の要否**（セクション3）
-4. **ログインなしで試せるデモモード**：同期なしで、端末内の SQLite だけに保存するモード。サーバー側の仕組みは不要で、Google アカウントなしでも試せる（旧 `DEMO_SESSION_TODO.md` の案を v2 向けに置き換えたもの）。入れる場合、画面上で「データはこのブラウザにだけ保存されます」と明示する
+4. **利用中のセッション延長**：今はログインから 7日で切れ、使っていても延長しない。実際に使って様子を見てから、`/api/auth/token` が成功するたびに期限を延ばすか決める。延ばす場合も上限は残し、Cookie の中にログイン時刻（または上限の期限）を別に持つ（#27）
+5. **セッションの管理を Redis で行うか**：今はサーバー側にセッション DB を持たない（個人情報を持たないため）。そのため特定のセッションだけを無効にできず、無効にする手段は Google での revoke だけ。後のバージョンで、Redis（Upstash など）に「ランダムなセッション ID → 期限、無効かどうか」だけを保存する形を検討する。名前、メールアドレス、Google の ID、IP、端末の情報は保存しない。切り替え時、Redis に記録のない古い Cookie は無効にするか、期限まで受け付けるかを決める
+6. **ログインなしで試せるデモモード**：同期なしで、端末内の SQLite だけに保存するモード。サーバー側の仕組みは不要で、Google アカウントなしでも試せる（旧 `DEMO_SESSION_TODO.md` の案を v2 向けに置き換えたもの）。入れる場合、画面上で「データはこのブラウザにだけ保存されます」と明示する
 
 決定済み: 閲覧リンクから予約番号を常に除外し、メモは既定で除外する（セクション6）

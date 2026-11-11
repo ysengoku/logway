@@ -31,15 +31,16 @@ function closeAccountMenu() {
   accountMenuOpen.value = false;
 }
 
-async function onSignOut() {
+async function onSignOut(allDevices: boolean) {
   closeAccountMenu();
-  await authStore.signOut();
-  await router.push({ name: 'auth' });
-}
-
-async function goToSettings() {
-  closeAccountMenu();
-  await router.push({ name: 'settings' });
+  // TODO: If allDevices is true, show confirmation dialog
+  const success = await authStore.signOut(allDevices);
+  if (success) {
+    await router.push({ name: 'auth' });
+    return;
+  }
+  // TODO: Show error
+  console.error('Logout failed');
 }
 
 function onDocumentClick(event: MouseEvent) {
@@ -72,7 +73,6 @@ onBeforeUnmount(() => {
 
 <template>
   <button
-    v-if="authStore.isAuthenticated"
     ref="accountTriggerRef"
     class="app-header__account-btn"
     type="button"
@@ -81,7 +81,14 @@ onBeforeUnmount(() => {
     aria-label="Open account menu"
     @click="toggleAccountMenu"
   >
-    <FaIcon icon="fa-solid fa-user" />
+    <img
+      v-if="authStore.profile"
+      class="app-header__account-avatar"
+      :src="authStore.profile.picture"
+      alt=""
+      referrerpolicy="no-referrer"
+    />
+    <FaIcon v-else icon="fa-solid fa-user" />
   </button>
 
   <Teleport to="body">
@@ -95,12 +102,12 @@ onBeforeUnmount(() => {
         right: `${accountMenuRight}px`,
       }"
     >
-      <span class="app-header__account-menu__user">{{ authStore.user?.email }}</span>
-      <button class="app-header__account-menu__item" role="menuitem" @click="goToSettings">
-        {{ $t('settings.settings') }}
-      </button>
-      <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut">
+      <span class="app-header__account-menu__user">{{ authStore.profile?.username }}</span>
+      <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut(false)">
         {{ $t('auth.signOut') }}
+      </button>
+      <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut(true)">
+        {{ $t('auth.signOutAll') }}
       </button>
     </div>
   </Teleport>
