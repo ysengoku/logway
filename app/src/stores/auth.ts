@@ -15,6 +15,7 @@ export const useAuthStore = defineStore('auth', () => {
   const profile = computed(() => session.value?.profile ?? null);
   const isAuthenticated = computed(() => session.value !== null);
   let refreshing: Promise<void> | null = null;
+  let sessionGeneration = 0;
   // const loadingStore = useLoadingStore();
 
   async function init() {
@@ -32,7 +33,11 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     refreshing = (async () => {
+      const generation = sessionGeneration;
       const fetchedSession = await fetchSession();
+      if (generation !== sessionGeneration) {
+        return; // Signed out while this refresh was in flight.
+      }
       switch (fetchedSession.status) {
         case 'ok':
           session.value = {
@@ -67,6 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!success) {
       return false;
     }
+    ++sessionGeneration;
     session.value = null;
     return true;
   }
