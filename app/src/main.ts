@@ -4,8 +4,6 @@ import { createI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import './lib/faIcons';
 
-import App from './App.vue';
-import router from './router';
 import DatabaseErrorView from './views/DatabaseErrorView.vue';
 import MaintenanceView from './views/MaintenanceView.vue';
 import TabInUseView from './views/TabInUseView.vue';
@@ -58,6 +56,12 @@ async function bootstrap() {
     showDatabaseError(e);
     return;
   }
+
+  // Load these only here: the router pulls in the auth store, which the maintenance page must not evaluate.
+  const [{ default: App }, { default: router }] = await Promise.all([
+    import('./App.vue'),
+    import('./router'),
+  ]);
 
   const app = createApp(App);
   app.use(createPinia());
