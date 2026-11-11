@@ -6,10 +6,11 @@ function requireEnv(key: string): string {
   return value;
 }
 
-export const appUrlOrigin = new URL(requireEnv('APP_URL')).origin;
+const appUrl = requireEnv('APP_URL').replace(/\/+$/, '');
 
-export const loginUrl = `${requireEnv('APP_URL')}/auth`;
-export const oauthRedirectUrl = `${requireEnv('APP_URL')}/api/auth/callback`;
+export const appUrlOrigin = new URL(appUrl).origin;
+export const loginUrl = `${appUrl}/auth`;
+export const oauthRedirectUrl = `${appUrl}/api/auth/callback`;
 
 export const googleClientId = requireEnv('GOOGLE_CLIENT_ID');
 export const googleClientSecret = requireEnv('GOOGLE_CLIENT_SECRET');
