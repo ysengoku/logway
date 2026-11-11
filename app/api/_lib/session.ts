@@ -7,7 +7,7 @@ interface SessionPayload {
   expiresAt: number;
 }
 
-const REFRESH_TOKEN = 'refresh_token';
+const REFRESH_TOKEN = '__Secure-refresh_token';
 
 export async function readRefreshToken(request: Request): Promise<string | null> {
   const cookies = parseCookie(request.headers.get('cookie') ?? '');
