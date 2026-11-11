@@ -2,6 +2,7 @@ export const auth = {
   signIn: 'Sign In',
   signUp: 'Sign Up',
   signOut: 'Sign Out',
+  signOutAll: 'Sign Out of All Devices',
   resetPassword: 'Reset Password',
   email: 'Email',
   password: 'Password',

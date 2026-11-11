@@ -62,8 +62,8 @@ export const useAuthStore = defineStore('auth', () => {
     return session.value.token;
   }
 
-  async function signOut(): Promise<boolean> {
-    const success = await logout();
+  async function signOut(allDevices: boolean = false): Promise<boolean> {
+    const success = await logout(allDevices);
     if (!success) {
       return false;
     }

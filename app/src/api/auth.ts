@@ -22,9 +22,13 @@ export async function fetchSession(): Promise<SessionResult> {
   }
 }
 
-export async function logout(): Promise<boolean> {
+export async function logout(allDevices: boolean): Promise<boolean> {
   try {
-    const response = await fetch(API_PATH.AUTH_LOGOUT, { method: 'POST' });
+    const response = await fetch(API_PATH.AUTH_LOGOUT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ allDevices }),
+    });
     if (!response.ok) {
       return false;
     }

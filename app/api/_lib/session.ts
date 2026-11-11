@@ -1,6 +1,5 @@
 import { encrypt, decrypt } from './encrypt.js';
 import { SESSION_MAX_AGE, parseCookie, serializeCookie } from './cookies.js';
-import { revokeGoogleToken } from './google.js';
 
 interface SessionPayload {
   token: string;
@@ -19,11 +18,7 @@ export async function readRefreshToken(request: Request): Promise<string | null>
     return null;
   }
   const payload = parsePayload(decrypted);
-  if (!payload) {
-    return null;
-  }
-  if (payload.expiresAt < Date.now()) {
-    await revokeGoogleToken(payload.token);
+  if (!payload || payload.expiresAt < Date.now()) {
     return null;
   }
   return payload.token;

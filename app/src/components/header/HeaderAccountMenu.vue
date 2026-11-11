@@ -31,9 +31,10 @@ function closeAccountMenu() {
   accountMenuOpen.value = false;
 }
 
-async function onSignOut() {
+async function onSignOut(allDevices: boolean) {
   closeAccountMenu();
-  const success = await authStore.signOut();
+  // TODO: If allDevices is true, show confirmation dialog
+  const success = await authStore.signOut(allDevices);
   if (success) {
     await router.push({ name: 'auth' });
     return;
@@ -102,8 +103,11 @@ onBeforeUnmount(() => {
       }"
     >
       <span class="app-header__account-menu__user">{{ authStore.profile?.username }}</span>
-      <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut">
+      <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut(false)">
         {{ $t('auth.signOut') }}
+      </button>
+      <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut(true)">
+        {{ $t('auth.signOutAll') }}
       </button>
     </div>
   </Teleport>
