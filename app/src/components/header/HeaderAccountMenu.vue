@@ -81,9 +81,9 @@ onBeforeUnmount(() => {
     @click="toggleAccountMenu"
   >
     <img
-      v-if="authStore.session?.profile"
+      v-if="authStore.profile"
       class="app-header__account-avatar"
-      :src="authStore.session.profile.picture"
+      :src="authStore.profile.picture"
       alt=""
       referrerpolicy="no-referrer"
     />
@@ -101,7 +101,7 @@ onBeforeUnmount(() => {
         right: `${accountMenuRight}px`,
       }"
     >
-      <span class="app-header__account-menu__user">{{ authStore.session?.profile?.username }}</span>
+      <span class="app-header__account-menu__user">{{ authStore.profile?.username }}</span>
       <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut">
         {{ $t('auth.signOut') }}
       </button>
