@@ -87,6 +87,10 @@ export const common = {
     },
     reload: 'Réessayer',
   },
+  maintenance: {
+    rebuilding: 'LogWay fait ses valises pour un nouveau voyage.',
+    availableSoon: 'De retour bientôt, prêt pour vos prochains voyages.',
+  },
 };
 
 export const day = {
