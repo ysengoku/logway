@@ -100,12 +100,12 @@
   &__account-btn {
     width: 44px;
     height: 44px;
+    padding: 0;
     border-radius: 50%;
-    border: none;
     font-size: 28px;
     color: $bg;
+    border: 1px solid rgba($bg, 0.4);
     background: rgba($header-gradient-start, 0.4);
-    border: 2px solid rgba($header-gradient-start, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
