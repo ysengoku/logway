@@ -1,6 +1,6 @@
 import { appUrlOrigin } from '../_lib/config.js';
 import { readRefreshToken, clearSessionCookies } from '../_lib/session.js';
-import { requestGoogleToken } from '../_lib/google.js';
+import { fetchUserProfile, requestGoogleToken, toUserProfile } from '../_lib/google.js';
 import { fromBase64Url } from '../_lib/base64.js';
 import type { Session, UserProfile } from '../../src/shared/types/auth.js';
 
@@ -28,6 +28,9 @@ export async function POST(request: Request): Promise<Response> {
   let profile = null;
   if (response.tokens.idToken) {
     profile = readUserProfile(response.tokens.idToken);
+  }
+  if (!profile) {
+    profile = await fetchUserProfile(response.tokens.accessToken);
   }
   const session: Session = {
     token: response.tokens.accessToken,
@@ -84,14 +87,7 @@ function readUserProfile(idToken: string): UserProfile | null {
   }
   try {
     const payload: unknown = JSON.parse(new TextDecoder().decode(fromBase64Url(parts[1])));
-    if (typeof payload !== 'object' || payload === null) {
-      return null;
-    }
-    const { name, picture } = payload as Record<string, unknown>;
-    if (typeof name !== 'string' || typeof picture !== 'string') {
-      return null;
-    }
-    return { username: name, picture };
+    return toUserProfile(payload);
   } catch {
     return null;
   }
