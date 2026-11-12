@@ -42,6 +42,7 @@ export const useAuthStore = defineStore('auth', () => {
         case 'ok':
           session.value = {
             ...fetchedSession.session,
+            profile: fetchedSession.session.profile ?? session.value?.profile ?? null,
             expiresAt: Date.now() + fetchedSession.session.expiresIn * 1000,
           };
           break;

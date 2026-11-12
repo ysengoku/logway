@@ -1,8 +1,10 @@
 import { googleClientId, googleClientSecret } from './config.js';
+import type { UserProfile } from '../../src/shared/types/auth.js';
 
 export const GOOGLE_OAUTH_BASE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
-export const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
-export const GOOGLE_REVOKE_URL = 'https://oauth2.googleapis.com/revoke';
+const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+const GOOGLE_REVOKE_URL = 'https://oauth2.googleapis.com/revoke';
+const GOOGLE_USER_INFO_URL = 'https://openidconnect.googleapis.com/v1/userinfo';
 
 export const GOOGLE_DRIVE_SCOPES = [
   'https://www.googleapis.com/auth/drive.file',
@@ -57,6 +59,34 @@ export async function requestGoogleToken(
     return { success: false, error: 'invalid_response' };
   }
   return { success: true, payload };
+}
+
+export async function fetchUserProfile(accessToken: string): Promise<UserProfile | null> {
+  try {
+    const response = await fetch(GOOGLE_USER_INFO_URL, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${accessToken}` },
+      signal: AbortSignal.timeout(GOOGLE_REQUEST_TIMEOUT_MS),
+    });
+    if (!response.ok) {
+      return null;
+    }
+    const data: unknown = await response.json();
+    return toUserProfile(data);
+  } catch {
+    return null;
+  }
+}
+
+export function toUserProfile(data: unknown): UserProfile | null {
+  if (typeof data !== 'object' || data === null) {
+    return null;
+  }
+  const { name, picture } = data as Record<string, unknown>;
+  if (typeof name !== 'string' || typeof picture !== 'string') {
+    return null;
+  }
+  return { username: name, picture };
 }
 
 export async function revokeGoogleToken(refreshToken: string): Promise<boolean> {
