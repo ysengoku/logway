@@ -64,11 +64,7 @@ const bookingRef = computed(() => ('booking_ref' in props.event ? props.event.bo
     </div>
     <div class="day-detail__card-content">
       <div class="day-detail__card-title">
-        <FaIcon
-          v-if="mode === 'timeline'"
-          :icon="eventIcon"
-          class="day-detail__card-icon material-icons"
-        />
+        <FaIcon v-if="mode === 'timeline'" :icon="eventIcon" class="day-detail__card-icon" />
         {{ getEventTitle(event) }}
       </div>
       <div class="day-detail__card-meta">
