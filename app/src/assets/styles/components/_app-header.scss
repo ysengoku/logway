@@ -12,17 +12,16 @@
   clip-path: ellipse(120% 100% at 25% 0%);
 
   &__logo {
-    font-family: $font-display;
-    font-size: 32px;
-    font-weight: 600;
-    color: rgba($bg, 0.7);
     cursor: pointer;
     display: inline-block;
     transition: opacity 0.15s;
 
-    &-highlight {
-      color: $accent2;
+    &-image {
+      display: block;
+      height: 38px;
+      width: auto;
     }
+
     &:hover {
       opacity: 0.85;
     }
