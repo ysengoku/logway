@@ -7,6 +7,8 @@ import './lib/faIcons';
 import DatabaseErrorView from './views/DatabaseErrorView.vue';
 import MaintenanceView from './views/MaintenanceView.vue';
 import TabInUseView from './views/TabInUseView.vue';
+import '@fontsource/capriola';
+import '@fontsource-variable/inter';
 import './assets/styles/main.scss';
 import messages, { datetimeFormats } from './locales';
 import { DEFAULT_LOCALE, resolveInitialLocale } from './lib/locale';
