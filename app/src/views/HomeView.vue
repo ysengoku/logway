@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import TripModal from '@/components/modals/TripModal.vue';
+import { ApiError } from '@/repositories';
 import { useLoadingStore } from '@/stores/loading';
 import { useTripsStore } from '@/stores/trips';
 import type { TripInput } from '@/shared/types/trip';
@@ -38,7 +39,8 @@ async function createTrip(input: TripInput) {
     showNewTripModal.value = false;
     router.push({ name: 'trip', params: { id: trip.id } });
   } catch (e) {
-    alert(e instanceof Error ? e.message : t('common.errorOccurred'));
+    // Other errors, such as SQLite failures, aren't meant for users.
+    alert(e instanceof ApiError ? t(e.message, e.params ?? {}) : t('common.errorOccurred'));
   }
 }
 

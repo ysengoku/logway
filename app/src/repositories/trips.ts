@@ -18,7 +18,7 @@ export class TripRepository {
     const db = await this.getDb();
     const [trip] = await db.query<Trip>('SELECT * FROM trips WHERE id = ?', [id]);
     if (!trip) {
-      throw new ApiError('Not found.', 404);
+      throw new ApiError('errors.notFound', 404);
     }
     return trip;
   }
@@ -75,19 +75,19 @@ export class TripRepository {
     };
     const changes = await db.exec([statement]);
     if (!changes) {
-      throw new ApiError('Not found.', 404);
+      throw new ApiError('errors.notFound', 404);
     }
   }
 
   private validateInput(body: TripInput): void {
     if (!body.title) {
-      throw new ApiError('Title is required.', 400);
+      throw new ApiError('errors.trip.titleRequired', 400);
     }
     if (!isValidDate(body.start_date) || !isValidDate(body.end_date)) {
-      throw new ApiError('Invalid date.', 400);
+      throw new ApiError('errors.trip.invalidDate', 400);
     }
     if (body.start_date > body.end_date) {
-      throw new ApiError('End date must not be before start date.', 400);
+      throw new ApiError('errors.trip.dateOrder', 400);
     }
   }
 
@@ -102,7 +102,7 @@ export class TripRepository {
       [id, start, end, end],
     );
     if (outOfRange.count > 0) {
-      throw new ApiError(`${outOfRange.count} event(s) are outside the new dates`, 400);
+      throw new ApiError('errors.trip.eventsOutsideDates', 400, { count: outOfRange.count });
     }
   }
 }

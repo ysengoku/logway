@@ -63,8 +63,9 @@ export const useEventsStore = defineStore('events', () => {
     error.value = null;
     try {
       events.value = await eventRepository.getByTrip(tripId);
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to fetch events';
+    } catch {
+      // An i18n key; the original error, such as a SQLite failure, isn't meant for users.
+      error.value = 'trip.loadFailed';
     } finally {
       loadingStore.stop();
     }

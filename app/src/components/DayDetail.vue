@@ -31,7 +31,7 @@ function getEventsByType(type: EventType) {
 }
 
 async function deleteEvent(id: string) {
-  if (!confirm('Delete this event?')) return;
+  if (!confirm(t('event.deleteConfirm'))) return;
   try {
     await eventsStore.deleteEvent(id);
   } catch {

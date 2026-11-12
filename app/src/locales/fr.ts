@@ -44,7 +44,7 @@ export const auth = {
 };
 
 export const calendar = {
-  selectDate: 'Sélectionnez une date pour voir les événements.',
+  selectDate: 'Sélectionnez une date pour voir les éléments.',
 };
 
 export const common = {
@@ -59,8 +59,8 @@ export const common = {
   saveChanges: 'Enregistrer les modifications',
   save: 'Enregistrer',
   saving: 'Enregistrement...',
-  failedToSaveEvent: "Echec de l'enregistrement de l'événement.",
-  failedToDeleteEvent: "Echec de la suppression de l'événement.",
+  failedToSaveEvent: "Echec de l'enregistrement de l'élément.",
+  failedToDeleteEvent: "Echec de la suppression de l'élément.",
   failedToDeleteTrip: 'Echec de la suppression du voyage.',
   backToSignIn: 'Retour à la connexion',
   unknownError: "Une erreur s'est produite. Veuillez réessayer.",
@@ -87,15 +87,43 @@ export const common = {
 export const day = {
   timeline: 'Chronologie',
   byType: 'Par type',
-  noEvents: 'Aucun événement ce jour-la.',
+  noEvents: 'Aucun élément ce jour-là.',
+};
+
+export const errors = {
+  notFound: 'Introuvable.',
+  trip: {
+    titleRequired: 'Le titre est obligatoire.',
+    invalidDate: 'Date invalide.',
+    dateOrder: 'La date de fin ne doit pas être antérieure à la date de début.',
+    eventsOutsideDates: '{count} élément(s) en dehors des nouvelles dates.',
+  },
+  event: {
+    tripIdRequired: "L'identifiant du voyage est obligatoire.",
+    tripNotFound: 'Voyage introuvable.',
+    typeChanged: 'Le type ne peut pas être modifié.',
+    invalidDates: 'Date de début et/ou de fin invalide.',
+    outsideTrip: 'Les dates doivent être comprises dans le voyage.',
+    titleAndUrlRequired: "Le titre et l'URL sont obligatoires.",
+    flightNumberRequired: 'Le numéro de vol est obligatoire.',
+    placesRequired: "Les lieux de départ et d'arrivée sont obligatoires.",
+    invalidTransportDateTime: "Date, heure ou fuseau horaire de départ ou d'arrivée invalide.",
+    arrivalBeforeDeparture: "L'arrivée ne doit pas être antérieure au départ.",
+    nameRequired: 'Le nom est obligatoire.',
+    checkoutAfterCheckin: "La date de départ doit être postérieure à la date d'arrivée.",
+    invalidHotelTime: "Heure d'arrivée ou de départ invalide.",
+    startTimeRequired: 'Heure de début manquante ou invalide.',
+    invalidStartTime: 'Heure de début invalide.',
+  },
 };
 
 export const event = {
   checkIn: 'ARRIVEE',
   checkOut: 'DEPART',
   ref: 'Réf : {ref}',
-  event: 'Evénement',
-  addEvent: 'Ajouter un événement',
+  event: 'Elément',
+  addEvent: 'Ajouter un élément',
+  deleteConfirm: 'Supprimer cet élément ?',
   type: {
     flight: 'Vol',
     transport: 'Transport',
@@ -176,7 +204,7 @@ export const home = {
 };
 
 export const trip = {
-  deleteConfirm: 'Supprimer "{title}" ? Tous les événements seront aussi supprimés.',
+  deleteConfirm: 'Supprimer "{title}" ? Tous les éléments seront aussi supprimés.',
   editTrip: 'Modifier le voyage',
   deleteTrip: 'Supprimer le voyage',
   notFound: 'Ce voyage est introuvable.',
@@ -209,6 +237,7 @@ export default {
   calendar,
   common,
   day,
+  errors,
   event,
   form,
   home,

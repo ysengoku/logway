@@ -57,8 +57,9 @@ export const useTripsStore = defineStore('trips', () => {
     error.value = null;
     try {
       trips.value = await tripRepository.getAll();
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to fetch trips';
+    } catch {
+      // An i18n key; the original error, such as a SQLite failure, isn't meant for users.
+      error.value = 'home.loadFailed';
     } finally {
       loadingStore.stop();
     }

@@ -29,14 +29,14 @@ export class EventRepository {
     const db = await this.getDb();
     const [event] = await db.query<TripEvent>('SELECT * FROM event_details WHERE id = ?', [id]);
     if (!event) {
-      throw new ApiError('Not found.', 404);
+      throw new ApiError('errors.notFound', 404);
     }
     return event;
   }
 
   async create(tripId: string, input: EventInput): Promise<TripEvent> {
     if (!tripId) {
-      throw new ApiError('Trip ID is required', 400);
+      throw new ApiError('errors.event.tripIdRequired', 400);
     }
     const db = await this.getDb();
     const trip = await this.getTripDates(db, tripId);
@@ -66,7 +66,7 @@ export class EventRepository {
   async update(id: string, input: EventInput): Promise<TripEvent> {
     const current = await this.getById(id);
     if (current.type !== input.type) {
-      throw new ApiError('Event type cannot be changed', 400);
+      throw new ApiError('errors.event.typeChanged', 400);
     }
     const db = await this.getDb();
     const trip = await this.getTripDates(db, current.trip_id);
@@ -89,7 +89,7 @@ export class EventRepository {
     };
     const changes = await db.exec([statement]);
     if (!changes) {
-      throw new ApiError('Not found.', 404);
+      throw new ApiError('errors.notFound', 404);
     }
   }
 
@@ -99,7 +99,7 @@ export class EventRepository {
       [id],
     );
     if (!trip) {
-      throw new ApiError('Trip not found', 404);
+      throw new ApiError('errors.event.tripNotFound', 404);
     }
     return trip;
   }
@@ -110,10 +110,10 @@ export class EventRepository {
       !isValidDate(input.end_date) ||
       input.start_date > input.end_date
     ) {
-      throw new ApiError('Invalid start and/or end date', 400);
+      throw new ApiError('errors.event.invalidDates', 400);
     }
     if (input.start_date < trip.start_date || input.end_date > trip.end_date) {
-      throw new ApiError('Event dates must be within the trip', 400);
+      throw new ApiError('errors.event.outsideTrip', 400);
     }
     switch (input.type) {
       case 'flight':
@@ -129,17 +129,17 @@ export class EventRepository {
         break;
       case 'link':
         if (!input.title || !input.url) {
-          throw new ApiError('Title and URL are required', 400);
+          throw new ApiError('errors.event.titleAndUrlRequired', 400);
         }
     }
   }
 
   private validateTransportInput(input: FlightEventInput | TransportEventInput, tripEnd: string) {
     if (input.type === 'flight' && !input.service_number) {
-      throw new ApiError('Flight number is required', 400);
+      throw new ApiError('errors.event.flightNumberRequired', 400);
     }
     if (!input.dep_place || !input.arr_place) {
-      throw new ApiError('Departure and arrival place required', 400);
+      throw new ApiError('errors.event.placesRequired', 400);
     }
 
     if (
@@ -149,43 +149,43 @@ export class EventRepository {
       !isValidTimeZone(input.dep_tz_id) ||
       !isValidTimeZone(input.arr_tz_id)
     ) {
-      throw new ApiError('Invalid departure and arrival date, time or time zone', 400);
+      throw new ApiError('errors.event.invalidTransportDateTime', 400);
     }
     if (input.arr_date > tripEnd) {
-      throw new ApiError('Event dates must be within the trip', 400);
+      throw new ApiError('errors.event.outsideTrip', 400);
     }
 
     const departure = toUTC(input.start_date, input.start_time, input.dep_tz_id);
     const arrival = toUTC(input.arr_date, input.arr_time, input.arr_tz_id);
     if (!departure || !arrival || arrival < departure) {
-      throw new ApiError('Arrival must not be earlier than departure', 400);
+      throw new ApiError('errors.event.arrivalBeforeDeparture', 400);
     }
   }
 
   private validateHotelInput(input: HotelEventInput) {
     if (!input.name) {
-      throw new ApiError('Name is required', 400);
+      throw new ApiError('errors.event.nameRequired', 400);
     }
     if (input.start_date >= input.end_date) {
-      throw new ApiError('Check-out date must be after check-in date', 400);
+      throw new ApiError('errors.event.checkoutAfterCheckin', 400);
     }
     if (
       (input.start_time !== null && !isValidTime(input.start_time)) ||
       (input.check_out_time !== null && !isValidTime(input.check_out_time))
     ) {
-      throw new ApiError('Invalid check-in or checkout time', 400);
+      throw new ApiError('errors.event.invalidHotelTime', 400);
     }
   }
 
   private validatePlaceInput(input: RestaurantEventInput | ActivityEventInput) {
     if (!input.name) {
-      throw new ApiError('Name is required', 400);
+      throw new ApiError('errors.event.nameRequired', 400);
     }
     if (input.type === 'restaurant' && !isValidTime(input.start_time)) {
-      throw new ApiError('Missing or invalid start time', 400);
+      throw new ApiError('errors.event.startTimeRequired', 400);
     }
     if (input.type === 'activity' && input.start_time !== null && !isValidTime(input.start_time)) {
-      throw new ApiError('Invalid start time', 400);
+      throw new ApiError('errors.event.invalidStartTime', 400);
     }
   }
 

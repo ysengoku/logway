@@ -58,7 +58,7 @@ async function onFormSubmit(data: EventInput) {
     emit('saved');
   } catch (e) {
     // Other errors, such as SQLite failures, aren't meant for users.
-    alert(e instanceof ApiError ? e.message : t('common.failedToSaveEvent'));
+    alert(e instanceof ApiError ? t(e.message, e.params ?? {}) : t('common.failedToSaveEvent'));
   } finally {
     saving.value = false;
   }

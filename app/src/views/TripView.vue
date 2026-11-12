@@ -3,6 +3,7 @@ import CalendarGrid from '@/components/CalendarGrid.vue';
 import DayDetail from '@/components/DayDetail.vue';
 import EventModal from '@/components/modals/EventModal.vue';
 import TripModal from '@/components/modals/TripModal.vue';
+import { ApiError } from '@/repositories';
 import { useEventsStore } from '@/stores/events';
 import { useLoadingStore } from '@/stores/loading';
 import { useTripsStore } from '@/stores/trips';
@@ -73,7 +74,8 @@ async function onEditTrip(input: TripInput) {
     await tripsStore.updateTrip(tripId.value, input);
     showEditModal.value = false;
   } catch (e) {
-    alert(e instanceof Error ? e.message : t('common.errorOccurred'));
+    // Other errors, such as SQLite failures, aren't meant for users.
+    alert(e instanceof ApiError ? t(e.message, e.params ?? {}) : t('common.errorOccurred'));
   }
 }
 
