@@ -34,7 +34,8 @@ export default {
 
     const headers = new Headers();
     headers.set('Location', '/');
-    await appendRefreshTokenCookie(headers, response.payload.refresh_token);
+    const refreshTokenData = { token: response.payload.refresh_token, issuedAt: Date.now() };
+    await appendRefreshTokenCookie(headers, refreshTokenData);
     clearOAuthCookies(headers);
     return new Response(null, { status: 302, headers });
   },

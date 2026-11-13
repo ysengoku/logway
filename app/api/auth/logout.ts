@@ -23,7 +23,7 @@ export async function POST(request: Request): Promise<Response> {
   clearSessionCookies(headers);
   const refreshToken = await readRefreshToken(request);
   if (refreshToken && allDevices) {
-    await revokeGoogleToken(refreshToken);
+    await revokeGoogleToken(refreshToken.token);
   }
   return new Response(null, { status: 200, headers });
 }
