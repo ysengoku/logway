@@ -98,7 +98,7 @@ export async function revokeGoogleToken(refreshToken: string): Promise<boolean> 
       }),
       signal: AbortSignal.timeout(GOOGLE_REQUEST_TIMEOUT_MS),
     });
-    return response.ok;
+    return response.ok || response.status === 400; // revoked or already invalid
   } catch {
     return false;
   }
