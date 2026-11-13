@@ -203,6 +203,96 @@ export const home = {
   showAll: 'Tout afficher ({count})',
 };
 
+export const privacyPolicy = {
+  title: 'Politique de confidentialité',
+  lastUpdated: 'Dernière mise à jour : {date}',
+  intro:
+    'LogWay est un outil de planification de voyages. Cette page explique quelles données LogWay utilise, où elles sont stockées et comment les supprimer.',
+  storage: {
+    title: 'Où sont stockées vos données',
+    description:
+      'LogWay ne stocke pas vos voyages sur ses serveurs. Vos voyages et leurs éléments sont stockés uniquement à ces deux endroits :',
+    items: {
+      browser: 'Dans votre navigateur, sous forme de copie locale sur votre appareil.',
+      drive:
+        "Dans votre Google Drive, dans un dossier masqué auquel seul LogWay a accès. Il n'apparaît pas dans vos fichiers Drive.",
+    },
+  },
+  googleData: {
+    title: 'Données de votre compte Google',
+    description: 'Lorsque vous vous connectez avec Google, LogWay demande les accès suivants :',
+    items: {
+      profile:
+        "Votre nom et votre photo de profil, pour les afficher dans l'application. Ils sont gardés en mémoire et ne sont pas enregistrés.",
+      appData:
+        "Le dossier masqué de l'application dans votre Google Drive, pour enregistrer et charger vos voyages.",
+      appFiles:
+        'Les fichiers créés par LogWay dans votre Google Drive, pour créer des liens de partage. LogWay ne peut pas voir vos autres fichiers Drive.',
+    },
+    noEmail: 'LogWay ne demande pas votre adresse e-mail.',
+    limitedUse:
+      "L'utilisation et le transfert par LogWay des informations reçues des API Google respectent les {policy}, y compris les exigences d'utilisation limitée (Limited Use). Ces données servent uniquement à fournir les fonctionnalités de LogWay. Elles ne sont ni vendues, ni utilisées à des fins publicitaires, ni partagées avec qui que ce soit.",
+    policyLink: 'règles relatives aux données utilisateur des services API Google',
+  },
+  share: {
+    title: 'Liens de partage',
+    items: {
+      snapshot:
+        'Lorsque vous partagez un voyage, LogWay en crée une copie en lecture seule dans votre Google Drive. Toute personne disposant du lien peut la consulter.',
+      excluded: 'Les numéros de réservation et les notes ne sont jamais inclus.',
+      stop: 'Lorsque vous arrêtez le partage, la copie est supprimée et le lien ne fonctionne plus.',
+    },
+  },
+  device: {
+    title: 'Cookies et stockage local',
+    items: {
+      cookie:
+        "Un cookie vous permet de rester connecté. Il contient un jeton de connexion Google chiffré. Vous devez vous reconnecter au plus tard au bout de 30 jours. Ce cookie est nécessaire au fonctionnement de l'application.",
+      localStorage: 'Votre préférence de langue est enregistrée dans votre navigateur.',
+      noTracking: "LogWay n'utilise aucun cookie de mesure d'audience, de publicité ou de suivi.",
+    },
+  },
+  providers: {
+    title: 'Prestataires',
+    items: {
+      google: 'Google : connexion et stockage de vos données dans votre Google Drive.',
+      vercel:
+        "Vercel : hébergement de l'application. Comme la plupart des hébergeurs, Vercel peut traiter des données techniques, comme votre adresse IP, dans ses journaux.",
+    },
+  },
+  deletion: {
+    title: 'Comment supprimer vos données',
+    items: {
+      revoke:
+        'Retirez LogWay des {permissions}. LogWay ne pourra alors plus accéder à votre Drive.',
+      drive:
+        "Dans Google Drive, ouvrez Paramètres, puis Gérer les applications. Trouvez LogWay et sélectionnez Supprimer les données d'application masquées.",
+      browser:
+        'Effacez les données du site LogWay dans les paramètres de votre navigateur pour supprimer la copie locale.',
+    },
+    permissionsLink: 'autorisations de votre compte Google',
+  },
+  rights: {
+    title: 'Vos droits',
+    items: {
+      access:
+        'LogWay ne conserve ni vos voyages ni votre profil sur ses serveurs. Vos données se trouvent dans votre propre Google Drive et votre navigateur : vous pouvez les consulter, les modifier et les supprimer vous-même à tout moment, comme indiqué ci-dessus.',
+      complaint:
+        "Vous pouvez aussi introduire une réclamation auprès de l'autorité de protection des données de votre pays.",
+    },
+  },
+  changes: {
+    title: 'Modifications de cette politique',
+    description:
+      'Si cette politique change, la nouvelle version sera publiée sur cette page avec une nouvelle date.',
+  },
+  contact: {
+    title: 'Contact',
+    description: 'Pour toute question sur cette politique, écrivez à {email}.',
+    showEmail: "Afficher l'adresse e-mail",
+  },
+};
+
 export const trip = {
   deleteConfirm: 'Supprimer "{title}" ? Tous les éléments seront aussi supprimés.',
   editTrip: 'Modifier le voyage',
@@ -241,5 +331,6 @@ export default {
   event,
   form,
   home,
+  privacyPolicy,
   trip,
 };

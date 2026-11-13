@@ -24,6 +24,12 @@ import { API_PATH } from '@/api/paths';
       <a class="auth-view__submit" :href="API_PATH.AUTH_LOGIN">
         {{ $t('auth.signIn') }}
       </a>
+
+      <div class="auth-view__links">
+        <RouterLink class="auth-view__link" :to="{ name: 'privacyPolicy' }">
+          {{ $t('privacyPolicy.title') }}
+        </RouterLink>
+      </div>
     </div>
   </div>
 </template>

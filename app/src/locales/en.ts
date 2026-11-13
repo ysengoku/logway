@@ -197,6 +197,93 @@ export const home = {
   showAll: 'Show all ({count})',
 };
 
+export const privacyPolicy = {
+  title: 'Privacy Policy',
+  lastUpdated: 'Last updated: {date}',
+  intro:
+    'LogWay is a travel planner. This page explains what data LogWay uses, where it is stored and how you can delete it.',
+  storage: {
+    title: 'Where your data is stored',
+    description:
+      'LogWay does not store your trips on its servers. Your trips and items are stored only in these two places:',
+    items: {
+      browser: 'In your browser, as a local copy on your device.',
+      drive:
+        'In your Google Drive, in a hidden folder that only LogWay can access. It does not appear in your Drive files.',
+    },
+  },
+  googleData: {
+    title: 'Data from your Google account',
+    description: 'When you sign in with Google, LogWay asks for the following access:',
+    items: {
+      profile:
+        'Your name and profile picture, to show them in the app. They are kept in memory and are not saved.',
+      appData: 'The hidden app folder in your Google Drive, to save and load your trips.',
+      appFiles:
+        'Files that LogWay creates in your Google Drive, to make share links. LogWay cannot see your other Drive files.',
+    },
+    noEmail: 'LogWay does not ask for your email address.',
+    limitedUse:
+      "LogWay's use and transfer of information received from Google APIs will adhere to the {policy}, including the Limited Use requirements. This data is used only to provide LogWay's features. It is not sold, not used for advertising and not shared with anyone else.",
+    policyLink: 'Google API Services User Data Policy',
+  },
+  share: {
+    title: 'Share links',
+    items: {
+      snapshot:
+        'When you share a trip, LogWay creates a read-only copy of it in your Google Drive. Anyone with the link can view it.',
+      excluded: 'Booking references and notes are never included.',
+      stop: 'When you stop sharing, the copy is deleted and the link no longer works.',
+    },
+  },
+  device: {
+    title: 'Cookies and local storage',
+    items: {
+      cookie:
+        'One cookie keeps you signed in. It contains an encrypted Google sign-in token. You need to sign in again after 30 days at most. This cookie is necessary for the app to work.',
+      localStorage: 'Your language preference is saved in your browser.',
+      noTracking: 'LogWay does not use analytics, advertising or tracking cookies.',
+    },
+  },
+  providers: {
+    title: 'Service providers',
+    items: {
+      google: 'Google: sign-in and storage of your data in your Google Drive.',
+      vercel:
+        'Vercel: hosting of the app. Like most hosting services, Vercel may process technical data such as your IP address in its logs.',
+    },
+  },
+  deletion: {
+    title: 'How to delete your data',
+    items: {
+      revoke: 'Remove LogWay from your {permissions}. LogWay can then no longer access your Drive.',
+      drive:
+        'In Google Drive, open Settings, then Manage apps. Find LogWay and select Delete hidden app data.',
+      browser: 'Clear the site data for LogWay in your browser settings to delete the local copy.',
+    },
+    permissionsLink: 'Google account permissions',
+  },
+  rights: {
+    title: 'Your rights',
+    items: {
+      access:
+        'LogWay does not keep your trips or your profile on its servers. Your data is in your own Google Drive and browser, so you can view, change and delete it yourself at any time, as described above.',
+      complaint:
+        'You can also file a complaint with the data protection authority of your country.',
+    },
+  },
+  changes: {
+    title: 'Changes to this policy',
+    description:
+      'If this policy changes, the new version will be published on this page with a new date.',
+  },
+  contact: {
+    title: 'Contact',
+    description: 'For questions about this policy, please email {email}.',
+    showEmail: 'Show email address',
+  },
+};
+
 export const trip = {
   deleteConfirm: 'Delete "{title}"? All items will also be deleted.',
   editTrip: 'Edit Trip',
@@ -235,5 +322,6 @@ export default {
   event,
   form,
   home,
+  privacyPolicy,
   trip,
 };

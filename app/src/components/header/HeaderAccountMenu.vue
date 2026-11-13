@@ -109,6 +109,14 @@ onBeforeUnmount(() => {
       <button class="app-header__account-menu__item" role="menuitem" @click="onSignOut(true)">
         {{ $t('auth.signOutAll') }}
       </button>
+      <RouterLink
+        class="app-header__account-menu__item"
+        role="menuitem"
+        :to="{ name: 'privacyPolicy' }"
+        @click="closeAccountMenu"
+      >
+        {{ $t('privacyPolicy.title') }}
+      </RouterLink>
     </div>
   </Teleport>
 </template>

@@ -1,0 +1,49 @@
+@use '../variables' as *;
+
+.privacy-policy {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 0 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: $text;
+  font-size: 14px;
+  line-height: 1.6;
+
+  &__updated {
+    color: $text-muted;
+    font-size: 12px;
+  }
+
+  &__list {
+    list-style: disc;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__show-email {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: $accent;
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      color: $accent-hover;
+    }
+  }
+
+  a {
+    color: $accent;
+    text-decoration: underline;
+
+    &:hover {
+      color: $accent-hover;
+    }
+  }
+}

@@ -21,6 +21,11 @@ const router = createRouter({
       name: 'auth',
       component: () => import('@/views/AuthView.vue'),
     },
+    {
+      path: '/privacy-policy',
+      name: 'privacyPolicy',
+      component: () => import('@/views/PrivacyPolicyView.vue'),
+    },
   ],
 });
 
