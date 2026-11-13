@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 const LAST_UPDATED = '2026-11-13';
 // Kept in two parts and shown only on click, so the address isn't easy to scrape.
@@ -17,11 +18,21 @@ const DEVICE_ITEMS = ['cookie', 'localStorage', 'noTracking'] as const;
 const PROVIDER_ITEMS = ['google', 'vercel'] as const;
 const RIGHTS_ITEMS = ['access', 'complaint'] as const;
 
+const router = useRouter();
 const { d } = useI18n({ useScope: 'global' });
 
 const lastUpdated = computed(() => d(new Date(`${LAST_UPDATED}T00:00:00`), 'short'));
 
 const contactEmail = ref<string | null>(null);
+
+// Opened directly (e.g. from Google's consent screen), there is no in-app page to go back to.
+function goBack() {
+  if (router.options.history.state.back) {
+    router.back();
+    return;
+  }
+  router.push({ name: 'home' });
+}
 
 function showContactEmail() {
   contactEmail.value = [CONTACT_EMAIL_USER, CONTACT_EMAIL_DOMAIN].join('@');
@@ -30,6 +41,9 @@ function showContactEmail() {
 
 <template>
   <main class="privacy-policy">
+    <button class="privacy-policy__back" type="button" @click="goBack">
+      ← {{ $t('common.back') }}
+    </button>
     <h1 class="page-title">{{ $t('privacyPolicy.title') }}</h1>
     <p class="privacy-policy__updated">
       {{ $t('privacyPolicy.lastUpdated', { date: lastUpdated }) }}
