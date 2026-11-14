@@ -16,8 +16,10 @@ export const useAuthStore = defineStore('auth', () => {
   const session = ref<StoredSession | null>(null);
   const profile = computed(() => session.value?.profile ?? null);
   const isAuthenticated = computed(() => session.value !== null);
+
   let refreshing: Promise<void> | null = null;
-  let logoutRequesting: Promise<boolean> | null = null;
+  let logoutAllDevices: Promise<boolean> | null = null;
+  let logoutThisDevice: Promise<boolean> | null = null;
   let sessionGeneration = 0;
   let lastRefreshedAt = 0;
   // const loadingStore = useLoadingStore();
@@ -45,6 +47,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function refreshSession(): Promise<void> {
+    if (logoutAllDevices || logoutThisDevice) {
+      return;
+    }
     if (refreshing) {
       return refreshing;
     }
@@ -89,10 +94,16 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function signOut(allDevices: boolean = false): Promise<boolean> {
-    if (logoutRequesting) {
-      return logoutRequesting;
+    if (logoutAllDevices) {
+      return logoutAllDevices;
     }
-    logoutRequesting = (async () => {
+    if (logoutThisDevice && !allDevices) {
+      return logoutThisDevice;
+    }
+    const request = (async () => {
+      if (refreshing) {
+        await refreshing;
+      }
       const success = await logout(allDevices);
       if (!success) {
         return false;
@@ -100,10 +111,17 @@ export const useAuthStore = defineStore('auth', () => {
       ++sessionGeneration;
       session.value = null;
       return true;
-    })().finally(() => {
-      logoutRequesting = null;
+    })();
+    if (allDevices) {
+      logoutAllDevices = request.finally(() => {
+        logoutAllDevices = null;
+      });
+      return logoutAllDevices;
+    }
+    logoutThisDevice = request.finally(() => {
+      logoutThisDevice = null;
     });
-    return logoutRequesting;
+    return logoutThisDevice;
   }
 
   return {
