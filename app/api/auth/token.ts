@@ -1,5 +1,10 @@
 import { appUrlOrigin } from '../_lib/config.js';
-import { readRefreshToken, clearSessionCookies } from '../_lib/session.js';
+import { SESSION_ABSOLUTE_TIMEOUT_MS } from '../_lib/cookies.js';
+import {
+  readRefreshToken,
+  appendRefreshTokenCookie,
+  clearSessionCookies,
+} from '../_lib/session.js';
 import { fetchUserProfile, requestGoogleToken, toUserProfile } from '../_lib/google.js';
 import { fromBase64Url } from '../_lib/base64.js';
 import type { Session, UserProfile } from '../../src/shared/types/auth.js';
@@ -13,15 +18,31 @@ interface RefreshedTokens {
 type AccessTokenResponse =
   { success: true; tokens: RefreshedTokens } | { success: false; status: number };
 
+/**
+ * Returns a fresh access token and rewrites the cookie with a new `lastActivity`.
+ *
+ * @returns 403 for other origins, 401 (cookie cleared) when the session is invalid,
+ * 503 when Google fails temporarily, otherwise the `Session`.
+ */
 export async function POST(request: Request): Promise<Response> {
   if (request.headers.get('origin') !== appUrlOrigin) {
     return new Response(null, { status: 403 });
   }
+
   const headers = new Headers({ 'Cache-Control': 'no-store' });
-  const response = await getAccessToken(request);
+  const refreshToken = await readRefreshToken(request);
+  if (!refreshToken) {
+    clearSessionCookies(headers);
+    return new Response(null, { status: 401, headers });
+  }
+
+  const response = await getAccessToken(refreshToken.token);
   if (!response.success) {
     if (response.status === 401) {
       clearSessionCookies(headers);
+    }
+    if (response.status === 503) {
+      await appendRefreshTokenCookie(headers, refreshToken);
     }
     return new Response(null, { status: response.status, headers });
   }
@@ -36,24 +57,20 @@ export async function POST(request: Request): Promise<Response> {
     token: response.tokens.accessToken,
     expiresIn: response.tokens.expiresIn,
     profile: profile,
+    sessionExpiresIn: (refreshToken.issuedAt + SESSION_ABSOLUTE_TIMEOUT_MS - Date.now()) / 1000,
   };
+  await appendRefreshTokenCookie(headers, refreshToken);
   return Response.json(session, { headers });
 }
 
 /**
- * Exchanges the encrypted refresh token cookie for a new access token
- * (and a fresh id_token when Google sends one).
+ * Exchanges a refresh token for a new access token and a fresh id_token when Google sends one.
  *
- * @returns The tokens on success. On failure, the status to send: 401 when the user
- * is not signed in or Google rejects the refresh token (`invalid_grant`), 503 when
- * Google fails temporarily or cannot be reached.
+ * @returns The tokens on success. On failure, the status to send: 401 when Google
+ * rejects the refresh token (`invalid_grant`), 503 when Google fails temporarily
+ * or cannot be reached.
  */
-async function getAccessToken(request: Request): Promise<AccessTokenResponse> {
-  const refreshToken = await readRefreshToken(request);
-  if (!refreshToken) {
-    return { success: false, status: 401 };
-  }
-
+async function getAccessToken(refreshToken: string): Promise<AccessTokenResponse> {
   const response = await requestGoogleToken({
     grant_type: 'refresh_token',
     refresh_token: refreshToken,

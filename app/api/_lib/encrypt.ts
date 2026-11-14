@@ -13,6 +13,9 @@ const cryptoKey = crypto.subtle.importKey('raw', keyBytes, algorithm, false, [
   'decrypt',
 ]);
 
+/** Encrypts with AES-256-GCM and a random IV.
+ * @returns `base64url(iv).base64url(ciphertext)`.
+ */
 export async function encrypt(plaintext: string): Promise<string> {
   const key = await cryptoKey;
   const encoded = new TextEncoder().encode(plaintext);
@@ -25,6 +28,12 @@ export async function encrypt(plaintext: string): Promise<string> {
   return `${toBase64Url(iv)}.${toBase64Url(new Uint8Array(ciphertext))}`;
 }
 
+/**
+ * Decrypts a value made by `encrypt`.
+ *
+ * @returns The plaintext, or null when the value is malformed, tampered with,
+ * or was encrypted with another key.
+ */
 export async function decrypt(value: string): Promise<string | null> {
   const key = await cryptoKey;
   try {

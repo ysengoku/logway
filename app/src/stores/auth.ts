@@ -4,18 +4,24 @@ import { fetchSession, logout } from '@/api/auth';
 // import { useLoadingStore } from './loading';
 import type { Session } from '@/shared/types/auth';
 
-type StoredSession = Session & { expiresAt: number };
+type StoredSession = Session & { expiresAt: number; sessionExpiresAt: number };
 
 const TOKEN_REFRESH_MARGIN_MS = 5 * 60 * 1000;
 const TOKEN_USABLE_MARGIN_MS = 60 * 1000;
+const SESSION_REAUTH_MARGIN_MS = 60 * 60 * 24 * 1000;
+const RESUME_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
 export const useAuthStore = defineStore('auth', () => {
   const initialized = ref(false);
   const session = ref<StoredSession | null>(null);
   const profile = computed(() => session.value?.profile ?? null);
   const isAuthenticated = computed(() => session.value !== null);
+
   let refreshing: Promise<void> | null = null;
+  let logoutAllDevices: Promise<boolean> | null = null;
+  let logoutThisDevice: Promise<boolean> | null = null;
   let sessionGeneration = 0;
+  let lastRefreshedAt = 0;
   // const loadingStore = useLoadingStore();
 
   async function init() {
@@ -23,11 +29,27 @@ export const useAuthStore = defineStore('auth', () => {
       return;
     }
 
-    await Promise.all([refreshSession(), new Promise((resolve) => setTimeout(resolve, 3600))]);
+    await Promise.all([resumeSession(), new Promise((resolve) => setTimeout(resolve, 3600))]);
     initialized.value = true;
   }
 
+  async function resumeSession(): Promise<boolean> {
+    if (lastRefreshedAt + RESUME_REFRESH_INTERVAL_MS < Date.now()) {
+      await refreshSession();
+    }
+    if (session.value && session.value?.sessionExpiresAt > Date.now() + SESSION_REAUTH_MARGIN_MS) {
+      return true;
+    }
+    // TODO: sync unsaved changes to Google Drive
+    session.value = null;
+    ++sessionGeneration;
+    return false;
+  }
+
   async function refreshSession(): Promise<void> {
+    if (logoutAllDevices || logoutThisDevice) {
+      return;
+    }
     if (refreshing) {
       return refreshing;
     }
@@ -40,11 +62,14 @@ export const useAuthStore = defineStore('auth', () => {
       }
       switch (fetchedSession.status) {
         case 'ok':
+          const now = Date.now();
           session.value = {
             ...fetchedSession.session,
             profile: fetchedSession.session.profile ?? session.value?.profile ?? null,
-            expiresAt: Date.now() + fetchedSession.session.expiresIn * 1000,
+            expiresAt: now + fetchedSession.session.expiresIn * 1000,
+            sessionExpiresAt: now + fetchedSession.session.sessionExpiresIn * 1000,
           };
+          lastRefreshedAt = Date.now();
           break;
         case 'unauthenticated':
           session.value = null;
@@ -69,13 +94,34 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function signOut(allDevices: boolean = false): Promise<boolean> {
-    const success = await logout(allDevices);
-    if (!success) {
-      return false;
+    if (logoutAllDevices) {
+      return logoutAllDevices;
     }
-    ++sessionGeneration;
-    session.value = null;
-    return true;
+    if (logoutThisDevice && !allDevices) {
+      return logoutThisDevice;
+    }
+    const request = (async () => {
+      if (refreshing) {
+        await refreshing;
+      }
+      const success = await logout(allDevices);
+      if (!success) {
+        return false;
+      }
+      ++sessionGeneration;
+      session.value = null;
+      return true;
+    })();
+    if (allDevices) {
+      logoutAllDevices = request.finally(() => {
+        logoutAllDevices = null;
+      });
+      return logoutAllDevices;
+    }
+    logoutThisDevice = request.finally(() => {
+      logoutThisDevice = null;
+    });
+    return logoutThisDevice;
   }
 
   return {
@@ -83,6 +129,7 @@ export const useAuthStore = defineStore('auth', () => {
     profile,
     isAuthenticated,
     init,
+    resumeSession,
     getAccessToken,
     signOut,
   };

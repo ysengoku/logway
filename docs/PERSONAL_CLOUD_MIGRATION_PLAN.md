@@ -65,7 +65,8 @@ logway/
 
 **Cookie**
 
-- 属性は `HttpOnly; Secure; SameSite=Lax; Path=/api/auth; Max-Age=7日`（`_lib/cookies.ts`）
+- 属性は `HttpOnly; Secure; SameSite=Lax; Path=/api/auth`（`_lib/cookies.ts`）
+- `Max-Age` は書き込みのたびに `min(7日, 絶対期限までの残り)` にする。ブラウザ側でも期限どおりに消えるようにするため（期限の判定はサーバーで行う）
 - セッションの Cookie は `refresh_token` だけ。読み書きと削除は `_lib/session.ts` にまとめる
 
 **リフレッシュトークンの暗号化**（`_lib/encrypt.ts`）
@@ -73,9 +74,10 @@ logway/
 - AES-256-GCM（Web Crypto）。GCM の認証タグで改ざんも検出できるので、別の署名は付けない
 - 鍵は `SESSION_SECRET` を base64 デコードした 32 バイトをそのまま使う。読み込み時に長さを確認し、32 バイトでなければ起動時にエラーにする
 - IV は暗号化のたびに 12 バイトのランダム値を作る。Cookie の値は `base64url(iv).base64url(暗号文)`
-- 暗号化する中身は、リフレッシュトークンと有効期限の JSON（`{ token, expiresAt }`、`expiresAt` はミリ秒）。期限はログイン時から 7日で、更新しても延長しない（盗まれた Cookie を使える期間に上限をつけるため）
+- 暗号化する中身は、リフレッシュトークンと日時の JSON（`{ token, issuedAt, lastActivity }`、日時はミリ秒）
+- 期限は2つ。ログインから 30日（絶対期限）と、最終利用から 7日。使っている間は延長するが、絶対期限は延ばさない（盗まれた Cookie を使える期間に上限をつけるため）
 - 復号に失敗したら（改ざん、鍵の変更など）、または中身の形が違えば `null` を返し、ログインしていない状態として扱う。鍵を変えると全員がログアウトされる
-- 期限切れなら Google でリフレッシュトークンを失効（revoke）させてから `null` を返す
+- 期限切れ（`now > issuedAt + 30日` または `now > lastActivity + 7日`）なら `null` を返す。Google での失効（revoke）はしない。revoke すると同じユーザーの他のセッションも切れるため
 
 **`prompt=consent` が必要な理由**
 
@@ -85,7 +87,8 @@ logway/
 
 - POST だけを受け付ける（副作用があり、先読みなどで呼ばれないようにするため）。`Cache-Control: no-store`
 - `Origin` が `APP_URL` のオリジンと一致しなければ 403 を返す（CSRF 対策。`SameSite=Lax` に重ねる）
-- 返す値は `{ token, expiresIn, profile }`（型は `src/shared/types/auth.ts` の `Session`。API とクライアントで共有する）
+- 返す値は `{ token, expiresIn, profile, sessionExpiresIn }`（型は `src/shared/types/auth.ts` の `Session`。API とクライアントで共有する）。`sessionExpiresIn` は絶対期限（`issuedAt + 30日`）までの残り秒数
+- Cookie が有効なら、`lastActivity` を更新した Cookie を毎回返す（間引かない。書き直しは暗号化1回だけで軽いため）。成功時と 503 のときに更新し、401 のときは更新しない
 - `profile`（名前と画像）は、リフレッシュ時に Google が返す id_token から取り出す。Google から直接受け取った値なので署名は検証しない。表示にだけ使い、権限の判断には使わない。取り出せなければ `null`
 - Cookie が使えない（ない、復号できない、期限切れ）か、Google に拒否された（`invalid_grant`）ときは 401 を返し、Cookie を削除する
 - Google の一時的な失敗（5xx など）では 503 を返し、Cookie は残す（再読み込みで元に戻れるように）
@@ -103,6 +106,10 @@ logway/
 - `isAuthenticated` は `session !== null`。`session` に値が入るのは、サーバーがリフレッシュトークンを有効と判断したときだけ
 - ログアウトに失敗したら（ネットワークエラー、5xx）、Cookie が消えていない可能性があるので、ログイン状態を残して通知する
 - 画面遷移はストアではなくコンポーネントで行う（router がストアを import しているため、逆向きにすると循環参照になる）
+- `sessionExpiresIn` は、受け取った時点で時刻（`sessionExpiresAt`）に変換して持つ
+- 起動時と `visibilitychange`（hidden → visible）のとき、ログイン中ならセッションを取り直し、絶対期限まで1日を切っていればログインし直してもらう（`resumeSession`）。使っている途中で切れないよう、使い始める時点で済ませるため。使っている間のトークン更新では判定しない
+- 前回の取り直しの成功から5分以内なら、リクエストは送らず、手元の `sessionExpiresAt` で判定だけする。旅行の予定を入れている間はタブの切り替えが多く、そのたびに Google での更新が走らないようにするため
+- ログインし直してもらうときは `session` を `null` にする。画面遷移は、起動時はルーターガード、`visibilitychange` のときは App.vue で行う
 
 **未実装**
 
