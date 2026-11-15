@@ -20,6 +20,7 @@ export const MIGRATIONS: Migration[] = Object.entries(migrationFiles)
     return { version: Number(match[1]), sql };
   })
   .sort((a, b) => a.version - b.version);
+
 export async function getSchemaVersion(db: Db): Promise<number> {
   const [row] = await db.query<{ value: string }>(
     "SELECT value FROM meta WHERE key = 'schema_version'",

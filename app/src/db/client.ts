@@ -1,4 +1,4 @@
-import { migrate } from './migrate';
+import { migrate, MIGRATIONS } from './migrate';
 import type { WorkerCommand, WorkerResponse } from './protocol';
 import type { Db, SqlValue, Statement } from './types';
 
@@ -26,6 +26,16 @@ class DbClient implements Db {
 
   async query<T>(sql: string, bind?: SqlValue[]): Promise<T[]> {
     return (await this.send({ kind: 'query', sql, bind })) as T[];
+  }
+
+  async export(): Promise<Uint8Array> {
+    return (await this.send({ kind: 'export' })) as Uint8Array;
+  }
+
+  async import(bytes: Uint8Array): Promise<void> {
+    const maxSchemaVersion = MIGRATIONS.at(-1)?.version ?? 0;
+    await this.send({ kind: 'import', bytes, maxSchemaVersion });
+    await migrate(this);
   }
 
   async exec(statements: Statement[]): Promise<number> {
