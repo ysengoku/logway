@@ -28,8 +28,8 @@ class DbClient implements Db {
     return (await this.send({ kind: 'query', sql, bind })) as T[];
   }
 
-  async export(): Promise<Uint8Array> {
-    return (await this.send({ kind: 'export' })) as Uint8Array;
+  async export(): Promise<Uint8Array<ArrayBuffer>> {
+    return (await this.send({ kind: 'export' })) as Uint8Array<ArrayBuffer>;
   }
 
   async import(bytes: Uint8Array): Promise<void> {
