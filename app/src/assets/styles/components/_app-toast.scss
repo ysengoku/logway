@@ -1,0 +1,58 @@
+@use '../variables' as *;
+
+.app-toast {
+  &__container {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 32px;
+    z-index: 1100;
+    pointer-events: none;
+
+    @media (min-width: $bp-mobile) {
+      align-items: flex-start;
+    }
+  }
+
+  &__message {
+    max-width: min(480px, 100%);
+    padding: 10px 16px;
+    border-radius: $radius-md;
+    background: $text;
+    color: $bg;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba($text, 0.2);
+    pointer-events: auto;
+  }
+
+  &__info {
+    background: $accent;
+  }
+
+  &__error {
+    background: $accent2;
+  }
+}
+
+.app-toast-enter-from,
+.app-toast-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+
+  // Larger screens: slide in from the left edge
+  @media (min-width: $bp-mobile) {
+    transform: translateX(-16px);
+  }
+}
+.app-toast-enter-active,
+.app-toast-leave-active,
+.app-toast-move {
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}

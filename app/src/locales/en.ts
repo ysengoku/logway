@@ -3,6 +3,7 @@ export const auth = {
   signUp: 'Sign Up',
   signOut: 'Sign Out',
   signOutAll: 'Sign Out of All Devices',
+  signOutFailed: 'Sign-out failed. Please try again.',
   resetPassword: 'Reset Password',
   email: 'Email',
   password: 'Password',

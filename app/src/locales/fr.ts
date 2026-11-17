@@ -3,6 +3,7 @@ export const auth = {
   signUp: "S'inscrire",
   signOut: 'Se déconnecter',
   signOutAll: 'Déconnecter tous les appareils',
+  signOutFailed: 'Echec de la déconnexion. Veuillez réessayer.',
   resetPassword: 'Réinitialiser le mot de passe',
   email: 'Email',
   password: 'mot de passe',
