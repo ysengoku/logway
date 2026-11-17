@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppHeader from '@/components/AppHeader.vue';
 import AppLoader from '@/components/AppLoader.vue';
+import AppToast from '@/components/AppToast.vue';
 import { useAuthStore } from './stores/auth';
 import { useRouter } from 'vue-router';
 import { onMounted, onUnmounted } from 'vue';
@@ -32,6 +33,7 @@ async function onVisibilitychange() {
   <div id="app">
     <AppHeader />
     <AppLoader />
+    <AppToast />
     <div class="router-view-wrapper">
       <RouterView />
     </div>

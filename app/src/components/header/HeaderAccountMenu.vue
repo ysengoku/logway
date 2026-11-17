@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth';
-import { useRouter } from 'vue-router';
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useAuthStore } from '@/stores/auth';
+import { useToastStore } from '@/stores/toast';
 
 const authStore = useAuthStore();
+const toastStore = useToastStore();
 const router = useRouter();
+const { t } = useI18n();
 
 const accountMenuOpen = ref(false);
 const accountTriggerRef = ref<HTMLElement | null>(null);
@@ -39,8 +43,7 @@ async function onSignOut(allDevices: boolean) {
     await router.push({ name: 'auth' });
     return;
   }
-  // TODO: Show error
-  console.error('Logout failed');
+  toastStore.push({ type: 'error', message: t('auth.signOutFailed') });
 }
 
 function onDocumentClick(event: MouseEvent) {
