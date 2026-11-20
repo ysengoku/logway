@@ -10,3 +10,8 @@ export interface Db {
   // Runs all statements in a single transaction.
   exec(statements: Statement[]): Promise<number>;
 }
+
+export interface Executor {
+  query<T>(sql: string, bind?: SqlValue[]): T[];
+  exec(statements: Statement[]): number;
+}

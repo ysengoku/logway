@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getSchemaVersion, migrate, MIGRATIONS } from '@/db/migrate';
-import { createMemoryDb } from '../helpers/memoryDb';
+import { createMemoryDb, createMemoryExecutor } from '../helpers/memoryDb';
 
 describe('migrate', () => {
   it('loads migration files in version order', () => {
@@ -10,11 +10,11 @@ describe('migrate', () => {
   });
 
   it('applies all migrations and records the latest schema version', async () => {
-    const db = await createMemoryDb({ migrated: false });
-    await migrate(db);
+    const executor = await createMemoryExecutor({ migrated: false });
+    migrate(executor);
 
-    expect(await getSchemaVersion(db)).toBe(MIGRATIONS.at(-1)!.version);
-    const tables = await db.query<{ name: string }>(
+    expect(getSchemaVersion(executor)).toBe(MIGRATIONS.at(-1)!.version);
+    const tables = executor.query<{ name: string }>(
       "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name",
     );
     expect(tables.map((t) => t.name)).toEqual([
@@ -29,29 +29,33 @@ describe('migrate', () => {
   });
 
   it('is safe to run more than once', async () => {
-    const db = await createMemoryDb();
-    await expect(migrate(db)).resolves.toBeUndefined();
+    const executor = await createMemoryExecutor();
+    const versionBefore = getSchemaVersion(executor);
+
+    expect(() => migrate(executor)).not.toThrow();
+    expect(versionBefore).toBe(MIGRATIONS.at(-1)!.version);
+    expect(getSchemaVersion(executor)).toBe(versionBefore);
   });
 
   it('only applies migrations newer than the current version', async () => {
-    const db = await createMemoryDb({ migrated: false });
-    await migrate(db, [{ version: 1, sql: 'CREATE TABLE a (id TEXT)' }]);
-    await migrate(db, [
+    const executor = await createMemoryExecutor({ migrated: false });
+    migrate(executor, [{ version: 1, sql: 'CREATE TABLE a (id TEXT)' }]);
+    migrate(executor, [
       { version: 1, sql: 'CREATE TABLE a (id TEXT)' },
       { version: 2, sql: 'CREATE TABLE b (id TEXT)' },
     ]);
 
-    expect(await getSchemaVersion(db)).toBe(2);
+    expect(getSchemaVersion(executor)).toBe(2);
   });
 
   it('rolls back a failing migration without bumping the version', async () => {
-    const db = await createMemoryDb({ migrated: false });
-    await expect(
-      migrate(db, [{ version: 1, sql: 'CREATE TABLE a (id TEXT); NOT VALID SQL' }]),
-    ).rejects.toThrow();
+    const executor = await createMemoryExecutor({ migrated: false });
+    expect(() =>
+      migrate(executor, [{ version: 1, sql: 'CREATE TABLE a (id TEXT); NOT VALID SQL' }]),
+    ).toThrow();
 
-    expect(await getSchemaVersion(db)).toBe(0);
-    const tables = await db.query("SELECT name FROM sqlite_master WHERE name = 'a'");
+    expect(getSchemaVersion(executor)).toBe(0);
+    const tables = executor.query("SELECT name FROM sqlite_master WHERE name = 'a'");
     expect(tables).toEqual([]);
   });
 });

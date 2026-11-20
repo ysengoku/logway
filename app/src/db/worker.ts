@@ -1,9 +1,9 @@
 import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
 import { createExecutor } from './executor';
+import { migrate } from './migrate';
 import type { Database, SAHPoolUtil } from '@sqlite.org/sqlite-wasm';
-import type { Executor } from './executor';
 import type { WorkerRequest, WorkerResponse } from './protocol';
-import type { SqlValue } from './types';
+import type { Executor, SqlValue } from './types';
 
 const DB_NAME = 'logway';
 const DB_PATH = '/logway.sqlite3';
@@ -24,6 +24,7 @@ class DbWorker {
   private openDb(pool: SAHPoolUtil) {
     this.db = new pool.OpfsSAHPoolDb(DB_PATH);
     this.executor = createExecutor(this.db);
+    migrate(this.executor);
   }
 
   private async validate(pool: SAHPoolUtil, bytes: Uint8Array, maxSchemaVersion: number) {

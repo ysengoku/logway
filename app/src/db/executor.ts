@@ -1,10 +1,5 @@
-import type { SqlValue, Statement } from './types';
+import type { Executor, SqlValue, Statement } from './types';
 import type { Database } from '@sqlite.org/sqlite-wasm';
-
-export interface Executor {
-  query<T>(sql: string, bind?: SqlValue[]): T[];
-  exec(statements: Statement[]): number;
-}
 
 class SqliteExecutor implements Executor {
   constructor(private readonly db: Database) {

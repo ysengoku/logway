@@ -1,4 +1,4 @@
-import type { Db } from './types';
+import type { Executor } from './types';
 
 export interface Migration {
   version: number;
@@ -21,24 +21,24 @@ export const MIGRATIONS: Migration[] = Object.entries(migrationFiles)
   })
   .sort((a, b) => a.version - b.version);
 
-export async function getSchemaVersion(db: Db): Promise<number> {
-  const [row] = await db.query<{ value: string }>(
+export function getSchemaVersion(executor: Executor): number {
+  const [row] = executor.query<{ value: string }>(
     "SELECT value FROM meta WHERE key = 'schema_version'",
   );
   return row ? Number(row.value) : 0;
 }
 
-export async function migrate(db: Db, migrations: Migration[] = MIGRATIONS): Promise<void> {
-  await db.exec([
+export function migrate(executor: Executor, migrations: Migration[] = MIGRATIONS) {
+  executor.exec([
     { sql: 'CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)' },
   ]);
 
-  const currentVersion = await getSchemaVersion(db);
+  const currentVersion = getSchemaVersion(executor);
   for (const migration of migrations) {
     if (migration.version <= currentVersion) {
       continue;
     }
-    await db.exec([
+    executor.exec([
       { sql: migration.sql },
       {
         sql: "INSERT INTO meta (key, value) VALUES ('schema_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
